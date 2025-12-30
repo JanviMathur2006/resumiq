@@ -1,21 +1,30 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Home from "./pages/Home";
 import CreateResume from "./pages/CreateResume";
 import Profile from "./pages/Profile";
-import Navbar from "./components/Navbar";
+import AppLayout from "./components/AppLayout";
+import AuthWrapper from "./components/AuthWrapper";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* Public Routes */}
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/create" element={<CreateResume />} />
-        <Route path="/profile" element={<Profile />} />
+
+        {/* Protected Routes */}
+        <Route element={<AuthWrapper />}>
+          <Route element={<AppLayout />}>
+            <Route path="/app" element={<Home />} />
+            <Route path="/app/create" element={<CreateResume />} />
+            <Route path="/app/profile" element={<Profile />} />
+          </Route>
+        </Route>
       </Routes>
     </BrowserRouter>
   );
