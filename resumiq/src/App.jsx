@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -11,17 +12,19 @@ import Settings from "./pages/settings";
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
+function AnimatedRoutes() {
+  const location = useLocation();
 
-        {/* PUBLIC ROUTES */}
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        
+        {/* PUBLIC */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* PROTECTED ROUTES */}
+        {/* PROTECTED */}
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
             <Route path="/app" element={<Home />} />
@@ -33,10 +36,16 @@ function App() {
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
+    </AnimatePresence>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AnimatedRoutes />
     </BrowserRouter>
   );
 }
 
-export default App;

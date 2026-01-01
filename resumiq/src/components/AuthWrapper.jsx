@@ -1,17 +1,33 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function AuthWrapper() {
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    const logged = localStorage.getItem("loggedIn") === "true";
-    setIsLoggedIn(logged);
+    // Simulate auth check (replace with real auth later)
+    const loggedIn = localStorage.getItem("loggedIn") === "true";
+
+    setIsAuthenticated(loggedIn);
     setLoading(false);
   }, []);
 
-  if (loading) return null;
+  // Show loader while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 text-lg">Checking authentication...</p>
+      </div>
+    );
+  }
 
-  return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
+  // If not logged in → redirect to login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  // If logged in → show protected pages
+  return <Outlet />;
 }
