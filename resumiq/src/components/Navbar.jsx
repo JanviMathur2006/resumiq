@@ -9,7 +9,7 @@ export default function Navbar() {
         Resumiq
       </div>
 
-      {/* Links */}
+      {/* Navigation Links */}
       <div className="flex gap-6">
         <NavLink
           to="/app"
