@@ -1,30 +1,48 @@
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("loggedIn");
-    navigate("/");
-  };
-
   return (
-    <nav className="navbar">
-      {/* Logo Section */}
-      <div className="logo-section" onClick={() => navigate("/app")}>
-        <img src={logo} alt="Resumiq Logo" className="logo" />
-        <span className="brand">Resumiq</span>
+    <nav className="bg-black text-white px-6 py-4 flex items-center justify-between">
+      
+      {/* Logo */}
+      <div className="text-xl font-semibold">
+        Resumiq
       </div>
 
-      {/* Navigation Links */}
-      <div className="nav-links">
-        <Link to="/app">Home</Link>
-        <Link to="/app/create">Create</Link>
-        <Link to="/app/profile">Profile</Link>
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
+      {/* Links */}
+      <div className="flex gap-6">
+        <NavLink
+          to="/app"
+          className={({ isActive }) =>
+            isActive
+              ? "text-blue-400 font-medium"
+              : "hover:text-gray-300"
+          }
+        >
+          Home
+        </NavLink>
+
+        <NavLink
+          to="/app/settings"
+          className={({ isActive }) =>
+            isActive
+              ? "text-blue-400 font-medium"
+              : "hover:text-gray-300"
+          }
+        >
+          Settings
+        </NavLink>
+
+        <NavLink
+          to="/app/profile"
+          className={({ isActive }) =>
+            isActive
+              ? "text-blue-400 font-medium"
+              : "hover:text-gray-300"
+          }
+        >
+          Profile
+        </NavLink>
       </div>
     </nav>
   );

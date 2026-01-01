@@ -1,112 +1,107 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import "tailwindcss";
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f6fa;
-}
-
-/* Navbar */
-nav {
-  background: #222;
-  padding: 15px 30px;
-  display: flex;
-  gap: 20px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-nav a:hover {
-  text-decoration: underline;
-}
-
-/* Page layout */
-.page {
-  max-width: 700px;
-  margin: 40px auto;
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-}
-
-/* Inputs */
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-}
-
-button {
-  padding: 10px 20px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo {
-  width: 40px;
-  height: 40px;
-}
-
-.brand {
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #111;
-  padding: 12px 25px;
-}
-
-.nav-links a {
-  margin-left: 20px;
-  color: white;
-  text-decoration: none;
-}
-button {
-  padding: 10px 16px;
-  margin-top: 10px;
-  background: black;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  opacity: 0.85;
-}
-.page {
-  max-width: 700px;
-  margin: 80px auto;
-  text-align: center;
-  animation: fadeIn 0.8s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+/* ============================= */
+/* BASE STYLES (GLOBAL RESET) */
+/* ============================= */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f6fa;
+  }
+}
+
+/* ============================= */
+/* COMPONENT STYLES */
+/* ============================= */
+@layer components {
+  /* Navbar */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #111;
+    padding: 12px 25px;
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .nav-links a {
+    margin-left: 20px;
+    color: white;
+    text-decoration: none;
+  }
+
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+
+  /* Page layout */
+  .page {
+    max-width: 700px;
+    margin: 80px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in;
+  }
+
+  /* Inputs */
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+  }
+
+  button {
+    padding: 10px 16px;
+    margin-top: 10px;
+    background: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+}
+
+/* ============================= */
+/* ANIMATIONS */
+/* ============================= */
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
