@@ -1,18 +1,46 @@
-import { Outlet } from "react-router-dom";
-import Navbar from "./Navbar";
+import { Outlet, NavLink } from "react-router-dom";
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      
-      {/* Top Navigation */}
-      <Navbar />
+    <div>
+      {/* Navbar */}
+      <nav className="flex items-center justify-between px-8 py-4 bg-black text-white">
+        <h1 className="text-xl font-semibold">Resumiq</h1>
 
-      {/* Main Content Area */}
-      <main className="flex-1 px-6 py-6 max-w-7xl mx-auto w-full">
+        <div className="flex gap-6 items-center">
+          <NavLink
+            to="/app"
+            className={({ isActive }) =>
+              isActive ? "text-blue-400" : "text-white"
+            }
+          >
+            Home
+          </NavLink>
+
+          <NavLink
+            to="/app/settings"
+            className={({ isActive }) =>
+              isActive ? "text-blue-400" : "text-white"
+            }
+          >
+            Settings
+          </NavLink>
+
+          <NavLink
+            to="/app/profile"
+            className={({ isActive }) =>
+              isActive ? "text-blue-400" : "text-white"
+            }
+          >
+            Profile
+          </NavLink>
+        </div>
+      </nav>
+
+      {/* Page Content */}
+      <main className="p-6">
         <Outlet />
       </main>
-
     </div>
   );
 }
