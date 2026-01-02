@@ -3,39 +3,48 @@ import PageTransition from "../components/PageTransition";
 export default function Home() {
   return (
     <PageTransition>
-      <div className="space-y-6">
-        {/* Page Title */}
-        <h1 className="text-3xl font-semibold">All Resumes</h1>
+      <div className="max-w-7xl mx-auto px-6 py-10">
 
-        {/* Subtitle */}
-        <p className="text-gray-600">
-          Manage, edit, and create your resumes here.
-        </p>
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            All Resumes
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Manage, edit, and create your resumes effortlessly.
+          </p>
+        </div>
 
-        {/* Action Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-          
-          {/* Create Resume Card */}
-          <div className="p-6 border rounded-lg hover:shadow transition cursor-pointer bg-white">
-            <h3 className="text-lg font-semibold mb-2">Create New Resume</h3>
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          {/* Create Resume */}
+          <div className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600">
+              Create New Resume
+            </h3>
             <p className="text-gray-500">
-              Start building a new professional resume.
+              Start building a professional resume in minutes.
             </p>
           </div>
 
-          {/* Example Resume Card */}
-          <div className="p-6 border rounded-lg hover:shadow transition cursor-pointer bg-white">
-            <h3 className="text-lg font-semibold mb-2">My Resume</h3>
+          {/* My Resume */}
+          <div className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600">
+              My Resume
+            </h3>
             <p className="text-gray-500">
-              View or edit your existing resume.
+              View, edit or download your saved resumes.
             </p>
           </div>
 
-          {/* Placeholder */}
-          <div className="p-6 border rounded-lg hover:shadow transition cursor-pointer bg-white">
-            <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
-            <p className="text-gray-500">
-              More features are on the way.
+          {/* Coming Soon */}
+          <div className="group cursor-not-allowed rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6">
+            <h3 className="text-xl font-semibold mb-2 text-gray-400">
+              Coming Soon
+            </h3>
+            <p className="text-gray-400">
+              More powerful features are on the way.
             </p>
           </div>
 
