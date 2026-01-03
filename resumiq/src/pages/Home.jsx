@@ -9,7 +9,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // Scroll helpers
   const scrollToSlide = (index) => {
     const slider = sliderRef.current;
     if (!slider) return;
@@ -33,7 +32,6 @@ export default function Home() {
     }
   };
 
-  // Update active slide on manual scroll (swipe / trackpad)
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
@@ -42,15 +40,11 @@ export default function Home() {
     setActiveSlide(index);
   };
 
-  // ⌨️ Keyboard navigation
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "ArrowLeft") {
-        scrollLeft();
-      }
-      if (e.key === "ArrowRight") {
-        scrollRight();
-      }
+      if (e.key === "ArrowLeft") scrollLeft();
+      if (e.key === "ArrowRight") scrollRight();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -78,9 +72,13 @@ export default function Home() {
           <button
             onClick={scrollLeft}
             disabled={activeSlide === 0}
+            aria-label="Previous slide"
             className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
                         h-12 w-12 items-center justify-center rounded-full
                         shadow-lg transition
+                        focus-visible:outline-none
+                        focus-visible:ring-2 focus-visible:ring-black
+                        focus-visible:ring-offset-4
                         ${
                           activeSlide === 0
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -94,9 +92,13 @@ export default function Home() {
           <button
             onClick={scrollRight}
             disabled={activeSlide === TOTAL_SLIDES - 1}
+            aria-label="Next slide"
             className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
                         h-12 w-12 items-center justify-center rounded-full
                         shadow-lg transition
+                        focus-visible:outline-none
+                        focus-visible:ring-2 focus-visible:ring-black
+                        focus-visible:ring-offset-4
                         ${
                           activeSlide === TOTAL_SLIDES - 1
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -135,7 +137,10 @@ export default function Home() {
                   <button
                     onClick={() => navigate("/app/create")}
                     className="px-8 py-3 rounded-xl bg-black text-white text-lg
-                               font-medium hover:bg-gray-800 transition"
+                               font-medium hover:bg-gray-800 transition
+                               focus-visible:outline-none
+                               focus-visible:ring-2 focus-visible:ring-black
+                               focus-visible:ring-offset-4"
                   >
                     Create Resume →
                   </button>
@@ -158,7 +163,10 @@ export default function Home() {
                   <button
                     onClick={() => navigate("/app")}
                     className="px-8 py-3 rounded-xl bg-black text-white text-lg
-                               font-medium hover:bg-gray-800 transition"
+                               font-medium hover:bg-gray-800 transition
+                               focus-visible:outline-none
+                               focus-visible:ring-2 focus-visible:ring-black
+                               focus-visible:ring-offset-4"
                   >
                     View Resumes →
                   </button>
@@ -181,7 +189,10 @@ export default function Home() {
                   <button
                     onClick={() => navigate("/app/create")}
                     className="px-8 py-3 rounded-xl bg-black text-white text-lg
-                               font-medium hover:bg-gray-800 transition"
+                               font-medium hover:bg-gray-800 transition
+                               focus-visible:outline-none
+                               focus-visible:ring-2 focus-visible:ring-black
+                               focus-visible:ring-offset-4"
                   >
                     Browse Samples →
                   </button>
@@ -198,11 +209,16 @@ export default function Home() {
             <button
               key={i}
               onClick={() => scrollToSlide(i)}
-              className={`h-3 w-3 rounded-full transition ${
-                activeSlide === i
-                  ? "bg-black scale-110"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`h-3 w-3 rounded-full transition
+                focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-black
+                focus-visible:ring-offset-4
+                ${
+                  activeSlide === i
+                    ? "bg-black scale-110"
+                    : "bg-gray-300 hover:bg-gray-400"
+                }`}
             />
           ))}
         </div>
