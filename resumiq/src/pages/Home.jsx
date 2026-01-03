@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "../components/PageTransition";
 
@@ -9,6 +9,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
 
+  // Scroll helpers
   const scrollToSlide = (index) => {
     const slider = sliderRef.current;
     if (!slider) return;
@@ -32,6 +33,7 @@ export default function Home() {
     }
   };
 
+  // Update active slide on manual scroll (swipe / trackpad)
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
@@ -39,6 +41,21 @@ export default function Home() {
     const index = Math.round(slider.scrollLeft / slider.offsetWidth);
     setActiveSlide(index);
   };
+
+  // ⌨️ Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") {
+        scrollLeft();
+      }
+      if (e.key === "ArrowRight") {
+        scrollRight();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeSlide]);
 
   return (
     <PageTransition>
@@ -192,7 +209,7 @@ export default function Home() {
 
         {/* Hint */}
         <p className="text-center text-gray-400 mt-4 text-sm">
-          Swipe, use arrows, or dots to explore
+          Swipe, use arrows, dots, or ← → keys to explore
         </p>
 
       </div>
