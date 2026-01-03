@@ -15,40 +15,76 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Slider Wrapper */}
+        <div className="relative overflow-x-auto scroll-smooth snap-x snap-mandatory">
+          <div className="flex gap-10">
 
-          {/* Create Resume */}
-          <div className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
-            <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600">
-              Create New Resume
-            </h3>
-            <p className="text-gray-500">
-              Start building a professional resume in minutes.
-            </p>
+            {/* Slide 1 - Create Resume */}
+            <div className="snap-center min-w-full flex justify-center">
+              <div className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+
+                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-4xl font-light mb-6">
+                  +
+                </div>
+
+                <h2 className="text-3xl font-semibold mb-3">
+                  Create New Resume
+                </h2>
+
+                <p className="text-gray-600 text-lg mb-8 max-w-xl">
+                  Build a professional, ATS-friendly resume in just a few minutes.
+                </p>
+
+                <button className="px-8 py-3 rounded-xl bg-black text-white text-lg font-medium hover:bg-gray-800 transition">
+                  Create Resume →
+                </button>
+              </div>
+            </div>
+
+            {/* Slide 2 - My Resumes */}
+            <div className="snap-center min-w-full flex justify-center">
+              <div className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+
+                <h2 className="text-3xl font-semibold mb-3">
+                  My Resumes
+                </h2>
+
+                <p className="text-gray-600 text-lg mb-8 max-w-xl">
+                  View, edit, and download all your saved resumes in one place.
+                </p>
+
+                <button className="px-8 py-3 rounded-xl bg-black text-white text-lg font-medium hover:bg-gray-800 transition">
+                  View Resumes →
+                </button>
+              </div>
+            </div>
+
+            {/* Slide 3 - Resume Samples */}
+            <div className="snap-center min-w-full flex justify-center">
+              <div className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+
+                <h2 className="text-3xl font-semibold mb-3">
+                  Resume Samples
+                </h2>
+
+                <p className="text-gray-600 text-lg mb-8 max-w-xl">
+                  Explore professionally written resume samples for different roles and experience levels.
+                </p>
+
+                <button className="px-8 py-3 rounded-xl bg-black text-white text-lg font-medium hover:bg-gray-800 transition">
+                  Browse Samples →
+                </button>
+              </div>
+            </div>
+
           </div>
-
-          {/* My Resume */}
-          <div className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
-            <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600">
-              My Resume
-            </h3>
-            <p className="text-gray-500">
-              View, edit or download your saved resumes.
-            </p>
-          </div>
-
-          {/* Coming Soon */}
-          <div className="group cursor-not-allowed rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6">
-            <h3 className="text-xl font-semibold mb-2 text-gray-400">
-              Coming Soon
-            </h3>
-            <p className="text-gray-400">
-              More powerful features are on the way.
-            </p>
-          </div>
-
         </div>
+
+        {/* Hint Text */}
+        <p className="text-center text-gray-400 mt-6 text-sm">
+          Swipe or scroll horizontally to explore
+        </p>
+
       </div>
     </PageTransition>
   );
