@@ -38,20 +38,26 @@ export default function Home() {
         <div className="relative">
 
           {/* Left Arrow */}
-          <button
-            onClick={scrollLeft}
-            className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-white shadow-lg items-center justify-center text-xl hover:bg-gray-100"
-          >
-            ←
-          </button>
+<button
+  onClick={scrollLeft}
+  className="absolute -left-6 top-1/2 -translate-y-1/2 z-20
+             hidden lg:flex h-12 w-12 items-center justify-center
+             rounded-full bg-black text-white shadow-lg
+             hover:bg-gray-800 transition"
+>
+  ←
+</button>
 
-          {/* Right Arrow */}
-          <button
-            onClick={scrollRight}
-            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-white shadow-lg items-center justify-center text-xl hover:bg-gray-100"
-          >
-            →
-          </button>
+{/* Right Arrow */}
+<button
+  onClick={scrollRight}
+  className="absolute -right-6 top-1/2 -translate-y-1/2 z-20
+             hidden lg:flex h-12 w-12 items-center justify-center
+             rounded-full bg-black text-white shadow-lg
+             hover:bg-gray-800 transition"
+>
+  →
+</button>
 
           {/* Slider */}
           <div
