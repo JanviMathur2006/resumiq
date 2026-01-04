@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import PageTransition from "../components/PageTransition";
 
 const TOTAL_SLIDES = 3;
@@ -21,15 +22,11 @@ export default function Home() {
   };
 
   const scrollLeft = () => {
-    if (activeSlide > 0) {
-      scrollToSlide(activeSlide - 1);
-    }
+    if (activeSlide > 0) scrollToSlide(activeSlide - 1);
   };
 
   const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1) {
-      scrollToSlide(activeSlide + 1);
-    }
+    if (activeSlide < TOTAL_SLIDES - 1) scrollToSlide(activeSlide + 1);
   };
 
   const handleScroll = () => {
@@ -56,14 +53,19 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 py-10">
 
         {/* Header */}
-        <div className="mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-10"
+        >
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             All Resumes
           </h1>
           <p className="text-gray-600 text-lg">
             Manage, edit, and create your resumes effortlessly.
           </p>
-        </div>
+        </motion.div>
 
         {/* Slider Section */}
         <div className="relative">
@@ -76,9 +78,6 @@ export default function Home() {
             className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
                         h-12 w-12 items-center justify-center rounded-full
                         shadow-lg transition
-                        focus-visible:outline-none
-                        focus-visible:ring-2 focus-visible:ring-black
-                        focus-visible:ring-offset-4
                         ${
                           activeSlide === 0
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -96,9 +95,6 @@ export default function Home() {
             className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
                         h-12 w-12 items-center justify-center rounded-full
                         shadow-lg transition
-                        focus-visible:outline-none
-                        focus-visible:ring-2 focus-visible:ring-black
-                        focus-visible:ring-offset-4
                         ${
                           activeSlide === TOTAL_SLIDES - 1
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -112,46 +108,59 @@ export default function Home() {
           <div
             ref={sliderRef}
             onScroll={handleScroll}
-            className="overflow-x-auto scroll-smooth snap-x snap-mandatory"
+            className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
           >
             <div className="flex gap-12">
 
-              {/* Slide 1 */}
+              {/* ================= SLIDE 1: CREATE RESUME ================= */}
               <div className="snap-center min-w-full flex justify-center">
-                <div className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                                flex flex-col items-center justify-center text-center px-10">
-
-                  <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center
-                                  justify-center text-4xl mb-6">
-                    +
-                  </div>
-
-                  <h2 className="text-3xl font-semibold mb-3">
-                    Create New Resume
-                  </h2>
-
-                  <p className="text-gray-600 text-lg mb-8 max-w-xl">
-                    Build a professional, ATS-friendly resume in just a few minutes.
-                  </p>
-
-                  <button
-                    onClick={() => navigate("/app/create")}
-                    className="px-8 py-3 rounded-xl bg-black text-white text-lg
-                               font-medium hover:bg-gray-800 transition
-                               focus-visible:outline-none
-                               focus-visible:ring-2 focus-visible:ring-black
-                               focus-visible:ring-offset-4"
+                <Link to="/app/create" className="w-full max-w-4xl">
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 280, damping: 22 }}
+                    className="h-[420px] bg-white rounded-3xl shadow-xl
+                               flex flex-col items-center justify-center
+                               text-center px-10 cursor-pointer"
                   >
-                    Create Resume →
-                  </button>
-                </div>
+                    {/* Animated Plus */}
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-20 h-20 rounded-full bg-gray-100
+                                 flex items-center justify-center
+                                 text-4xl mb-6"
+                    >
+                      +
+                    </motion.div>
+
+                    <h2 className="text-3xl font-semibold mb-3">
+                      Create New Resume
+                    </h2>
+
+                    <p className="text-gray-600 text-lg mb-8 max-w-xl">
+                      Build a professional, ATS-friendly resume in just a few minutes.
+                    </p>
+
+                    <div className="px-8 py-3 rounded-xl bg-black text-white
+                                    text-lg font-medium">
+                      Create Resume →
+                    </div>
+                  </motion.div>
+                </Link>
               </div>
 
-              {/* Slide 2 */}
+              {/* ================= SLIDE 2: MY RESUMES ================= */}
               <div className="snap-center min-w-full flex justify-center">
-                <div className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                                flex flex-col items-center justify-center text-center px-10">
-
+                <motion.div
+                  whileHover={{ y: -6 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 280, damping: 22 }}
+                  className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                             flex flex-col items-center justify-center
+                             text-center px-10 cursor-pointer"
+                  onClick={() => navigate("/app")}
+                >
                   <h2 className="text-3xl font-semibold mb-3">
                     My Resumes
                   </h2>
@@ -160,24 +169,24 @@ export default function Home() {
                     View, edit, and download all your saved resumes in one place.
                   </p>
 
-                  <button
-                    onClick={() => navigate("/app")}
-                    className="px-8 py-3 rounded-xl bg-black text-white text-lg
-                               font-medium hover:bg-gray-800 transition
-                               focus-visible:outline-none
-                               focus-visible:ring-2 focus-visible:ring-black
-                               focus-visible:ring-offset-4"
-                  >
+                  <div className="px-8 py-3 rounded-xl bg-black text-white
+                                  text-lg font-medium">
                     View Resumes →
-                  </button>
-                </div>
+                  </div>
+                </motion.div>
               </div>
 
-              {/* Slide 3 */}
+              {/* ================= SLIDE 3: SAMPLES ================= */}
               <div className="snap-center min-w-full flex justify-center">
-                <div className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                                flex flex-col items-center justify-center text-center px-10">
-
+                <motion.div
+                  whileHover={{ y: -6 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 280, damping: 22 }}
+                  className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                             flex flex-col items-center justify-center
+                             text-center px-10 cursor-pointer"
+                  onClick={() => navigate("/app/create")}
+                >
                   <h2 className="text-3xl font-semibold mb-3">
                     Resume Samples
                   </h2>
@@ -186,17 +195,11 @@ export default function Home() {
                     Explore professionally written resume samples for different roles.
                   </p>
 
-                  <button
-                    onClick={() => navigate("/app/create")}
-                    className="px-8 py-3 rounded-xl bg-black text-white text-lg
-                               font-medium hover:bg-gray-800 transition
-                               focus-visible:outline-none
-                               focus-visible:ring-2 focus-visible:ring-black
-                               focus-visible:ring-offset-4"
-                  >
+                  <div className="px-8 py-3 rounded-xl bg-black text-white
+                                  text-lg font-medium">
                     Browse Samples →
-                  </button>
-                </div>
+                  </div>
+                </motion.div>
               </div>
 
             </div>
@@ -209,11 +212,7 @@ export default function Home() {
             <button
               key={i}
               onClick={() => scrollToSlide(i)}
-              aria-label={`Go to slide ${i + 1}`}
               className={`h-3 w-3 rounded-full transition
-                focus-visible:outline-none
-                focus-visible:ring-2 focus-visible:ring-black
-                focus-visible:ring-offset-4
                 ${
                   activeSlide === i
                     ? "bg-black scale-110"
