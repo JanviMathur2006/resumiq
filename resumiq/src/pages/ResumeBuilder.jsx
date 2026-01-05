@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import ResumeStrength from "../components/ResumeStrength";
 
 export default function ResumeBuilder() {
@@ -10,7 +10,13 @@ export default function ResumeBuilder() {
     skills: "",
   });
 
-  /* ================= UPDATE HANDLER ================= */
+  /* ================= REFS FOR AUTO SCROLL ================= */
+  const summaryRef = useRef(null);
+  const educationRef = useRef(null);
+  const experienceRef = useRef(null);
+  const projectsRef = useRef(null);
+  const skillsRef = useRef(null);
+
   const handleChange = (field, value) => {
     setResumeData((prev) => ({
       ...prev,
@@ -18,7 +24,7 @@ export default function ResumeBuilder() {
     }));
   };
 
-  /* ================= STRENGTH SCORE ================= */
+  /* ================= RESUME SCORE ================= */
   const resumeScore = useMemo(() => {
     let score = 0;
 
@@ -31,33 +37,59 @@ export default function ResumeBuilder() {
     return Math.min(score, 100);
   }, [resumeData]);
 
-  /* ================= IMPROVEMENT TIPS ================= */
+  /* ================= SECTION STATUS (LOGIC ONLY) ================= */
+  const sectionStatus = {
+    summary: resumeData.summary.trim().length > 30,
+    education: resumeData.education.trim().length > 20,
+    experience: resumeData.experience.trim().length > 50,
+    projects: resumeData.projects.trim().length > 40,
+    skills: resumeData.skills.trim().length > 10,
+  };
+
+  /* ================= TIPS ================= */
   const improvementTips = useMemo(() => {
     const tips = [];
 
-    if (resumeData.summary.trim().length <= 30) {
+    if (!sectionStatus.summary)
       tips.push("Add a stronger professional summary (2–3 lines).");
-    }
-    if (resumeData.education.trim().length <= 20) {
+    if (!sectionStatus.education)
       tips.push("Add complete education details.");
-    }
-    if (resumeData.experience.trim().length <= 50) {
+    if (!sectionStatus.experience)
       tips.push("Add or expand your work experience.");
-    }
-    if (resumeData.projects.trim().length <= 40) {
+    if (!sectionStatus.projects)
       tips.push("Add relevant projects to strengthen your profile.");
-    }
-    if (resumeData.skills.trim().length <= 10) {
+    if (!sectionStatus.skills)
       tips.push("Add more relevant skills.");
-    }
 
     return tips;
-  }, [resumeData]);
+  }, [sectionStatus]);
+
+  /* ================= AUTO SCROLL (SILENT) ================= */
+  useEffect(() => {
+    const sections = [
+      { key: "summary", ref: summaryRef },
+      { key: "education", ref: educationRef },
+      { key: "experience", ref: experienceRef },
+      { key: "projects", ref: projectsRef },
+      { key: "skills", ref: skillsRef },
+    ];
+
+    const firstWeak = sections.find(
+      (section) => !sectionStatus[section.key]
+    );
+
+    if (firstWeak?.ref.current) {
+      firstWeak.ref.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, []); // run once on page load
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Resume Builder
@@ -67,13 +99,63 @@ export default function ResumeBuilder() {
         </p>
       </div>
 
-      {/* ================= RESUME STRENGTH ================= */}
+      {/* RESUME STRENGTH */}
       <ResumeStrength score={resumeScore} />
 
-      {/* ================= IMPROVEMENT TIPS ================= */}
+      {/* FORM (NORMAL LOOK) */}
+      <div className="grid gap-6">
+
+        <div ref={summaryRef}>
+          <Section
+            title="Professional Summary"
+            placeholder="Write a short summary about yourself..."
+            value={resumeData.summary}
+            onChange={(v) => handleChange("summary", v)}
+          />
+        </div>
+
+        <div ref={educationRef}>
+          <Section
+            title="Education"
+            placeholder="Enter your education details..."
+            value={resumeData.education}
+            onChange={(v) => handleChange("education", v)}
+          />
+        </div>
+
+        <div ref={experienceRef}>
+          <Section
+            title="Experience"
+            placeholder="Describe your work experience..."
+            value={resumeData.experience}
+            onChange={(v) => handleChange("experience", v)}
+          />
+        </div>
+
+        <div ref={projectsRef}>
+          <Section
+            title="Projects"
+            placeholder="Mention projects you have worked on..."
+            value={resumeData.projects}
+            onChange={(v) => handleChange("projects", v)}
+          />
+        </div>
+
+        <div ref={skillsRef}>
+          <Section
+            title="Skills"
+            placeholder="List your skills (comma separated)..."
+            value={resumeData.skills}
+            onChange={(v) => handleChange("skills", v)}
+          />
+        </div>
+
+      </div>
+
+      {/* ================= TIPS AT THE END ================= */}
       {improvementTips.length > 0 && (
-        <div className="mb-8 bg-yellow-50 border border-yellow-200
-                        rounded-xl p-4">
+        <div className="mt-10 bg-yellow-50 border border-yellow-200
+                        rounded-xl p-5">
           <h3 className="text-sm font-semibold text-yellow-800 mb-2">
             💡 Tips to improve your resume
           </h3>
@@ -86,53 +168,14 @@ export default function ResumeBuilder() {
         </div>
       )}
 
-      {/* ================= FORM ================= */}
-      <div className="grid gap-6">
-
-        <Section
-          title="Professional Summary"
-          placeholder="Write a short summary about yourself..."
-          value={resumeData.summary}
-          onChange={(v) => handleChange("summary", v)}
-        />
-
-        <Section
-          title="Education"
-          placeholder="Enter your education details..."
-          value={resumeData.education}
-          onChange={(v) => handleChange("education", v)}
-        />
-
-        <Section
-          title="Experience"
-          placeholder="Describe your work experience..."
-          value={resumeData.experience}
-          onChange={(v) => handleChange("experience", v)}
-        />
-
-        <Section
-          title="Projects"
-          placeholder="Mention projects you have worked on..."
-          value={resumeData.projects}
-          onChange={(v) => handleChange("projects", v)}
-        />
-
-        <Section
-          title="Skills"
-          placeholder="List your skills (comma separated)..."
-          value={resumeData.skills}
-          onChange={(v) => handleChange("skills", v)}
-        />
-
-      </div>
     </div>
   );
 }
 
-/* ================= REUSABLE SECTION ================= */
+/* ================= SECTION COMPONENT (NORMAL) ================= */
 function Section({ title, placeholder, value, onChange }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white border border-gray-200 rounded-xl p-6">
       <h2 className="text-lg font-semibold text-gray-800 mb-3">
         {title}
       </h2>
