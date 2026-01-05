@@ -1,10 +1,6 @@
 import { useState, useMemo } from "react";
 import ResumeStrength from "../components/ResumeStrength";
 
-/*
-  Simple resume data structure
-  (Later this can come from Firebase / context)
-*/
 export default function ResumeBuilder() {
   const [resumeData, setResumeData] = useState({
     summary: "",
@@ -22,7 +18,7 @@ export default function ResumeBuilder() {
     }));
   };
 
-  /* ================= STRENGTH CALCULATION ================= */
+  /* ================= STRENGTH SCORE ================= */
   const resumeScore = useMemo(() => {
     let score = 0;
 
@@ -33,6 +29,29 @@ export default function ResumeBuilder() {
     if (resumeData.skills.trim().length > 10) score += 20;
 
     return Math.min(score, 100);
+  }, [resumeData]);
+
+  /* ================= IMPROVEMENT TIPS ================= */
+  const improvementTips = useMemo(() => {
+    const tips = [];
+
+    if (resumeData.summary.trim().length <= 30) {
+      tips.push("Add a stronger professional summary (2–3 lines).");
+    }
+    if (resumeData.education.trim().length <= 20) {
+      tips.push("Add complete education details.");
+    }
+    if (resumeData.experience.trim().length <= 50) {
+      tips.push("Add or expand your work experience.");
+    }
+    if (resumeData.projects.trim().length <= 40) {
+      tips.push("Add relevant projects to strengthen your profile.");
+    }
+    if (resumeData.skills.trim().length <= 10) {
+      tips.push("Add more relevant skills.");
+    }
+
+    return tips;
   }, [resumeData]);
 
   return (
@@ -51,10 +70,25 @@ export default function ResumeBuilder() {
       {/* ================= RESUME STRENGTH ================= */}
       <ResumeStrength score={resumeScore} />
 
+      {/* ================= IMPROVEMENT TIPS ================= */}
+      {improvementTips.length > 0 && (
+        <div className="mb-8 bg-yellow-50 border border-yellow-200
+                        rounded-xl p-4">
+          <h3 className="text-sm font-semibold text-yellow-800 mb-2">
+            💡 Tips to improve your resume
+          </h3>
+
+          <ul className="list-disc list-inside text-sm text-yellow-800 space-y-1">
+            {improvementTips.map((tip, index) => (
+              <li key={index}>{tip}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* ================= FORM ================= */}
       <div className="grid gap-6">
 
-        {/* SUMMARY */}
         <Section
           title="Professional Summary"
           placeholder="Write a short summary about yourself..."
@@ -62,7 +96,6 @@ export default function ResumeBuilder() {
           onChange={(v) => handleChange("summary", v)}
         />
 
-        {/* EDUCATION */}
         <Section
           title="Education"
           placeholder="Enter your education details..."
@@ -70,7 +103,6 @@ export default function ResumeBuilder() {
           onChange={(v) => handleChange("education", v)}
         />
 
-        {/* EXPERIENCE */}
         <Section
           title="Experience"
           placeholder="Describe your work experience..."
@@ -78,7 +110,6 @@ export default function ResumeBuilder() {
           onChange={(v) => handleChange("experience", v)}
         />
 
-        {/* PROJECTS */}
         <Section
           title="Projects"
           placeholder="Mention projects you have worked on..."
@@ -86,7 +117,6 @@ export default function ResumeBuilder() {
           onChange={(v) => handleChange("projects", v)}
         />
 
-        {/* SKILLS */}
         <Section
           title="Skills"
           placeholder="List your skills (comma separated)..."
@@ -95,12 +125,11 @@ export default function ResumeBuilder() {
         />
 
       </div>
-
     </div>
   );
 }
 
-/* ================= REUSABLE SECTION COMPONENT ================= */
+/* ================= REUSABLE SECTION ================= */
 function Section({ title, placeholder, value, onChange }) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
