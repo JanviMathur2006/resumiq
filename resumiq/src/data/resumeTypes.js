@@ -74,3 +74,4 @@ export const resumeTypes = [
     sections: ["education", "research", "publications", "experience", "skills"],
   },
 ];
+

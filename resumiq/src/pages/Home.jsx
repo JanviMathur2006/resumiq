@@ -1,7 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
+import { resumeTypes } from "../data/resumeTypes";
 
 const TOTAL_SLIDES = 3;
 
@@ -9,6 +11,9 @@ export default function Home() {
   const sliderRef = useRef(null);
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
+
+  // extract resume names for typing
+  const resumeNames = resumeTypes.map((type) => type.name);
 
   const scrollToSlide = (index) => {
     const slider = sliderRef.current;
@@ -52,22 +57,36 @@ export default function Home() {
     <PageTransition>
       <div className="max-w-7xl mx-auto px-6 py-10">
 
-        {/* Header */}
+        {/* ================= HEADER ================= */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-10"
+          className="mb-12"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            All Resumes
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+            Build Your Resume
           </h1>
+
+          {/* ✅ Typing Resume Types */}
+          <h2 className="text-2xl font-medium text-green-600 mb-3">
+            <Typewriter
+              words={resumeNames}
+              loop={0}
+              cursor
+              cursorStyle="|"
+              typeSpeed={65}
+              deleteSpeed={45}
+              delaySpeed={1200}
+            />
+          </h2>
+
           <p className="text-gray-600 text-lg">
-            Manage, edit, and create your resumes effortlessly.
+            ATS-friendly • Professional • Recruiter-approved
           </p>
         </motion.div>
 
-        {/* Slider Section */}
+        {/* ================= SLIDER SECTION ================= */}
         <div className="relative">
 
           {/* Left Arrow */}
@@ -112,7 +131,7 @@ export default function Home() {
           >
             <div className="flex gap-12">
 
-              {/* ================= SLIDE 1: CREATE RESUME ================= */}
+              {/* SLIDE 1 */}
               <div className="snap-center min-w-full flex justify-center">
                 <Link to="/app/create" className="w-full max-w-4xl">
                   <motion.div
@@ -123,7 +142,6 @@ export default function Home() {
                                flex flex-col items-center justify-center
                                text-center px-10 cursor-pointer"
                   >
-                    {/* Animated Plus */}
                     <motion.div
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
@@ -139,7 +157,7 @@ export default function Home() {
                     </h2>
 
                     <p className="text-gray-600 text-lg mb-8 max-w-xl">
-                      Build a professional, ATS-friendly resume in just a few minutes.
+                      Build a professional, ATS-friendly resume in just minutes.
                     </p>
 
                     <div className="px-8 py-3 rounded-xl bg-black text-white
@@ -150,7 +168,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* ================= SLIDE 2: MY RESUMES ================= */}
+              {/* SLIDE 2 */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   whileHover={{ y: -6 }}
@@ -166,7 +184,7 @@ export default function Home() {
                   </h2>
 
                   <p className="text-gray-600 text-lg mb-8 max-w-xl">
-                    View, edit, and download all your saved resumes in one place.
+                    View, edit, and download all your resumes in one place.
                   </p>
 
                   <div className="px-8 py-3 rounded-xl bg-black text-white
@@ -176,7 +194,7 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* ================= SLIDE 3: SAMPLES ================= */}
+              {/* SLIDE 3 */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   whileHover={{ y: -6 }}
@@ -192,7 +210,7 @@ export default function Home() {
                   </h2>
 
                   <p className="text-gray-600 text-lg mb-8 max-w-xl">
-                    Explore professionally written resume samples for different roles.
+                    Explore professionally written resume samples.
                   </p>
 
                   <div className="px-8 py-3 rounded-xl bg-black text-white
