@@ -13,6 +13,10 @@ export default function ResumeBuilder() {
     skills: "",
   });
 
+  /* ================= AUTO SAVE STATE ================= */
+  const [saveStatus, setSaveStatus] = useState("Saved");
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+
   /* ================= REFS FOR AUTO SCROLL ================= */
   const summaryRef = useRef(null);
   const educationRef = useRef(null);
@@ -67,7 +71,7 @@ export default function ResumeBuilder() {
     return tips;
   }, [sectionStatus]);
 
-  /* ================= AUTO SCROLL (ON LOAD) ================= */
+  /* ================= AUTO SCROLL ON LOAD ================= */
   useEffect(() => {
     const sections = [
       { key: "summary", ref: summaryRef },
@@ -89,9 +93,37 @@ export default function ResumeBuilder() {
     }
   }, []);
 
+  /* ================= AUTO SAVE ================= */
+  useEffect(() => {
+    setSaveStatus("Saving...");
+
+    const timeout = setTimeout(() => {
+      localStorage.setItem("resumeData", JSON.stringify(resumeData));
+      setLastSavedAt(Date.now());
+      setSaveStatus("Saved");
+    }, 800);
+
+    return () => clearTimeout(timeout);
+  }, [resumeData]);
+
+  /* ================= SAVE TIME TEXT ================= */
+  const getSaveText = () => {
+    if (!lastSavedAt) return "Not saved yet";
+
+    const seconds = Math.floor((Date.now() - lastSavedAt) / 1000);
+
+    if (seconds < 3) return "Saved just now";
+    if (seconds < 60) return `Saved ${seconds} seconds ago`;
+
+    const minutes = Math.floor(seconds / 60);
+    return `Saved ${minutes} min ago`;
+  };
+
   /* ================= ACTIONS ================= */
   const handleSaveResume = () => {
     localStorage.setItem("resumeData", JSON.stringify(resumeData));
+    setLastSavedAt(Date.now());
+    setSaveStatus("Saved");
     alert("Resume saved successfully!");
   };
 
@@ -181,8 +213,15 @@ export default function ResumeBuilder() {
         </div>
       )}
 
+      {/* SAVE STATUS */}
+      <div className="flex justify-end mt-6 mb-2">
+        <span className="text-sm text-gray-500">
+          {saveStatus === "Saving..." ? "Saving…" : getSaveText()}
+        </span>
+      </div>
+
       {/* ACTION BAR */}
-      <div className="flex justify-end gap-4 mt-10 pt-6 border-t border-gray-200">
+      <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
         <button
           onClick={handlePreviewResume}
           className="px-6 py-3 rounded-xl bg-white border border-gray-300
