@@ -8,6 +8,8 @@ export default function ResumeBuilder() {
 
   /* ================= STATE ================= */
   const [resumeData, setResumeData] = useState({
+    name: "Your Name",
+    title: "Software Engineer",
     summary: "",
     education: "",
     experience: "",
@@ -65,16 +67,12 @@ export default function ResumeBuilder() {
     return Math.min(score, 100);
   }, [resumeData]);
 
-  /* ================= PDF DOWNLOAD ================= */
+  /* ================= PDF ================= */
   const downloadPDF = async () => {
-    const canvas = await html2canvas(pdfRef.current, {
-      scale: 2,
-      useCORS: true,
-    });
-
+    const canvas = await html2canvas(pdfRef.current, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
 
+    const pdf = new jsPDF("p", "mm", "a4");
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
@@ -85,77 +83,41 @@ export default function ResumeBuilder() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Resume Builder
-      </h1>
-
+      <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
       <ResumeStrength score={resumeScore} />
 
       {/* ================= EDIT MODE ================= */}
       {!previewMode && (
         <div className="space-y-6 mt-6">
-          <Section title="Professional Summary"
-            value={resumeData.summary}
-            onChange={(v) => handleChange("summary", v)}
-          />
+          <Input title="Name" value={resumeData.name} onChange={(v) => handleChange("name", v)} />
+          <Input title="Role / Title" value={resumeData.title} onChange={(v) => handleChange("title", v)} />
 
-          <Section title="Education"
-            value={resumeData.education}
-            onChange={(v) => handleChange("education", v)}
-          />
-
-          <Section title="Experience"
-            value={resumeData.experience}
-            onChange={(v) => handleChange("experience", v)}
-          />
-
-          <Section title="Projects"
-            value={resumeData.projects}
-            onChange={(v) => handleChange("projects", v)}
-          />
-
-          <Section title="Skills"
-            value={resumeData.skills}
-            onChange={(v) => handleChange("skills", v)}
-          />
+          <Section title="Professional Summary" value={resumeData.summary} onChange={(v) => handleChange("summary", v)} />
+          <Section title="Experience" value={resumeData.experience} onChange={(v) => handleChange("experience", v)} />
+          <Section title="Projects" value={resumeData.projects} onChange={(v) => handleChange("projects", v)} />
+          <Section title="Education" value={resumeData.education} onChange={(v) => handleChange("education", v)} />
+          <Section title="Skills" value={resumeData.skills} onChange={(v) => handleChange("skills", v)} />
         </div>
       )}
 
-      {/* ================= PREVIEW MODE ================= */}
+      {/* ================= PREVIEW MODE (TEMPLATE) ================= */}
       {previewMode && (
         <div className="mt-10 bg-gray-100 p-6 rounded-xl">
-          <div ref={pdfRef} className="bg-white p-10">
-            <h1 className="text-3xl font-bold mb-4">Your Name</h1>
+          <div
+            ref={pdfRef}
+            className="bg-white p-10 max-w-[800px] mx-auto text-black font-sans"
+          >
+            {/* HEADER */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold">{resumeData.name}</h1>
+              <p className="text-gray-600">{resumeData.title}</p>
+            </div>
 
-            {resumeData.summary && (
-              <PDFSection title="Summary">
-                {resumeData.summary}
-              </PDFSection>
-            )}
-
-            {resumeData.experience && (
-              <PDFSection title="Experience">
-                {resumeData.experience}
-              </PDFSection>
-            )}
-
-            {resumeData.projects && (
-              <PDFSection title="Projects">
-                {resumeData.projects}
-              </PDFSection>
-            )}
-
-            {resumeData.education && (
-              <PDFSection title="Education">
-                {resumeData.education}
-              </PDFSection>
-            )}
-
-            {resumeData.skills && (
-              <PDFSection title="Skills">
-                {resumeData.skills}
-              </PDFSection>
-            )}
+            <TemplateSection title="Summary" content={resumeData.summary} />
+            <TemplateSection title="Experience" content={resumeData.experience} />
+            <TemplateSection title="Projects" content={resumeData.projects} />
+            <TemplateSection title="Education" content={resumeData.education} />
+            <TemplateSection title="Skills" content={resumeData.skills} />
           </div>
         </div>
       )}
@@ -202,6 +164,19 @@ export default function ResumeBuilder() {
 
 /* ================= COMPONENTS ================= */
 
+function Input({ title, value, onChange }) {
+  return (
+    <div className="bg-white border rounded-xl p-4">
+      <h2 className="font-semibold mb-2">{title}</h2>
+      <input
+        className="w-full border rounded-lg p-2"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
 function Section({ title, value, onChange }) {
   return (
     <div className="bg-white border rounded-xl p-6">
@@ -215,13 +190,14 @@ function Section({ title, value, onChange }) {
   );
 }
 
-function PDFSection({ title, children }) {
+function TemplateSection({ title, content }) {
+  if (!content) return null;
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold border-b mb-2">
-        {title}
-      </h2>
-      <p>{children}</p>
+    <div className="mb-5">
+      <h2 className="text-lg font-semibold border-b mb-2">{title}</h2>
+      <p className="text-sm leading-relaxed whitespace-pre-line">
+        {content}
+      </p>
     </div>
   );
 }
