@@ -27,15 +27,14 @@ export default function ResumeBuilder() {
   const projectsRef = useRef(null);
   const skillsRef = useRef(null);
 
-  /* ================= LOAD HISTORY ================= */
+  /* ================= LOAD SAVED DATA + HISTORY ================= */
   useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("resumeData"));
+    if (storedData) setResumeData(storedData);
+
     const storedVersions =
       JSON.parse(localStorage.getItem("resumeVersions")) || [];
     setVersions(storedVersions);
-
-    const storedData =
-      JSON.parse(localStorage.getItem("resumeData")) || null;
-    if (storedData) setResumeData(storedData);
   }, []);
 
   /* ================= CHANGE HANDLER ================= */
@@ -43,7 +42,7 @@ export default function ResumeBuilder() {
     setResumeData((prev) => ({ ...prev, [field]: value }));
   };
 
-  /* ================= SCORE ================= */
+  /* ================= RESUME SCORE ================= */
   const resumeScore = useMemo(() => {
     let score = 0;
     if (resumeData.summary.length > 30) score += 10;
@@ -85,6 +84,7 @@ export default function ResumeBuilder() {
 
     const timeout = setTimeout(() => {
       const timestamp = Date.now();
+
       const newVersion = {
         id: timestamp,
         data: resumeData,
@@ -114,19 +114,20 @@ export default function ResumeBuilder() {
     if (!lastSavedAt) return "Not saved yet";
     const s = Math.floor((Date.now() - lastSavedAt) / 1000);
     if (s < 3) return "Saved just now";
-    if (s < 60) return `Saved ${s}s ago`;
+    if (s < 60) return `Saved ${s} seconds ago`;
     return `Saved ${Math.floor(s / 60)} min ago`;
   };
 
-  const restoreVersion = (v) => {
-    if (window.confirm("Restore this version?")) {
-      setResumeData(v.data);
-    }
-  };
-
+  /* ================= ACTIONS ================= */
   const handlePreview = () => {
     localStorage.setItem("resumeData", JSON.stringify(resumeData));
     navigate("/resume-preview");
+  };
+
+  const restoreVersion = (version) => {
+    if (window.confirm("Restore this version?")) {
+      setResumeData(version.data);
+    }
   };
 
   return (
@@ -134,7 +135,10 @@ export default function ResumeBuilder() {
 
       {/* ================= LEFT: BUILDER ================= */}
       <div className="lg:col-span-2 space-y-6">
-        <h1 className="text-3xl font-bold">Resume Builder</h1>
+
+        <h1 className="text-3xl font-bold text-gray-900">
+          Resume Builder
+        </h1>
 
         <ResumeStrength score={resumeScore} />
 
@@ -142,33 +146,43 @@ export default function ResumeBuilder() {
           refProp={summaryRef}
           title="Professional Summary"
           value={resumeData.summary}
+          placeholder="Write a short summary..."
           onChange={(v) => handleChange("summary", v)}
         />
+
         <Section
           refProp={educationRef}
           title="Education"
           value={resumeData.education}
+          placeholder="Enter education details..."
           onChange={(v) => handleChange("education", v)}
         />
+
         <Section
           refProp={experienceRef}
           title="Experience"
           value={resumeData.experience}
+          placeholder="Describe your experience..."
           onChange={(v) => handleChange("experience", v)}
         />
+
         <Section
           refProp={projectsRef}
           title="Projects"
           value={resumeData.projects}
+          placeholder="Mention projects..."
           onChange={(v) => handleChange("projects", v)}
         />
+
         <Section
           refProp={skillsRef}
           title="Skills"
           value={resumeData.skills}
+          placeholder="List skills..."
           onChange={(v) => handleChange("skills", v)}
         />
 
+        {/* TIPS */}
         {improvementTips.length > 0 && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
             <h3 className="font-semibold mb-2">
@@ -182,67 +196,78 @@ export default function ResumeBuilder() {
           </div>
         )}
 
+        {/* SAVE BAR */}
         <div className="flex justify-between items-center pt-6 border-t">
           <span className="text-sm text-gray-500">
             {saveStatus === "Saving…" ? "Saving…" : getSaveText()}
           </span>
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <button
               onClick={handlePreview}
-              className="px-5 py-2 rounded-lg border bg-white"
+              className="px-6 py-3 rounded-xl bg-white border border-gray-300
+                         text-gray-900 font-semibold shadow-sm
+                         hover:bg-gray-50"
             >
               Preview
             </button>
-            <button className="px-5 py-2 rounded-lg bg-black text-white">
+
+            <button
+              className="px-6 py-3 rounded-xl bg-black text-white
+                         font-semibold shadow-md"
+            >
               Save
             </button>
           </div>
         </div>
       </div>
 
-      {/* ================= RIGHT: VERSION HISTORY ================= */}
+      {/* ================= RIGHT: SAVE HISTORY ================= */}
       <div className="bg-white border rounded-xl p-5 h-fit">
-        <h3 className="font-semibold mb-4">🕘 Version History</h3>
+        <h3 className="font-semibold mb-4">
+          🕘 Save History
+        </h3>
 
-        {versions.length === 0 && (
+        {versions.length === 0 ? (
           <p className="text-sm text-gray-500">
             No versions yet
           </p>
-        )}
-
-        <ul className="space-y-3">
-          {versions.map((v, i) => (
-            <li
-              key={v.id}
-              className="flex justify-between items-center text-sm"
-            >
-              <span>
-                Version {versions.length - i} ·{" "}
-                {new Date(v.savedAt).toLocaleTimeString()}
-              </span>
-              <button
-                onClick={() => restoreVersion(v)}
-                className="text-blue-600 hover:underline"
+        ) : (
+          <ul className="space-y-3">
+            {versions.map((v, i) => (
+              <li
+                key={v.id}
+                className="flex justify-between items-center text-sm"
               >
-                Restore
-              </button>
-            </li>
-          ))}
-        </ul>
+                <span>
+                  Version {versions.length - i} ·{" "}
+                  {new Date(v.savedAt).toLocaleTimeString()}
+                </span>
+                <button
+                  onClick={() => restoreVersion(v)}
+                  className="text-blue-600 hover:underline"
+                >
+                  Restore
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
 }
 
 /* ================= SECTION ================= */
-function Section({ title, value, onChange, refProp }) {
+function Section({ title, value, placeholder, onChange, refProp }) {
   return (
     <div ref={refProp} className="bg-white border rounded-xl p-6">
       <h2 className="font-semibold mb-2">{title}</h2>
       <textarea
-        className="w-full min-h-[120px] border rounded-lg p-3"
+        className="w-full min-h-[120px] border rounded-lg p-3
+                   focus:outline-none focus:ring-2 focus:ring-black/20"
         value={value}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>
