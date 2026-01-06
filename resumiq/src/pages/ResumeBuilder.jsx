@@ -1,7 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ResumeStrength from "../components/ResumeStrength";
 
 export default function ResumeBuilder() {
+  const navigate = useNavigate();
+
   const [resumeData, setResumeData] = useState({
     summary: "",
     education: "",
@@ -37,7 +40,7 @@ export default function ResumeBuilder() {
     return Math.min(score, 100);
   }, [resumeData]);
 
-  /* ================= SECTION STATUS (LOGIC ONLY) ================= */
+  /* ================= SECTION STATUS ================= */
   const sectionStatus = {
     summary: resumeData.summary.trim().length > 30,
     education: resumeData.education.trim().length > 20,
@@ -64,7 +67,7 @@ export default function ResumeBuilder() {
     return tips;
   }, [sectionStatus]);
 
-  /* ================= AUTO SCROLL (SILENT) ================= */
+  /* ================= AUTO SCROLL (ON LOAD) ================= */
   useEffect(() => {
     const sections = [
       { key: "summary", ref: summaryRef },
@@ -84,7 +87,18 @@ export default function ResumeBuilder() {
         block: "center",
       });
     }
-  }, []); // run once on page load
+  }, []);
+
+  /* ================= ACTIONS ================= */
+  const handleSaveResume = () => {
+    localStorage.setItem("resumeData", JSON.stringify(resumeData));
+    alert("Resume saved successfully!");
+  };
+
+  const handlePreviewResume = () => {
+    localStorage.setItem("resumeData", JSON.stringify(resumeData));
+    navigate("/resume-preview");
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -102,8 +116,8 @@ export default function ResumeBuilder() {
       {/* RESUME STRENGTH */}
       <ResumeStrength score={resumeScore} />
 
-      {/* FORM (NORMAL LOOK) */}
-      <div className="grid gap-6">
+      {/* FORM */}
+      <div className="grid gap-6 mt-6">
 
         <div ref={summaryRef}>
           <Section
@@ -152,10 +166,9 @@ export default function ResumeBuilder() {
 
       </div>
 
-      {/* ================= TIPS AT THE END ================= */}
+      {/* TIPS */}
       {improvementTips.length > 0 && (
-        <div className="mt-10 bg-yellow-50 border border-yellow-200
-                        rounded-xl p-5">
+        <div className="mt-10 bg-yellow-50 border border-yellow-200 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-yellow-800 mb-2">
             💡 Tips to improve your resume
           </h3>
@@ -168,11 +181,30 @@ export default function ResumeBuilder() {
         </div>
       )}
 
+      {/* ACTION BUTTONS */}
+      <div className="flex justify-end gap-4 mt-8">
+        <button
+          onClick={handlePreviewResume}
+          className="px-5 py-2.5 rounded-lg border border-gray-300
+                     text-gray-800 font-medium hover:bg-gray-100"
+        >
+          Preview Resume
+        </button>
+
+        <button
+          onClick={handleSaveResume}
+          className="px-5 py-2.5 rounded-lg bg-black text-white
+                     font-semibold hover:bg-gray-900"
+        >
+          Save Resume
+        </button>
+      </div>
+
     </div>
   );
 }
 
-/* ================= SECTION COMPONENT (NORMAL) ================= */
+/* ================= SECTION COMPONENT ================= */
 function Section({ title, placeholder, value, onChange }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6">
