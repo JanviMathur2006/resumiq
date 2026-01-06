@@ -11,15 +11,22 @@ export default function ResumeBuilder() {
     name: "Your Name",
     title: "Software Engineer",
     summary: "",
-    education: "",
     experience: "",
     projects: "",
+    education: "",
     skills: "",
   });
 
   const [previewMode, setPreviewMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [lastSavedAt, setLastSavedAt] = useState(null);
+
+  const hasPreviewContent =
+    resumeData.summary ||
+    resumeData.experience ||
+    resumeData.projects ||
+    resumeData.education ||
+    resumeData.skills;
 
   /* ================= LOAD ================= */
   useEffect(() => {
@@ -69,6 +76,8 @@ export default function ResumeBuilder() {
 
   /* ================= PDF ================= */
   const downloadPDF = async () => {
+    if (!hasPreviewContent) return;
+
     const canvas = await html2canvas(pdfRef.current, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
 
@@ -83,43 +92,90 @@ export default function ResumeBuilder() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
 
-      <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Resume Builder
+      </h1>
+
       <ResumeStrength score={resumeScore} />
 
       {/* ================= EDIT MODE ================= */}
       {!previewMode && (
         <div className="space-y-6 mt-6">
-          <Input title="Name" value={resumeData.name} onChange={(v) => handleChange("name", v)} />
-          <Input title="Role / Title" value={resumeData.title} onChange={(v) => handleChange("title", v)} />
+          <Input
+            title="Name"
+            value={resumeData.name}
+            onChange={(v) => handleChange("name", v)}
+          />
 
-          <Section title="Professional Summary" value={resumeData.summary} onChange={(v) => handleChange("summary", v)} />
-          <Section title="Experience" value={resumeData.experience} onChange={(v) => handleChange("experience", v)} />
-          <Section title="Projects" value={resumeData.projects} onChange={(v) => handleChange("projects", v)} />
-          <Section title="Education" value={resumeData.education} onChange={(v) => handleChange("education", v)} />
-          <Section title="Skills" value={resumeData.skills} onChange={(v) => handleChange("skills", v)} />
+          <Input
+            title="Role / Title"
+            value={resumeData.title}
+            onChange={(v) => handleChange("title", v)}
+          />
+
+          <Section
+            title="Professional Summary"
+            value={resumeData.summary}
+            onChange={(v) => handleChange("summary", v)}
+          />
+
+          <Section
+            title="Experience"
+            value={resumeData.experience}
+            onChange={(v) => handleChange("experience", v)}
+          />
+
+          <Section
+            title="Projects"
+            value={resumeData.projects}
+            onChange={(v) => handleChange("projects", v)}
+          />
+
+          <Section
+            title="Education"
+            value={resumeData.education}
+            onChange={(v) => handleChange("education", v)}
+          />
+
+          <Section
+            title="Skills"
+            value={resumeData.skills}
+            onChange={(v) => handleChange("skills", v)}
+          />
         </div>
       )}
 
-      {/* ================= PREVIEW MODE (TEMPLATE) ================= */}
+      {/* ================= PREVIEW MODE ================= */}
       {previewMode && (
-        <div className="mt-10 bg-gray-100 p-6 rounded-xl">
-          <div
-            ref={pdfRef}
-            className="bg-white p-10 max-w-[800px] mx-auto text-black font-sans"
-          >
-            {/* HEADER */}
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold">{resumeData.name}</h1>
-              <p className="text-gray-600">{resumeData.title}</p>
-            </div>
+        <>
+          {hasPreviewContent && (
+            <div
+              ref={pdfRef}
+              className="mt-10 bg-white p-10 max-w-[800px] mx-auto text-black"
+            >
+              <div className="mb-6">
+                <h1 className="text-3xl font-bold">
+                  {resumeData.name}
+                </h1>
+                <p className="text-gray-600">
+                  {resumeData.title}
+                </p>
+              </div>
 
-            <TemplateSection title="Summary" content={resumeData.summary} />
-            <TemplateSection title="Experience" content={resumeData.experience} />
-            <TemplateSection title="Projects" content={resumeData.projects} />
-            <TemplateSection title="Education" content={resumeData.education} />
-            <TemplateSection title="Skills" content={resumeData.skills} />
-          </div>
-        </div>
+              <TemplateSection title="Summary" content={resumeData.summary} />
+              <TemplateSection title="Experience" content={resumeData.experience} />
+              <TemplateSection title="Projects" content={resumeData.projects} />
+              <TemplateSection title="Education" content={resumeData.education} />
+              <TemplateSection title="Skills" content={resumeData.skills} />
+            </div>
+          )}
+
+          {!hasPreviewContent && (
+            <p className="mt-10 text-center text-gray-500">
+              Add content to preview your resume.
+            </p>
+          )}
+        </>
       )}
 
       {/* ================= ACTION BAR ================= */}
@@ -149,7 +205,14 @@ export default function ResumeBuilder() {
 
               <button
                 onClick={downloadPDF}
-                className="px-6 py-3 rounded-xl bg-black text-white font-semibold"
+                disabled={!hasPreviewContent}
+                className={`px-6 py-3 rounded-xl font-semibold
+                  ${
+                    hasPreviewContent
+                      ? "bg-black text-white"
+                      : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  }
+                `}
               >
                 Download PDF
               </button>
@@ -194,7 +257,9 @@ function TemplateSection({ title, content }) {
   if (!content) return null;
   return (
     <div className="mb-5">
-      <h2 className="text-lg font-semibold border-b mb-2">{title}</h2>
+      <h2 className="text-lg font-semibold border-b mb-2">
+        {title}
+      </h2>
       <p className="text-sm leading-relaxed whitespace-pre-line">
         {content}
       </p>
