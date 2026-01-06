@@ -1,9 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect, useRef } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import ResumeStrength from "../components/ResumeStrength";
 
 export default function ResumeBuilder() {
-  const navigate = useNavigate();
+  const pdfRef = useRef(null);
 
   /* ================= STATE ================= */
   const [resumeData, setResumeData] = useState({
@@ -14,16 +15,17 @@ export default function ResumeBuilder() {
     skills: "",
   });
 
+  const [previewMode, setPreviewMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
-  /* ================= LOAD SAVED DATA ================= */
+  /* ================= LOAD ================= */
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("resumeData"));
     if (stored) setResumeData(stored);
   }, []);
 
-  /* ================= CHANGE HANDLER ================= */
+  /* ================= CHANGE ================= */
   const handleChange = (field, value) => {
     setResumeData((prev) => ({
       ...prev,
@@ -35,13 +37,13 @@ export default function ResumeBuilder() {
   useEffect(() => {
     setSaveStatus("Saving…");
 
-    const timeout = setTimeout(() => {
+    const timer = setTimeout(() => {
       localStorage.setItem("resumeData", JSON.stringify(resumeData));
       setLastSavedAt(Date.now());
       setSaveStatus("Saved");
     }, 800);
 
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(timer);
   }, [resumeData]);
 
   const getSaveText = () => {
@@ -63,111 +65,163 @@ export default function ResumeBuilder() {
     return Math.min(score, 100);
   }, [resumeData]);
 
-  /* ================= ACTIONS ================= */
-  const handlePreview = () => {
-    localStorage.setItem("resumeData", JSON.stringify(resumeData));
-    navigate("/app/preview");
-  };
+  /* ================= PDF DOWNLOAD ================= */
+  const downloadPDF = async () => {
+    const canvas = await html2canvas(pdfRef.current, {
+      scale: 2,
+      useCORS: true,
+    });
 
-  const handleSave = () => {
-    localStorage.setItem("resumeData", JSON.stringify(resumeData));
-    setLastSavedAt(Date.now());
-    setSaveStatus("Saved");
-    alert("Resume saved successfully!");
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("resume.pdf");
   };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
 
-      {/* HEADER */}
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-3xl font-bold mb-6">
         Resume Builder
       </h1>
 
-      {/* STRENGTH */}
       <ResumeStrength score={resumeScore} />
 
-      {/* FORM */}
-      <div className="space-y-6 mt-6">
-        <Section
-          title="Professional Summary"
-          placeholder="Write your professional summary..."
-          value={resumeData.summary}
-          onChange={(v) => handleChange("summary", v)}
-        />
+      {/* ================= EDIT MODE ================= */}
+      {!previewMode && (
+        <div className="space-y-6 mt-6">
+          <Section title="Professional Summary"
+            value={resumeData.summary}
+            onChange={(v) => handleChange("summary", v)}
+          />
 
-        <Section
-          title="Education"
-          placeholder="Enter your education details..."
-          value={resumeData.education}
-          onChange={(v) => handleChange("education", v)}
-        />
+          <Section title="Education"
+            value={resumeData.education}
+            onChange={(v) => handleChange("education", v)}
+          />
 
-        <Section
-          title="Experience"
-          placeholder="Describe your experience..."
-          value={resumeData.experience}
-          onChange={(v) => handleChange("experience", v)}
-        />
+          <Section title="Experience"
+            value={resumeData.experience}
+            onChange={(v) => handleChange("experience", v)}
+          />
 
-        <Section
-          title="Projects"
-          placeholder="Mention your projects..."
-          value={resumeData.projects}
-          onChange={(v) => handleChange("projects", v)}
-        />
+          <Section title="Projects"
+            value={resumeData.projects}
+            onChange={(v) => handleChange("projects", v)}
+          />
 
-        <Section
-          title="Skills"
-          placeholder="List your skills (comma separated)..."
-          value={resumeData.skills}
-          onChange={(v) => handleChange("skills", v)}
-        />
-      </div>
+          <Section title="Skills"
+            value={resumeData.skills}
+            onChange={(v) => handleChange("skills", v)}
+          />
+        </div>
+      )}
 
-      {/* SAVE BAR */}
+      {/* ================= PREVIEW MODE ================= */}
+      {previewMode && (
+        <div className="mt-10 bg-gray-100 p-6 rounded-xl">
+          <div ref={pdfRef} className="bg-white p-10">
+            <h1 className="text-3xl font-bold mb-4">Your Name</h1>
+
+            {resumeData.summary && (
+              <PDFSection title="Summary">
+                {resumeData.summary}
+              </PDFSection>
+            )}
+
+            {resumeData.experience && (
+              <PDFSection title="Experience">
+                {resumeData.experience}
+              </PDFSection>
+            )}
+
+            {resumeData.projects && (
+              <PDFSection title="Projects">
+                {resumeData.projects}
+              </PDFSection>
+            )}
+
+            {resumeData.education && (
+              <PDFSection title="Education">
+                {resumeData.education}
+              </PDFSection>
+            )}
+
+            {resumeData.skills && (
+              <PDFSection title="Skills">
+                {resumeData.skills}
+              </PDFSection>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ================= ACTION BAR ================= */}
       <div className="flex justify-between items-center pt-8 mt-8 border-t">
         <span className="text-sm text-gray-500">
           {saveStatus === "Saving…" ? "Saving…" : getSaveText()}
         </span>
 
-        <div className="flex gap-4">
-          <button
-            onClick={handlePreview}
-            className="px-6 py-3 rounded-xl bg-white border border-gray-300
-                       text-gray-900 font-semibold hover:bg-gray-50"
-          >
-            Preview
-          </button>
+        <div className="flex gap-3">
+          {!previewMode && (
+            <button
+              onClick={() => setPreviewMode(true)}
+              className="px-6 py-3 rounded-xl bg-black text-white font-semibold"
+            >
+              Preview Resume
+            </button>
+          )}
 
-          <button
-            onClick={handleSave}
-            className="px-6 py-3 rounded-xl bg-black text-white
-                       font-semibold hover:bg-gray-900"
-          >
-            Save
-          </button>
+          {previewMode && (
+            <>
+              <button
+                onClick={() => setPreviewMode(false)}
+                className="px-6 py-3 rounded-xl border font-semibold"
+              >
+                Back to Edit
+              </button>
+
+              <button
+                onClick={downloadPDF}
+                className="px-6 py-3 rounded-xl bg-black text-white font-semibold"
+              >
+                Download PDF
+              </button>
+            </>
+          )}
         </div>
       </div>
+
     </div>
   );
 }
 
-/* ================= SECTION ================= */
-function Section({ title, placeholder, value, onChange }) {
+/* ================= COMPONENTS ================= */
+
+function Section({ title, value, onChange }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-3">
-        {title}
-      </h2>
+    <div className="bg-white border rounded-xl p-6">
+      <h2 className="font-semibold mb-2">{title}</h2>
       <textarea
-        className="w-full min-h-[120px] border border-gray-300 rounded-lg
-                   px-4 py-3 text-gray-800 focus:outline-none
-                   focus:ring-2 focus:ring-black/20"
-        placeholder={placeholder}
+        className="w-full min-h-[120px] border rounded-lg p-3"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+    </div>
+  );
+}
+
+function PDFSection({ title, children }) {
+  return (
+    <div className="mb-6">
+      <h2 className="text-lg font-semibold border-b mb-2">
+        {title}
+      </h2>
+      <p>{children}</p>
     </div>
   );
 }
