@@ -181,20 +181,21 @@ export default function ResumeBuilder() {
         </div>
       )}
 
-      {/* ACTION BUTTONS */}
-      <div className="flex justify-end gap-4 mt-8">
+      {/* ACTION BAR */}
+      <div className="flex justify-end gap-4 mt-10 pt-6 border-t border-gray-200">
         <button
           onClick={handlePreviewResume}
-          className="px-5 py-2.5 rounded-lg border border-gray-300
-                     text-gray-800 font-medium hover:bg-gray-100"
+          className="px-6 py-3 rounded-xl bg-white border border-gray-300
+                     text-gray-900 font-semibold shadow-sm
+                     hover:bg-gray-50 hover:border-gray-400"
         >
           Preview Resume
         </button>
 
         <button
           onClick={handleSaveResume}
-          className="px-5 py-2.5 rounded-lg bg-black text-white
-                     font-semibold hover:bg-gray-900"
+          className="px-6 py-3 rounded-xl bg-black text-white
+                     font-semibold shadow-md hover:bg-gray-900"
         >
           Save Resume
         </button>
