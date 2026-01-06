@@ -10,6 +10,10 @@ export default function ResumeBuilder() {
   const [resumeData, setResumeData] = useState({
     name: "Your Name",
     title: "Software Engineer",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin: "",
     summary: "",
     experience: "",
     projects: "",
@@ -101,44 +105,63 @@ export default function ResumeBuilder() {
       {/* ================= EDIT MODE ================= */}
       {!previewMode && (
         <div className="space-y-6 mt-6">
-          <Input
-            title="Name"
-            value={resumeData.name}
+
+          {/* CONTACT DETAILS */}
+          <div className="bg-white border rounded-xl p-6">
+            <h2 className="font-semibold mb-4">Contact Details</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                placeholder="Email"
+                value={resumeData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                className="border rounded-lg p-3"
+              />
+              <input
+                placeholder="Phone"
+                value={resumeData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+                className="border rounded-lg p-3"
+              />
+              <input
+                placeholder="Location (City, Country)"
+                value={resumeData.location}
+                onChange={(e) => handleChange("location", e.target.value)}
+                className="border rounded-lg p-3"
+              />
+              <input
+                placeholder="LinkedIn URL"
+                value={resumeData.linkedin}
+                onChange={(e) => handleChange("linkedin", e.target.value)}
+                className="border rounded-lg p-3"
+              />
+            </div>
+          </div>
+
+          <Input title="Name" value={resumeData.name}
             onChange={(v) => handleChange("name", v)}
           />
-
-          <Input
-            title="Role / Title"
-            value={resumeData.title}
+          <Input title="Role / Title" value={resumeData.title}
             onChange={(v) => handleChange("title", v)}
           />
 
-          <Section
-            title="Professional Summary"
+          <Section title="Professional Summary"
             value={resumeData.summary}
             onChange={(v) => handleChange("summary", v)}
           />
-
-          <Section
-            title="Experience"
+          <Section title="Experience"
             value={resumeData.experience}
             onChange={(v) => handleChange("experience", v)}
           />
-
-          <Section
-            title="Projects"
+          <Section title="Projects"
             value={resumeData.projects}
             onChange={(v) => handleChange("projects", v)}
           />
-
-          <Section
-            title="Education"
+          <Section title="Education"
             value={resumeData.education}
             onChange={(v) => handleChange("education", v)}
           />
-
-          <Section
-            title="Skills"
+          <Section title="Skills"
             value={resumeData.skills}
             onChange={(v) => handleChange("skills", v)}
           />
@@ -153,13 +176,21 @@ export default function ResumeBuilder() {
               ref={pdfRef}
               className="mt-10 bg-white p-10 max-w-[800px] mx-auto text-black"
             >
-              <div className="mb-6">
+              {/* HEADER */}
+              <div className="mb-6 text-center">
                 <h1 className="text-3xl font-bold">
                   {resumeData.name}
                 </h1>
                 <p className="text-gray-600">
                   {resumeData.title}
                 </p>
+
+                <div className="mt-2 text-sm text-gray-700 flex flex-wrap justify-center gap-x-4 gap-y-1">
+                  {resumeData.email && <span>{resumeData.email}</span>}
+                  {resumeData.phone && <span>{resumeData.phone}</span>}
+                  {resumeData.location && <span>{resumeData.location}</span>}
+                  {resumeData.linkedin && <span>{resumeData.linkedin}</span>}
+                </div>
               </div>
 
               <TemplateSection title="Summary" content={resumeData.summary} />
