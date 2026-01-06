@@ -1,8 +1,6 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ResumeStrength from "../components/ResumeStrength";
-
-const MAX_VERSIONS = 10;
 
 export default function ResumeBuilder() {
   const navigate = useNavigate();
@@ -18,31 +16,43 @@ export default function ResumeBuilder() {
 
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [lastSavedAt, setLastSavedAt] = useState(null);
-  const [versions, setVersions] = useState([]);
 
-  /* ================= REFS ================= */
-  const summaryRef = useRef(null);
-  const educationRef = useRef(null);
-  const experienceRef = useRef(null);
-  const projectsRef = useRef(null);
-  const skillsRef = useRef(null);
-
-  /* ================= LOAD SAVED DATA + HISTORY ================= */
+  /* ================= LOAD SAVED DATA ================= */
   useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("resumeData"));
-    if (storedData) setResumeData(storedData);
-
-    const storedVersions =
-      JSON.parse(localStorage.getItem("resumeVersions")) || [];
-    setVersions(storedVersions);
+    const stored = JSON.parse(localStorage.getItem("resumeData"));
+    if (stored) setResumeData(stored);
   }, []);
 
   /* ================= CHANGE HANDLER ================= */
   const handleChange = (field, value) => {
-    setResumeData((prev) => ({ ...prev, [field]: value }));
+    setResumeData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  /* ================= RESUME SCORE ================= */
+  /* ================= AUTO SAVE ================= */
+  useEffect(() => {
+    setSaveStatus("Saving…");
+
+    const timeout = setTimeout(() => {
+      localStorage.setItem("resumeData", JSON.stringify(resumeData));
+      setLastSavedAt(Date.now());
+      setSaveStatus("Saved");
+    }, 800);
+
+    return () => clearTimeout(timeout);
+  }, [resumeData]);
+
+  const getSaveText = () => {
+    if (!lastSavedAt) return "Not saved yet";
+    const sec = Math.floor((Date.now() - lastSavedAt) / 1000);
+    if (sec < 3) return "Saved just now";
+    if (sec < 60) return `Saved ${sec}s ago`;
+    return `Saved ${Math.floor(sec / 60)} min ago`;
+  };
+
+  /* ================= SCORE ================= */
   const resumeScore = useMemo(() => {
     let score = 0;
     if (resumeData.summary.length > 30) score += 10;
@@ -53,221 +63,109 @@ export default function ResumeBuilder() {
     return Math.min(score, 100);
   }, [resumeData]);
 
-  /* ================= SECTION STATUS ================= */
-  const sectionStatus = {
-    summary: resumeData.summary.length > 30,
-    education: resumeData.education.length > 20,
-    experience: resumeData.experience.length > 50,
-    projects: resumeData.projects.length > 40,
-    skills: resumeData.skills.length > 10,
-  };
-
-  /* ================= TIPS ================= */
-  const improvementTips = useMemo(() => {
-    const tips = [];
-    if (!sectionStatus.summary)
-      tips.push("Add a stronger professional summary (2–3 lines).");
-    if (!sectionStatus.education)
-      tips.push("Add complete education details.");
-    if (!sectionStatus.experience)
-      tips.push("Add or expand your work experience.");
-    if (!sectionStatus.projects)
-      tips.push("Add relevant projects.");
-    if (!sectionStatus.skills)
-      tips.push("Add more relevant skills.");
-    return tips;
-  }, [sectionStatus]);
-
-  /* ================= AUTO SAVE + VERSIONING ================= */
-  useEffect(() => {
-    setSaveStatus("Saving…");
-
-    const timeout = setTimeout(() => {
-      const timestamp = Date.now();
-
-      const newVersion = {
-        id: timestamp,
-        data: resumeData,
-        savedAt: timestamp,
-      };
-
-      const updatedVersions = [
-        newVersion,
-        ...versions,
-      ].slice(0, MAX_VERSIONS);
-
-      localStorage.setItem("resumeData", JSON.stringify(resumeData));
-      localStorage.setItem(
-        "resumeVersions",
-        JSON.stringify(updatedVersions)
-      );
-
-      setVersions(updatedVersions);
-      setLastSavedAt(timestamp);
-      setSaveStatus("Saved");
-    }, 800);
-
-    return () => clearTimeout(timeout);
-  }, [resumeData]);
-
-  const getSaveText = () => {
-    if (!lastSavedAt) return "Not saved yet";
-    const s = Math.floor((Date.now() - lastSavedAt) / 1000);
-    if (s < 3) return "Saved just now";
-    if (s < 60) return `Saved ${s} seconds ago`;
-    return `Saved ${Math.floor(s / 60)} min ago`;
-  };
-
   /* ================= ACTIONS ================= */
   const handlePreview = () => {
     localStorage.setItem("resumeData", JSON.stringify(resumeData));
-    navigate("/resume-preview");
+    navigate("/app/preview");
   };
 
-  const restoreVersion = (version) => {
-    if (window.confirm("Restore this version?")) {
-      setResumeData(version.data);
-    }
+  const handleSave = () => {
+    localStorage.setItem("resumeData", JSON.stringify(resumeData));
+    setLastSavedAt(Date.now());
+    setSaveStatus("Saved");
+    alert("Resume saved successfully!");
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="max-w-5xl mx-auto px-6 py-10">
 
-      {/* ================= LEFT: BUILDER ================= */}
-      <div className="lg:col-span-2 space-y-6">
+      {/* HEADER */}
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+        Resume Builder
+      </h1>
 
-        <h1 className="text-3xl font-bold text-gray-900">
-          Resume Builder
-        </h1>
+      {/* STRENGTH */}
+      <ResumeStrength score={resumeScore} />
 
-        <ResumeStrength score={resumeScore} />
-
+      {/* FORM */}
+      <div className="space-y-6 mt-6">
         <Section
-          refProp={summaryRef}
           title="Professional Summary"
+          placeholder="Write your professional summary..."
           value={resumeData.summary}
-          placeholder="Write a short summary..."
           onChange={(v) => handleChange("summary", v)}
         />
 
         <Section
-          refProp={educationRef}
           title="Education"
+          placeholder="Enter your education details..."
           value={resumeData.education}
-          placeholder="Enter education details..."
           onChange={(v) => handleChange("education", v)}
         />
 
         <Section
-          refProp={experienceRef}
           title="Experience"
-          value={resumeData.experience}
           placeholder="Describe your experience..."
+          value={resumeData.experience}
           onChange={(v) => handleChange("experience", v)}
         />
 
         <Section
-          refProp={projectsRef}
           title="Projects"
+          placeholder="Mention your projects..."
           value={resumeData.projects}
-          placeholder="Mention projects..."
           onChange={(v) => handleChange("projects", v)}
         />
 
         <Section
-          refProp={skillsRef}
           title="Skills"
+          placeholder="List your skills (comma separated)..."
           value={resumeData.skills}
-          placeholder="List skills..."
           onChange={(v) => handleChange("skills", v)}
         />
-
-        {/* TIPS */}
-        {improvementTips.length > 0 && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-5">
-            <h3 className="font-semibold mb-2">
-              💡 Tips to improve your resume
-            </h3>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              {improvementTips.map((t, i) => (
-                <li key={i}>{t}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* SAVE BAR */}
-        <div className="flex justify-between items-center pt-6 border-t">
-          <span className="text-sm text-gray-500">
-            {saveStatus === "Saving…" ? "Saving…" : getSaveText()}
-          </span>
-
-          <div className="flex gap-4">
-            <button
-              onClick={handlePreview}
-              className="px-6 py-3 rounded-xl bg-white border border-gray-300
-                         text-gray-900 font-semibold shadow-sm
-                         hover:bg-gray-50"
-            >
-              Preview
-            </button>
-
-            <button
-              className="px-6 py-3 rounded-xl bg-black text-white
-                         font-semibold shadow-md"
-            >
-              Save
-            </button>
-          </div>
-        </div>
       </div>
 
-      {/* ================= RIGHT: SAVE HISTORY ================= */}
-      <div className="bg-white border rounded-xl p-5 h-fit">
-        <h3 className="font-semibold mb-4">
-          🕘 Save History
-        </h3>
+      {/* SAVE BAR */}
+      <div className="flex justify-between items-center pt-8 mt-8 border-t">
+        <span className="text-sm text-gray-500">
+          {saveStatus === "Saving…" ? "Saving…" : getSaveText()}
+        </span>
 
-        {versions.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            No versions yet
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {versions.map((v, i) => (
-              <li
-                key={v.id}
-                className="flex justify-between items-center text-sm"
-              >
-                <span>
-                  Version {versions.length - i} ·{" "}
-                  {new Date(v.savedAt).toLocaleTimeString()}
-                </span>
-                <button
-                  onClick={() => restoreVersion(v)}
-                  className="text-blue-600 hover:underline"
-                >
-                  Restore
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="flex gap-4">
+          <button
+            onClick={handlePreview}
+            className="px-6 py-3 rounded-xl bg-white border border-gray-300
+                       text-gray-900 font-semibold hover:bg-gray-50"
+          >
+            Preview
+          </button>
+
+          <button
+            onClick={handleSave}
+            className="px-6 py-3 rounded-xl bg-black text-white
+                       font-semibold hover:bg-gray-900"
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 /* ================= SECTION ================= */
-function Section({ title, value, placeholder, onChange, refProp }) {
+function Section({ title, placeholder, value, onChange }) {
   return (
-    <div ref={refProp} className="bg-white border rounded-xl p-6">
-      <h2 className="font-semibold mb-2">{title}</h2>
+    <div className="bg-white border border-gray-200 rounded-xl p-6">
+      <h2 className="text-lg font-semibold text-gray-800 mb-3">
+        {title}
+      </h2>
       <textarea
-        className="w-full min-h-[120px] border rounded-lg p-3
-                   focus:outline-none focus:ring-2 focus:ring-black/20"
-        value={value}
+        className="w-full min-h-[120px] border border-gray-300 rounded-lg
+                   px-4 py-3 text-gray-800 focus:outline-none
+                   focus:ring-2 focus:ring-black/20"
         placeholder={placeholder}
+        value={value}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>

@@ -20,6 +20,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import CreateResumes from "./pages/CreateResumes"; // resume type selection
 import ResumeBuilder from "./pages/ResumeBuilder"; // editor
+import ResumeSamples from "./pages/ResumeSamples"; // ✅ NEW: samples page
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
@@ -55,6 +56,9 @@ function AnimatedRoutes() {
             {/* Create Resume Flow */}
             <Route path="/app/create" element={<CreateResumes />} />
             <Route path="/app/builder" element={<ResumeBuilder />} />
+
+            {/* ✅ Resume Samples Page */}
+            <Route path="/app/samples" element={<ResumeSamples />} />
 
             {/* User Pages */}
             <Route path="/app/profile" element={<Profile />} />
