@@ -1,3 +1,7 @@
+/* ===============================
+   ROOT LAYOUT
+================================ */
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,18 +9,28 @@
   text-align: center;
 }
 
+/* ===============================
+   LOGO (DEFAULT)
+================================ */
+
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+
+/* ===============================
+   LOGO ANIMATION
+================================ */
 
 @keyframes logo-spin {
   from {
@@ -33,10 +47,111 @@
   }
 }
 
+/* ===============================
+   GENERIC CARD
+================================ */
+
 .card {
   padding: 2em;
 }
 
+/* ===============================
+   TEXT
+================================ */
+
 .read-the-docs {
   color: #888;
+}
+
+/* ===============================
+   ✨ RESUME TYPE CARD
+================================ */
+
+.resume-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 28px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Hover glow */
+.resume-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 18px 40px rgba(0, 0, 0, 0.08),
+    0 0 45px rgba(99, 102, 241, 0.18);
+}
+
+/* ===============================
+   🔥 ANIMATED GLOW PULSE
+================================ */
+
+@keyframes glowPulse {
+  0% {
+    box-shadow:
+      0 0 0 2px rgba(99, 102, 241, 0.25),
+      0 20px 40px rgba(99, 102, 241, 0.25),
+      0 0 50px rgba(99, 102, 241, 0.35);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(99, 102, 241, 0.35),
+      0 25px 50px rgba(99, 102, 241, 0.35),
+      0 0 75px rgba(99, 102, 241, 0.55);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(99, 102, 241, 0.25),
+      0 20px 40px rgba(99, 102, 241, 0.25),
+      0 0 50px rgba(99, 102, 241, 0.35);
+  }
+}
+
+/* Active (Selected) Card */
+.resume-card.active {
+  border-color: #6366f1;
+  animation: glowPulse 2.6s ease-in-out infinite;
+}
+
+/* ===============================
+   RECOMMENDED BADGE
+================================ */
+
+.resume-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #000;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.35);
+}
+
+/* ===============================
+   CONTINUE BUTTON STATES
+================================ */
+
+.button-disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.button-active {
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
