@@ -3,18 +3,6 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 /* ===================================================== */
-/* ================= FONT LOADER ======================= */
-/* ===================================================== */
-const loadFonts = () => {
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href =
-    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto:wght@400;500&family=Arial&family=Helvetica&family=Calibri&family=Times+New+Roman&family=Georgia&family=Cambria&family=Garamond&family=Poppins:wght@400;500&family=Montserrat:wght@400;500&family=Source+Sans+Pro:wght@400;600&family=IBM+Plex+Sans:wght@400;500&family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap";
-  document.head.appendChild(link);
-};
-loadFonts();
-
-/* ===================================================== */
 /* ================= DEFAULT DATA ====================== */
 /* ===================================================== */
 
@@ -41,6 +29,7 @@ const createVersion = (name = "New Resume") => ({
     fontFamily: "Inter",
     fontSize: 14,
     lineHeight: 1.6,
+    margin: 40, // px
   },
 });
 
@@ -66,7 +55,7 @@ export default function ResumeBuilder() {
   /* ===================================================== */
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("resume_builder_full"));
+    const stored = JSON.parse(localStorage.getItem("resume_builder_spacing"));
     if (stored) {
       setVersions(stored.versions);
       setActiveId(stored.activeId);
@@ -80,7 +69,7 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (!versions.length) return;
     localStorage.setItem(
-      "resume_builder_full",
+      "resume_builder_spacing",
       JSON.stringify({ versions, activeId })
     );
   }, [versions, activeId]);
@@ -95,7 +84,7 @@ export default function ResumeBuilder() {
     const t = setTimeout(() => {
       setSaveStatus("Saved");
       setLastSavedAt(Date.now());
-    }, 700);
+    }, 600);
     return () => clearTimeout(t);
   }, [activeVersion?.data, activeVersion?.style]);
 
@@ -167,7 +156,7 @@ export default function ResumeBuilder() {
   };
 
   /* ===================================================== */
-  /* ================= RESUME SCORE ====================== */
+  /* ================= SCORE ============================= */
   /* ===================================================== */
 
   const score = useMemo(() => {
@@ -230,7 +219,7 @@ export default function ResumeBuilder() {
         ))}
       </Box>
 
-      {/* Strength */}
+      {/* Resume Strength */}
       <div className="mb-6">
         <p>Resume Strength: {score}%</p>
         <div style={{ background: "#e5e7eb", height: 6 }}>
@@ -238,9 +227,10 @@ export default function ResumeBuilder() {
         </div>
       </div>
 
-      {/* Typography */}
+      {/* Typography + Spacing */}
       <Box>
-        <strong>Typography</strong>
+        <strong>Typography & Layout</strong>
+
         <Row>
           <select value={s.fontFamily} onChange={e => updateStyle("fontFamily", e.target.value)}>
             {[
@@ -258,19 +248,46 @@ export default function ResumeBuilder() {
             ))}
           </select>
         </Row>
+
+        <Row>
+          <label>Line spacing</label>
+          <input
+            type="range"
+            min="1.2"
+            max="2"
+            step="0.1"
+            value={s.lineHeight}
+            onChange={e => updateStyle("lineHeight", Number(e.target.value))}
+          />
+          <span>{s.lineHeight}</span>
+        </Row>
+
+        <Row>
+          <label>Page margin</label>
+          <input
+            type="range"
+            min="20"
+            max="80"
+            step="5"
+            value={s.margin}
+            onChange={e => updateStyle("margin", Number(e.target.value))}
+          />
+          <span>{s.margin}px</span>
+        </Row>
       </Box>
 
       {/* Edit */}
       {!previewMode && (
         <>
           <button onClick={undo}>Undo</button>
+
           {Object.keys(EMPTY_RESUME).map(k => (
             <Box key={k}>
               <strong>{k.toUpperCase()}</strong>
               <textarea
                 value={d[k]}
                 onChange={e => updateField(k, e.target.value)}
-                rows={k === "summary" ? 3 : 4}
+                rows={4}
               />
             </Box>
           ))}
@@ -285,19 +302,22 @@ export default function ResumeBuilder() {
             fontFamily: s.fontFamily,
             fontSize: s.fontSize,
             lineHeight: s.lineHeight,
+            padding: s.margin,
             background: "white",
-            padding: 40,
           }}
         >
           <h1>{d.name}</h1>
           <p>{d.title}</p>
           <p>{[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(" • ")}</p>
-          {Object.entries(d).map(([k, v]) => v && k !== "name" && k !== "title" && (
-            <section key={k}>
-              <h3>{k.toUpperCase()}</h3>
-              <p>{v}</p>
-            </section>
-          ))}
+
+          {Object.entries(d).map(([k, v]) =>
+            v && !["name","title","email","phone","location","linkedin"].includes(k) && (
+              <section key={k}>
+                <h3>{k.toUpperCase()}</h3>
+                <p>{v}</p>
+              </section>
+            )
+          )}
         </div>
       )}
 
@@ -311,6 +331,7 @@ export default function ResumeBuilder() {
           {previewMode && <button onClick={downloadPDF}>Download PDF</button>}
         </div>
       </Row>
+
     </div>
   );
 }
