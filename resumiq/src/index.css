@@ -12,7 +12,13 @@
 
   body {
     font-family: Arial, sans-serif;
-    background: #f5f6fa;
+    background-color: #f5f6fa;
+    color: #111827;
+  }
+
+  .dark body {
+    background-color: #030712;
+    color: #f9fafb;
   }
 }
 
@@ -20,7 +26,8 @@
 /* COMPONENT STYLES */
 /* ============================= */
 @layer components {
-  /* Navbar */
+
+  /* ---------------- Navbar ---------------- */
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -56,7 +63,7 @@
     text-decoration: underline;
   }
 
-  /* Page layout */
+  /* ---------------- Page Layout ---------------- */
   .page {
     max-width: 700px;
     margin: 80px auto;
@@ -67,14 +74,43 @@
     animation: fadeIn 0.8s ease-in;
   }
 
-  /* Inputs */
-  input,
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
+  .dark .page {
+    background: #111827;
   }
 
+  /* ---------------- Inputs ---------------- */
+  .input,
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #111827;
+    outline: none;
+  }
+
+  .input:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #111827;
+  }
+
+  .dark .input,
+  .dark input,
+  .dark textarea,
+  .dark select {
+    background: #1f2933;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  /* ---------------- Buttons ---------------- */
+  .btn,
   button {
     padding: 10px 16px;
     margin-top: 10px;
@@ -82,18 +118,59 @@
     color: white;
     border: none;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 6px;
+    transition: opacity 0.2s ease, transform 0.1s ease;
   }
 
+  .btn:hover,
   button:hover {
-    opacity: 0.85;
+    opacity: 0.9;
+  }
+
+  .btn:active,
+  button:active {
+    transform: scale(0.98);
+  }
+
+  /* ---------------- Danger Button ---------------- */
+  .btn-danger {
+    background: #dc2626;
+  }
+
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+
+  /* ---------------- Toggle / Checkbox ---------------- */
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: black;
+    cursor: pointer;
+  }
+
+  .dark input[type="checkbox"] {
+    accent-color: white;
+  }
+
+  /* ---------------- Cards ---------------- */
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .card {
+    background: #111827;
   }
 }
 
 /* ============================= */
-/* ANIMATIONS */
+/* UTILITIES & ANIMATIONS */
 /* ============================= */
 @layer utilities {
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -103,5 +180,9 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.6s ease-in;
   }
 }

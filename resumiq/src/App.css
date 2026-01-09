@@ -1,5 +1,5 @@
 /* ===============================
-   ROOT LAYOUT
+   ROOT
 ================================ */
 
 #root {
@@ -10,61 +10,7 @@
 }
 
 /* ===============================
-   LOGO (DEFAULT)
-================================ */
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-/* ===============================
-   LOGO ANIMATION
-================================ */
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-/* ===============================
-   GENERIC CARD
-================================ */
-
-.card {
-  padding: 2em;
-}
-
-/* ===============================
-   TEXT
-================================ */
-
-.read-the-docs {
-  color: #888;
-}
-
-/* ===============================
-   ✨ RESUME TYPE CARD
+   BASE RESUME CARD
 ================================ */
 
 .resume-card {
@@ -75,49 +21,106 @@
   text-align: left;
   cursor: pointer;
   position: relative;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
+
+  /* 🔑 transition EVERYTHING smoothly */
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.45s ease,
+    border-color 0.45s ease;
+
+  /* Default glow vars (neutral) */
+  --glow-border: rgba(0, 0, 0, 0);
+  --glow-border-strong: rgba(0, 0, 0, 0);
+  --glow-shadow: rgba(0, 0, 0, 0);
+  --glow-shadow-strong: rgba(0, 0, 0, 0);
+  --glow-outer: rgba(0, 0, 0, 0);
+  --glow-outer-strong: rgba(0, 0, 0, 0);
 }
 
-/* Hover glow */
+/* Lift on hover */
 .resume-card:hover {
   transform: translateY(-6px);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 18px 40px rgba(0, 0, 0, 0.08),
-    0 0 45px rgba(99, 102, 241, 0.18);
 }
 
 /* ===============================
-   🔥 ANIMATED GLOW PULSE
+   🔥 GLOW PULSE ANIMATION
 ================================ */
 
 @keyframes glowPulse {
   0% {
     box-shadow:
-      0 0 0 2px rgba(99, 102, 241, 0.25),
-      0 20px 40px rgba(99, 102, 241, 0.25),
-      0 0 50px rgba(99, 102, 241, 0.35);
+      0 0 0 2px var(--glow-border),
+      0 20px 40px var(--glow-shadow),
+      0 0 55px var(--glow-outer);
   }
 
   50% {
     box-shadow:
-      0 0 0 2px rgba(99, 102, 241, 0.35),
-      0 25px 50px rgba(99, 102, 241, 0.35),
-      0 0 75px rgba(99, 102, 241, 0.55);
+      0 0 0 2px var(--glow-border-strong),
+      0 28px 55px var(--glow-shadow-strong),
+      0 0 80px var(--glow-outer-strong);
   }
 
   100% {
     box-shadow:
-      0 0 0 2px rgba(99, 102, 241, 0.25),
-      0 20px 40px rgba(99, 102, 241, 0.25),
-      0 0 50px rgba(99, 102, 241, 0.35);
+      0 0 0 2px var(--glow-border),
+      0 20px 40px var(--glow-shadow),
+      0 0 55px var(--glow-outer);
   }
 }
 
-/* Active (Selected) Card */
+/* Active card */
 .resume-card.active {
-  border-color: #6366f1;
   animation: glowPulse 2.6s ease-in-out infinite;
+}
+
+/* ===============================
+   🎨 COLOR TRANSITIONS PER TYPE
+   (Smooth morphing happens here)
+================================ */
+
+/* Fresher / Student — Indigo */
+.resume-card.fresher {
+  --glow-border: rgba(99, 102, 241, 0.25);
+  --glow-border-strong: rgba(99, 102, 241, 0.4);
+  --glow-shadow: rgba(99, 102, 241, 0.25);
+  --glow-shadow-strong: rgba(99, 102, 241, 0.4);
+  --glow-outer: rgba(99, 102, 241, 0.35);
+  --glow-outer-strong: rgba(99, 102, 241, 0.6);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+/* Professional — Emerald */
+.resume-card.professional {
+  --glow-border: rgba(16, 185, 129, 0.25);
+  --glow-border-strong: rgba(16, 185, 129, 0.4);
+  --glow-shadow: rgba(16, 185, 129, 0.25);
+  --glow-shadow-strong: rgba(16, 185, 129, 0.4);
+  --glow-outer: rgba(16, 185, 129, 0.35);
+  --glow-outer-strong: rgba(16, 185, 129, 0.6);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Internship — Sky */
+.resume-card.internship {
+  --glow-border: rgba(56, 189, 248, 0.25);
+  --glow-border-strong: rgba(56, 189, 248, 0.4);
+  --glow-shadow: rgba(56, 189, 248, 0.25);
+  --glow-shadow-strong: rgba(56, 189, 248, 0.4);
+  --glow-outer: rgba(56, 189, 248, 0.35);
+  --glow-outer-strong: rgba(56, 189, 248, 0.6);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* Career Switch — Amber */
+.resume-card.career-switch {
+  --glow-border: rgba(245, 158, 11, 0.25);
+  --glow-border-strong: rgba(245, 158, 11, 0.4);
+  --glow-shadow: rgba(245, 158, 11, 0.25);
+  --glow-shadow-strong: rgba(245, 158, 11, 0.4);
+  --glow-outer: rgba(245, 158, 11, 0.35);
+  --glow-outer-strong: rgba(245, 158, 11, 0.6);
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
 /* ===============================
@@ -134,24 +137,5 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.3px;
   box-shadow: 0 0 22px rgba(0, 0, 0, 0.35);
-}
-
-/* ===============================
-   CONTINUE BUTTON STATES
-================================ */
-
-.button-disabled {
-  background: #e5e7eb;
-  color: #9ca3af;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.button-active {
-  background: #111827;
-  color: #ffffff;
-  cursor: pointer;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
