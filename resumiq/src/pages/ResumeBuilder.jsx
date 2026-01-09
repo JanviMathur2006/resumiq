@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 /* ===================================================== */
-/* ================= DEFAULT DATA ====================== */
+/* =================== CONSTANTS ======================= */
 /* ===================================================== */
 
 const EMPTY_RESUME = {
@@ -23,14 +23,15 @@ const EMPTY_RESUME = {
 const createVersion = (name = "New Resume") => ({
   id: "v_" + Date.now(),
   name,
+  deletedAt: null,
   data: { ...EMPTY_RESUME },
-  history: [],
   style: {
     fontFamily: "Inter",
     fontSize: 14,
     lineHeight: 1.6,
-    margin: 40, // px
+    margin: 40,
   },
+  history: [],
 });
 
 /* ===================================================== */
@@ -40,12 +41,16 @@ const createVersion = (name = "New Resume") => ({
 export default function ResumeBuilder() {
   const pdfRef = useRef(null);
 
-  /* ---------- Versions ---------- */
+  /* ---------------- Versions ---------------- */
   const [versions, setVersions] = useState([]);
   const [activeId, setActiveId] = useState(null);
+
   const activeVersion = versions.find(v => v.id === activeId);
 
-  /* ---------- UI ---------- */
+  const activeVersions = versions.filter(v => !v.deletedAt);
+  const deletedVersions = versions.filter(v => v.deletedAt);
+
+  /* ---------------- UI ---------------- */
   const [previewMode, setPreviewMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [lastSavedAt, setLastSavedAt] = useState(null);
@@ -55,7 +60,7 @@ export default function ResumeBuilder() {
   /* ===================================================== */
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("resume_builder_spacing"));
+    const stored = JSON.parse(localStorage.getItem("resumiq_builder_full"));
     if (stored) {
       setVersions(stored.versions);
       setActiveId(stored.activeId);
@@ -69,7 +74,7 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (!versions.length) return;
     localStorage.setItem(
-      "resume_builder_spacing",
+      "resumiq_builder_full",
       JSON.stringify({ versions, activeId })
     );
   }, [versions, activeId]);
@@ -81,19 +86,21 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (!activeVersion) return;
     setSaveStatus("Saving…");
+
     const t = setTimeout(() => {
       setSaveStatus("Saved");
       setLastSavedAt(Date.now());
     }, 600);
+
     return () => clearTimeout(t);
   }, [activeVersion?.data, activeVersion?.style]);
 
   const getSaveText = () => {
     if (!lastSavedAt) return "Not saved yet";
-    const s = Math.floor((Date.now() - lastSavedAt) / 1000);
-    if (s < 3) return "Saved just now";
-    if (s < 60) return `Saved ${s}s ago`;
-    return `Saved ${Math.floor(s / 60)} min ago`;
+    const sec = Math.floor((Date.now() - lastSavedAt) / 1000);
+    if (sec < 3) return "Saved just now";
+    if (sec < 60) return `Saved ${sec}s ago`;
+    return `Saved ${Math.floor(sec / 60)} min ago`;
   };
 
   /* ===================================================== */
@@ -106,7 +113,15 @@ export default function ResumeBuilder() {
         v.id === activeId
           ? {
               ...v,
-              history: [...v.history, v.data],
+              history: [
+                ...v.history,
+                {
+                  time: Date.now(),
+                  action: `Edited ${field}`,
+                  dataSnapshot: v.data,
+                  styleSnapshot: v.style,
+                },
+              ],
               data: { ...v.data, [field]: value },
             }
           : v
@@ -118,7 +133,19 @@ export default function ResumeBuilder() {
     setVersions(prev =>
       prev.map(v =>
         v.id === activeId
-          ? { ...v, style: { ...v.style, [key]: value } }
+          ? {
+              ...v,
+              history: [
+                ...v.history,
+                {
+                  time: Date.now(),
+                  action: `Changed ${key}`,
+                  dataSnapshot: v.data,
+                  styleSnapshot: v.style,
+                },
+              ],
+              style: { ...v.style, [key]: value },
+            }
           : v
       )
     );
@@ -129,7 +156,12 @@ export default function ResumeBuilder() {
       prev.map(v => {
         if (v.id !== activeId || !v.history.length) return v;
         const last = v.history[v.history.length - 1];
-        return { ...v, data: last, history: v.history.slice(0, -1) };
+        return {
+          ...v,
+          data: last.dataSnapshot,
+          style: last.styleSnapshot,
+          history: v.history.slice(0, -1),
+        };
       })
     );
   };
@@ -148,11 +180,24 @@ export default function ResumeBuilder() {
     setVersions(versions.map(v => (v.id === id ? { ...v, name } : v)));
   };
 
-  const deleteVersion = id => {
-    if (versions.length === 1) return;
-    const filtered = versions.filter(v => v.id !== id);
-    setVersions(filtered);
-    setActiveId(filtered[0].id);
+  const softDeleteVersion = id => {
+    setVersions(versions.map(v =>
+      v.id === id ? { ...v, deletedAt: Date.now() } : v
+    ));
+    if (id === activeId) {
+      const remaining = activeVersions.filter(v => v.id !== id);
+      setActiveId(remaining.length ? remaining[0].id : null);
+    }
+  };
+
+  const restoreVersion = id => {
+    setVersions(versions.map(v =>
+      v.id === id ? { ...v, deletedAt: null } : v
+    ));
+  };
+
+  const deleteForever = id => {
+    setVersions(versions.filter(v => v.id !== id));
   };
 
   /* ===================================================== */
@@ -185,7 +230,10 @@ export default function ResumeBuilder() {
     pdf.save("resume.pdf");
   };
 
-  if (!activeVersion) return null;
+  if (!activeVersion) {
+    return <p className="p-10">No resume selected</p>;
+  }
+
   const d = activeVersion.data;
   const s = activeVersion.style;
 
@@ -198,36 +246,56 @@ export default function ResumeBuilder() {
 
       <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
 
-      {/* Versions */}
+      {/* ===== Versions ===== */}
       <Box>
         <Row between>
           <strong>Resume Versions</strong>
           <button onClick={addVersion}>+ New</button>
         </Row>
-        {versions.map(v => (
+
+        {activeVersions.map(v => (
           <Row key={v.id} between>
-            <input value={v.name} onChange={e => renameVersion(v.id, e.target.value)} />
+            <input
+              value={v.name}
+              onChange={e => renameVersion(v.id, e.target.value)}
+            />
             <div>
               <button onClick={() => setActiveId(v.id)}>Open</button>
-              {versions.length > 1 && (
-                <button onClick={() => deleteVersion(v.id)} style={{ color: "red" }}>
-                  Delete
-                </button>
-              )}
+              <button onClick={() => softDeleteVersion(v.id)} style={{ color: "red" }}>
+                Delete
+              </button>
             </div>
           </Row>
         ))}
       </Box>
 
-      {/* Resume Strength */}
+      {/* ===== Trash ===== */}
+      {deletedVersions.length > 0 && (
+        <Box>
+          <strong>Trash</strong>
+          {deletedVersions.map(v => (
+            <Row key={v.id} between>
+              <span>{v.name}</span>
+              <div>
+                <button onClick={() => restoreVersion(v.id)}>Restore</button>
+                <button onClick={() => deleteForever(v.id)} style={{ color: "red" }}>
+                  Delete Forever
+                </button>
+              </div>
+            </Row>
+          ))}
+        </Box>
+      )}
+
+      {/* ===== Score ===== */}
       <div className="mb-6">
         <p>Resume Strength: {score}%</p>
-        <div style={{ background: "#e5e7eb", height: 6 }}>
-          <div style={{ width: `${score}%`, background: "black", height: 6 }} />
+        <div style={{ height: 6, background: "#e5e7eb" }}>
+          <div style={{ width: `${score}%`, height: 6, background: "black" }} />
         </div>
       </div>
 
-      {/* Typography + Spacing */}
+      {/* ===== Typography ===== */}
       <Box>
         <strong>Typography & Layout</strong>
 
@@ -250,7 +318,7 @@ export default function ResumeBuilder() {
         </Row>
 
         <Row>
-          <label>Line spacing</label>
+          <label>Line Spacing</label>
           <input
             type="range"
             min="1.2"
@@ -263,7 +331,7 @@ export default function ResumeBuilder() {
         </Row>
 
         <Row>
-          <label>Page margin</label>
+          <label>Page Margin</label>
           <input
             type="range"
             min="20"
@@ -276,25 +344,45 @@ export default function ResumeBuilder() {
         </Row>
       </Box>
 
-      {/* Edit */}
+      {/* ===== History ===== */}
+      <Box>
+        <strong>Version History</strong>
+        {activeVersion.history.slice().reverse().map((h, i) => (
+          <Row key={i} between>
+            <span>{h.action}</span>
+            <button onClick={() =>
+              setVersions(prev =>
+                prev.map(v =>
+                  v.id === activeId
+                    ? { ...v, data: h.dataSnapshot, style: h.styleSnapshot }
+                    : v
+                )
+              )
+            }>
+              Restore
+            </button>
+          </Row>
+        ))}
+      </Box>
+
+      {/* ===== Edit ===== */}
       {!previewMode && (
         <>
           <button onClick={undo}>Undo</button>
-
-          {Object.keys(EMPTY_RESUME).map(k => (
-            <Box key={k}>
-              <strong>{k.toUpperCase()}</strong>
+          {Object.keys(EMPTY_RESUME).map(key => (
+            <Box key={key}>
+              <strong>{key.toUpperCase()}</strong>
               <textarea
-                value={d[k]}
-                onChange={e => updateField(k, e.target.value)}
+                value={d[key]}
                 rows={4}
+                onChange={e => updateField(key, e.target.value)}
               />
             </Box>
           ))}
         </>
       )}
 
-      {/* Preview */}
+      {/* ===== Preview ===== */}
       {previewMode && (
         <div
           ref={pdfRef}
@@ -308,9 +396,9 @@ export default function ResumeBuilder() {
         >
           <h1>{d.name}</h1>
           <p>{d.title}</p>
-          <p>{[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(" • ")}</p>
+          <p>{[d.email,d.phone,d.location,d.linkedin].filter(Boolean).join(" • ")}</p>
 
-          {Object.entries(d).map(([k, v]) =>
+          {Object.entries(d).map(([k,v]) =>
             v && !["name","title","email","phone","location","linkedin"].includes(k) && (
               <section key={k}>
                 <h3>{k.toUpperCase()}</h3>
@@ -321,7 +409,7 @@ export default function ResumeBuilder() {
         </div>
       )}
 
-      {/* Actions */}
+      {/* ===== Actions ===== */}
       <Row between>
         <small>{saveStatus === "Saving…" ? "Saving…" : getSaveText()}</small>
         <div>
