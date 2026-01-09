@@ -3,7 +3,19 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 /* ===================================================== */
-/* =================== CONSTANTS ======================= */
+/* ================= FONT LOADER ======================= */
+/* ===================================================== */
+const loadFonts = () => {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href =
+    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto:wght@400;500&family=Arial&family=Helvetica&family=Calibri&family=Times+New+Roman&family=Georgia&family=Cambria&family=Garamond&family=Poppins:wght@400;500&family=Montserrat:wght@400;500&family=Source+Sans+Pro:wght@400;600&family=IBM+Plex+Sans:wght@400;500&family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap";
+  document.head.appendChild(link);
+};
+loadFonts();
+
+/* ===================================================== */
+/* ================= DEFAULT DATA ====================== */
 /* ===================================================== */
 
 const EMPTY_RESUME = {
@@ -25,6 +37,11 @@ const createVersion = (name = "New Resume") => ({
   name,
   data: { ...EMPTY_RESUME },
   history: [],
+  style: {
+    fontFamily: "Inter",
+    fontSize: 14,
+    lineHeight: 1.6,
+  },
 });
 
 /* ===================================================== */
@@ -34,22 +51,22 @@ const createVersion = (name = "New Resume") => ({
 export default function ResumeBuilder() {
   const pdfRef = useRef(null);
 
-  /* ------------ Versions ------------ */
+  /* ---------- Versions ---------- */
   const [versions, setVersions] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const activeVersion = versions.find(v => v.id === activeId);
 
-  /* ------------ UI State ------------ */
+  /* ---------- UI ---------- */
   const [previewMode, setPreviewMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
   /* ===================================================== */
-  /* ================= LOAD FROM STORAGE ================= */
+  /* ================= LOAD / SAVE ======================= */
   /* ===================================================== */
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("resume_versions_full"));
+    const stored = JSON.parse(localStorage.getItem("resume_builder_full"));
     if (stored) {
       setVersions(stored.versions);
       setActiveId(stored.activeId);
@@ -60,33 +77,27 @@ export default function ResumeBuilder() {
     }
   }, []);
 
-  /* ===================================================== */
-  /* ================= SAVE TO STORAGE =================== */
-  /* ===================================================== */
-
   useEffect(() => {
     if (!versions.length) return;
     localStorage.setItem(
-      "resume_versions_full",
+      "resume_builder_full",
       JSON.stringify({ versions, activeId })
     );
   }, [versions, activeId]);
 
   /* ===================================================== */
-  /* ================= AUTO SAVE STATUS ================== */
+  /* ================= AUTOSAVE ========================== */
   /* ===================================================== */
 
   useEffect(() => {
     if (!activeVersion) return;
     setSaveStatus("Saving…");
-
     const t = setTimeout(() => {
       setSaveStatus("Saved");
       setLastSavedAt(Date.now());
     }, 700);
-
     return () => clearTimeout(t);
-  }, [activeVersion?.data]);
+  }, [activeVersion?.data, activeVersion?.style]);
 
   const getSaveText = () => {
     if (!lastSavedAt) return "Not saved yet";
@@ -97,7 +108,7 @@ export default function ResumeBuilder() {
   };
 
   /* ===================================================== */
-  /* ================= EDIT HANDLERS ===================== */
+  /* ================= EDIT LOGIC ======================== */
   /* ===================================================== */
 
   const updateField = (field, value) => {
@@ -114,35 +125,41 @@ export default function ResumeBuilder() {
     );
   };
 
+  const updateStyle = (key, value) => {
+    setVersions(prev =>
+      prev.map(v =>
+        v.id === activeId
+          ? { ...v, style: { ...v.style, [key]: value } }
+          : v
+      )
+    );
+  };
+
   const undo = () => {
     setVersions(prev =>
       prev.map(v => {
-        if (v.id !== activeId || v.history.length === 0) return v;
+        if (v.id !== activeId || !v.history.length) return v;
         const last = v.history[v.history.length - 1];
-        return {
-          ...v,
-          data: last,
-          history: v.history.slice(0, -1),
-        };
+        return { ...v, data: last, history: v.history.slice(0, -1) };
       })
     );
   };
 
   /* ===================================================== */
-  /* ================= VERSION ACTIONS =================== */
+  /* ================= VERSION MGMT ====================== */
   /* ===================================================== */
 
-  const createNewVersion = () => {
+  const addVersion = () => {
     const v = createVersion();
     setVersions([...versions, v]);
     setActiveId(v.id);
   };
 
   const renameVersion = (id, name) => {
-    setVersions(versions.map(v => v.id === id ? { ...v, name } : v));
+    setVersions(versions.map(v => (v.id === id ? { ...v, name } : v)));
   };
 
-  const deleteVersion = (id) => {
+  const deleteVersion = id => {
     if (versions.length === 1) return;
     const filtered = versions.filter(v => v.id !== id);
     setVersions(filtered);
@@ -153,16 +170,16 @@ export default function ResumeBuilder() {
   /* ================= RESUME SCORE ====================== */
   /* ===================================================== */
 
-  const resumeScore = useMemo(() => {
+  const score = useMemo(() => {
     if (!activeVersion) return 0;
     const d = activeVersion.data;
-    let score = 0;
-    if (d.summary.length > 30) score += 15;
-    if (d.experience.length > 50) score += 25;
-    if (d.projects.length > 40) score += 20;
-    if (d.education.length > 20) score += 15;
-    if (d.skills.length > 10) score += 25;
-    return Math.min(score, 100);
+    let s = 0;
+    if (d.summary.length > 30) s += 15;
+    if (d.experience.length > 50) s += 25;
+    if (d.projects.length > 40) s += 20;
+    if (d.education.length > 20) s += 15;
+    if (d.skills.length > 10) s += 25;
+    return Math.min(s, 100);
   }, [activeVersion]);
 
   /* ===================================================== */
@@ -181,6 +198,7 @@ export default function ResumeBuilder() {
 
   if (!activeVersion) return null;
   const d = activeVersion.data;
+  const s = activeVersion.style;
 
   /* ===================================================== */
   /* ================= RENDER ============================ */
@@ -191,169 +209,131 @@ export default function ResumeBuilder() {
 
       <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
 
-      {/* ===== Versions ===== */}
-      <div className="bg-white border rounded-xl p-4 mb-6">
-        <div className="flex justify-between mb-3">
-          <h2 className="font-semibold">Resume Versions</h2>
-          <button className="bg-black text-white px-3 py-1 rounded" onClick={createNewVersion}>
-            + New
-          </button>
-        </div>
-
+      {/* Versions */}
+      <Box>
+        <Row between>
+          <strong>Resume Versions</strong>
+          <button onClick={addVersion}>+ New</button>
+        </Row>
         {versions.map(v => (
-          <div key={v.id} className="flex justify-between items-center mb-2">
-            <input
-              value={v.name}
-              onChange={e => renameVersion(v.id, e.target.value)}
-              className="border rounded px-2 py-1"
-            />
-            <div className="flex gap-2">
+          <Row key={v.id} between>
+            <input value={v.name} onChange={e => renameVersion(v.id, e.target.value)} />
+            <div>
               <button onClick={() => setActiveId(v.id)}>Open</button>
               {versions.length > 1 && (
-                <button className="text-red-500" onClick={() => deleteVersion(v.id)}>
+                <button onClick={() => deleteVersion(v.id)} style={{ color: "red" }}>
                   Delete
                 </button>
               )}
             </div>
-          </div>
+          </Row>
         ))}
+      </Box>
+
+      {/* Strength */}
+      <div className="mb-6">
+        <p>Resume Strength: {score}%</p>
+        <div style={{ background: "#e5e7eb", height: 6 }}>
+          <div style={{ width: `${score}%`, background: "black", height: 6 }} />
+        </div>
       </div>
 
-      {/* ===== Resume Strength ===== */}
-      <ResumeStrengthBar score={resumeScore} />
+      {/* Typography */}
+      <Box>
+        <strong>Typography</strong>
+        <Row>
+          <select value={s.fontFamily} onChange={e => updateStyle("fontFamily", e.target.value)}>
+            {[
+              "Inter","Arial","Helvetica","Roboto","Calibri",
+              "Times New Roman","Georgia","Cambria","Garamond",
+              "Poppins","Montserrat","Source Sans Pro","IBM Plex Sans","Lato","Open Sans"
+            ].map(f => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
 
-      {/* ===== Edit Mode ===== */}
+          <select value={s.fontSize} onChange={e => updateStyle("fontSize", Number(e.target.value))}>
+            {[11,12,13,14,15,16,17,18].map(n => (
+              <option key={n} value={n}>{n}px</option>
+            ))}
+          </select>
+        </Row>
+      </Box>
+
+      {/* Edit */}
       {!previewMode && (
         <>
-          <button onClick={undo} className="mb-4 underline text-sm">
-            Undo last change
-          </button>
-
-          <Section title="Contact Details">
-            <Grid>
-              <Input value={d.email} onChange={v => updateField("email", v)} placeholder="Email" />
-              <Input value={d.phone} onChange={v => updateField("phone", v)} placeholder="Phone" />
-              <Input value={d.location} onChange={v => updateField("location", v)} placeholder="Location" />
-              <Input value={d.linkedin} onChange={v => updateField("linkedin", v)} placeholder="LinkedIn" />
-            </Grid>
-          </Section>
-
-          <Single title="Name" value={d.name} onChange={v => updateField("name", v)} />
-          <Single title="Title" value={d.title} onChange={v => updateField("title", v)} />
-          <Textarea title="Summary" value={d.summary} onChange={v => updateField("summary", v)} />
-          <Textarea title="Experience" value={d.experience} onChange={v => updateField("experience", v)} />
-          <Textarea title="Projects" value={d.projects} onChange={v => updateField("projects", v)} />
-          <Textarea title="Education" value={d.education} onChange={v => updateField("education", v)} />
-          <Textarea title="Skills" value={d.skills} onChange={v => updateField("skills", v)} />
+          <button onClick={undo}>Undo</button>
+          {Object.keys(EMPTY_RESUME).map(k => (
+            <Box key={k}>
+              <strong>{k.toUpperCase()}</strong>
+              <textarea
+                value={d[k]}
+                onChange={e => updateField(k, e.target.value)}
+                rows={k === "summary" ? 3 : 4}
+              />
+            </Box>
+          ))}
         </>
       )}
 
-      {/* ===== Preview ===== */}
+      {/* Preview */}
       {previewMode && (
-        <div ref={pdfRef} className="bg-white p-10 text-black">
-          <h1 className="text-3xl font-bold text-center">{d.name}</h1>
-          <p className="text-center text-gray-600">{d.title}</p>
-          <p className="text-center text-sm mt-2">
-            {[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(" • ")}
-          </p>
-
-          <Preview title="Summary" content={d.summary} />
-          <Preview title="Experience" content={d.experience} />
-          <Preview title="Projects" content={d.projects} />
-          <Preview title="Education" content={d.education} />
-          <Preview title="Skills" content={d.skills} />
+        <div
+          ref={pdfRef}
+          style={{
+            fontFamily: s.fontFamily,
+            fontSize: s.fontSize,
+            lineHeight: s.lineHeight,
+            background: "white",
+            padding: 40,
+          }}
+        >
+          <h1>{d.name}</h1>
+          <p>{d.title}</p>
+          <p>{[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(" • ")}</p>
+          {Object.entries(d).map(([k, v]) => v && k !== "name" && k !== "title" && (
+            <section key={k}>
+              <h3>{k.toUpperCase()}</h3>
+              <p>{v}</p>
+            </section>
+          ))}
         </div>
       )}
 
-      {/* ===== Action Bar ===== */}
-      <div className="flex justify-between items-center border-t mt-8 pt-4">
-        <span className="text-sm text-gray-500">
-          {saveStatus === "Saving…" ? "Saving…" : getSaveText()}
-        </span>
-
-        <div className="flex gap-3">
-          <button
-            className="border px-4 py-2 rounded"
-            onClick={() => setPreviewMode(!previewMode)}
-          >
-            {previewMode ? "Back to Edit" : "Preview"}
+      {/* Actions */}
+      <Row between>
+        <small>{saveStatus === "Saving…" ? "Saving…" : getSaveText()}</small>
+        <div>
+          <button onClick={() => setPreviewMode(!previewMode)}>
+            {previewMode ? "Edit" : "Preview"}
           </button>
-
-          {previewMode && (
-            <button
-              className="bg-black text-white px-4 py-2 rounded"
-              onClick={downloadPDF}
-            >
-              Download PDF
-            </button>
-          )}
+          {previewMode && <button onClick={downloadPDF}>Download PDF</button>}
         </div>
-      </div>
-
+      </Row>
     </div>
   );
 }
 
 /* ===================================================== */
-/* ================== SUB COMPONENTS =================== */
+/* ================= UI HELPERS ======================== */
 /* ===================================================== */
 
-function ResumeStrengthBar({ score }) {
-  return (
-    <div className="mb-6">
-      <p className="text-sm mb-1">Resume Strength: {score}%</p>
-      <div className="w-full h-2 bg-gray-200 rounded">
-        <div
-          className="h-2 bg-black rounded"
-          style={{ width: `${score}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-const Section = ({ title, children }) => (
-  <div className="bg-white border rounded-xl p-4 mb-4">
-    <h3 className="font-semibold mb-2">{title}</h3>
+const Box = ({ children }) => (
+  <div style={{ border: "1px solid #e5e7eb", padding: 16, marginBottom: 16 }}>
     {children}
   </div>
 );
 
-const Grid = ({ children }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">{children}</div>
+const Row = ({ children, between }) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: between ? "space-between" : "flex-start",
+      gap: 12,
+      marginBottom: 8,
+    }}
+  >
+    {children}
+  </div>
 );
-
-const Input = ({ value, onChange, placeholder }) => (
-  <input
-    className="border rounded p-2"
-    value={value}
-    onChange={e => onChange(e.target.value)}
-    placeholder={placeholder}
-  />
-);
-
-const Single = ({ title, value, onChange }) => (
-  <Section title={title}>
-    <Input value={value} onChange={onChange} />
-  </Section>
-);
-
-const Textarea = ({ title, value, onChange }) => (
-  <Section title={title}>
-    <textarea
-      className="border rounded p-2 w-full min-h-[120px]"
-      value={value}
-      onChange={e => onChange(e.target.value)}
-    />
-  </Section>
-);
-
-const Preview = ({ title, content }) => {
-  if (!content) return null;
-  return (
-    <div className="mt-4">
-      <h3 className="font-semibold border-b mb-1">{title}</h3>
-      <p className="text-sm whitespace-pre-line">{content}</p>
-    </div>
-  );
-};
