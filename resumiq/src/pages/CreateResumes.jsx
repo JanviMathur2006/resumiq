@@ -1,13 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { resumeTypes } from "../data/resumeTypes";
 
+/* =======================
+   TABS
+======================= */
 const TABS = [
   { id: "recommended", label: "Recommended" },
   { id: "students", label: "Students" },
   { id: "professionals", label: "Professionals" },
   { id: "specialized", label: "Specialized" },
 ];
+
+/* =======================
+   ANIMATION VARIANTS
+======================= */
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const item = {
+  hidden: {
+    opacity: 0,
+    y: 16,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: "easeOut",
+    },
+  },
+};
 
 export default function CreateResumes() {
   const [activeTab, setActiveTab] = useState("recommended");
@@ -59,21 +90,28 @@ export default function CreateResumes() {
           ))}
         </div>
 
-        {/* RESUME TYPE CARDS */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* RESUME CARDS (ANIMATED) */}
+        <motion.div
+          key={activeTab}               // ⭐ THIS MAKES ANIMATION VISIBLE
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           {filteredTypes.map((type) => {
             const isActive = selectedType?.id === type.id;
 
             return (
-              <div
+              <motion.div
                 key={type.id}
+                variants={item}
                 onClick={() => setSelectedType(type)}
                 className={`
                   cursor-pointer rounded-2xl border bg-white p-6
                   transition-all duration-200
                   ${
                     isActive
-                      ? "border-black shadow-lg"
+                      ? "border-black shadow-lg bg-[#fafafa]"
                       : "border-gray-200 hover:shadow-md hover:-translate-y-1"
                   }
                 `}
@@ -89,10 +127,10 @@ export default function CreateResumes() {
                 <p className="text-xs text-gray-400">
                   Best for: {type.bestFor}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* CONTINUE BUTTON */}
         <div className="mt-12 flex justify-end">
