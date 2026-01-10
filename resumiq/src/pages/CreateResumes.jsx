@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { resumeTypes } from "../data/resumeTypes";
 
-/* =======================
-   TABS
-======================= */
 const TABS = [
   { id: "recommended", label: "Recommended" },
   { id: "students", label: "Students" },
@@ -13,30 +10,19 @@ const TABS = [
   { id: "specialized", label: "Specialized" },
 ];
 
-/* =======================
-   ANIMATION VARIANTS
-======================= */
 const container = {
   hidden: {},
   show: {
-    transition: {
-      staggerChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
 const item = {
-  hidden: {
-    opacity: 0,
-    y: 16,
-  },
+  hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.35,
-      ease: "easeOut",
-    },
+    transition: { duration: 0.35, ease: "easeOut" },
   },
 };
 
@@ -63,7 +49,6 @@ export default function CreateResumes() {
     <div className="min-h-screen bg-[#f6f7fb]">
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
           Choose Resume Type
         </h1>
@@ -71,7 +56,7 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* TABS */}
+        {/* Tabs */}
         <div className="mt-8 flex gap-3 flex-wrap">
           {TABS.map((tab) => (
             <button
@@ -82,17 +67,16 @@ export default function CreateResumes() {
                   activeTab === tab.id
                     ? "bg-black text-white"
                     : "bg-white text-gray-600 hover:bg-gray-100"
-                }
-              `}
+                }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        {/* RESUME CARDS (ANIMATED) */}
+        {/* Cards */}
         <motion.div
-          key={activeTab}               // ⭐ THIS MAKES ANIMATION VISIBLE
+          key={activeTab}
           variants={container}
           initial="hidden"
           animate="show"
@@ -107,7 +91,7 @@ export default function CreateResumes() {
                 variants={item}
                 onClick={() => setSelectedType(type)}
                 className={`
-                  cursor-pointer rounded-2xl border bg-white p-6
+                  group relative cursor-pointer rounded-2xl border bg-white p-6
                   transition-all duration-200
                   ${
                     isActive
@@ -127,12 +111,26 @@ export default function CreateResumes() {
                 <p className="text-xs text-gray-400">
                   Best for: {type.bestFor}
                 </p>
+
+                {/* HOVER ARROW HINT */}
+                <span
+                  className="
+                    pointer-events-none absolute bottom-4 right-4
+                    text-gray-400 text-lg
+                    opacity-0 translate-x-1
+                    transition-all duration-200
+                    group-hover:opacity-100
+                    group-hover:translate-x-0
+                  "
+                >
+                  →
+                </span>
               </motion.div>
             );
           })}
         </motion.div>
 
-        {/* CONTINUE BUTTON */}
+        {/* Continue */}
         <div className="mt-12 flex justify-end">
           <button
             onClick={handleContinue}
