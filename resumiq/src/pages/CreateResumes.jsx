@@ -18,7 +18,9 @@ const TABS = [
 ======================= */
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
+  show: {
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
 const item = {
@@ -53,6 +55,21 @@ export default function CreateResumes() {
     <div className="min-h-screen bg-[#f6f7fb]">
       <div className="max-w-6xl mx-auto px-6 py-12">
 
+        {/* BACK ARROW */}
+        <button
+          onClick={() => navigate(-1)}
+          className="
+            mb-6 inline-flex items-center gap-2
+            text-sm font-medium text-gray-500
+            hover:text-gray-900 transition
+          "
+        >
+          <span className="text-lg transition-transform hover:-translate-x-0.5">
+            ←
+          </span>
+          Back
+        </button>
+
         {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
           Choose Resume Type
@@ -72,7 +89,8 @@ export default function CreateResumes() {
                   activeTab === tab.id
                     ? "bg-black text-white"
                     : "bg-white text-gray-600 hover:bg-gray-100"
-                }`}
+                }
+              `}
             >
               {tab.label}
             </button>
@@ -111,12 +129,10 @@ export default function CreateResumes() {
                   }
                 `}
               >
-                {/* TITLE */}
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {type.name}
                 </h3>
 
-                {/* DESCRIPTION */}
                 <p className="text-sm text-gray-600 mb-4">
                   {type.description}
                 </p>
@@ -136,7 +152,6 @@ export default function CreateResumes() {
                   />
                 </div>
 
-                {/* META */}
                 <p className="text-xs text-gray-400">
                   Best for: {type.bestFor}
                 </p>
