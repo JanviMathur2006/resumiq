@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { resumeTypes } from "../data/resumeTypes";
@@ -35,6 +35,34 @@ export default function CreateResumes() {
   const [selectedType, setSelectedType] = useState(null);
   const navigate = useNavigate();
 
+  /* =======================
+     KEYBOARD SHORTCUT
+     ⌘ + ← (Mac)
+     Alt + ← (Win/Linux)
+  ======================= */
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore when typing in inputs/textareas
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      // Mac: Cmd + ArrowLeft
+      if (e.metaKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        navigate(-1);
+      }
+
+      // Windows/Linux: Alt + ArrowLeft
+      if (e.altKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        navigate(-1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigate]);
+
   const filteredTypes = resumeTypes.filter((type) =>
     type.category.includes(activeTab)
   );
@@ -51,11 +79,12 @@ export default function CreateResumes() {
 
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
-      
+
       {/* BACK ARROW – EXTREME LEFT */}
       <button
         onClick={() => navigate(-1)}
-        aria-label="Go back"
+        aria-label="Go back (⌘ + ←)"
+        title="Go back (⌘ + ←)"
         className="
           fixed top-28 left-6 z-20
           text-gray-400 text-xl
