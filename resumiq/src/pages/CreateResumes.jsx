@@ -14,13 +14,11 @@ const TABS = [
 ];
 
 /* =======================
-   ANIMATION (gentle)
+   ENTRANCE ANIMATION
 ======================= */
 const container = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const item = {
@@ -74,15 +72,14 @@ export default function CreateResumes() {
                   activeTab === tab.id
                     ? "bg-black text-white"
                     : "bg-white text-gray-600 hover:bg-gray-100"
-                }
-              `}
+                }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        {/* CARDS */}
+        {/* RESUME CARDS */}
         <motion.div
           key={activeTab}
           variants={container}
@@ -114,19 +111,37 @@ export default function CreateResumes() {
                   }
                 `}
               >
+                {/* TITLE */}
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {type.name}
                 </h3>
 
-                <p className="text-sm text-gray-600 mb-3">
+                {/* DESCRIPTION */}
+                <p className="text-sm text-gray-600 mb-4">
                   {type.description}
                 </p>
 
+                {/* SUBTLE DIVIDER */}
+                <div className="relative h-px w-full overflow-hidden mb-4">
+                  <span
+                    className={`
+                      absolute left-0 top-0 h-px bg-gray-300
+                      transition-all duration-300
+                      ${
+                        isActive
+                          ? "w-full opacity-30"
+                          : "w-0 opacity-20 group-hover:w-full"
+                      }
+                    `}
+                  />
+                </div>
+
+                {/* META */}
                 <p className="text-xs text-gray-400">
                   Best for: {type.bestFor}
                 </p>
 
-                {/* Hover arrow hint */}
+                {/* HOVER ARROW */}
                 <span
                   className="
                     pointer-events-none absolute bottom-4 right-4
