@@ -18,9 +18,7 @@ const TABS = [
 ======================= */
 const container = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const item = {
@@ -53,22 +51,23 @@ export default function CreateResumes() {
 
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      
+      {/* BACK ARROW – EXTREME LEFT */}
+      <button
+        onClick={() => navigate(-1)}
+        aria-label="Go back"
+        className="
+          fixed top-28 left-6 z-20
+          text-gray-400 text-xl
+          hover:text-gray-900
+          transition-transform transition-colors
+          hover:-translate-x-1
+        "
+      >
+        ←
+      </button>
 
-        {/* BACK ARROW */}
-        <button
-          onClick={() => navigate(-1)}
-          className="
-            mb-6 inline-flex items-center gap-2
-            text-sm font-medium text-gray-500
-            hover:text-gray-900 transition
-          "
-        >
-          <span className="text-lg transition-transform hover:-translate-x-0.5">
-            ←
-          </span>
-          Back
-        </button>
+      <div className="max-w-6xl mx-auto px-6 py-12">
 
         {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
@@ -156,7 +155,7 @@ export default function CreateResumes() {
                   Best for: {type.bestFor}
                 </p>
 
-                {/* HOVER ARROW */}
+                {/* HOVER ARROW HINT */}
                 <span
                   className="
                     pointer-events-none absolute bottom-4 right-4
