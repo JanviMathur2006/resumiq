@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { resumeTypes } from "../data/resumeTypes";
 
+/* =======================
+   TABS
+======================= */
 const TABS = [
   { id: "recommended", label: "Recommended" },
   { id: "students", label: "Students" },
@@ -10,6 +13,9 @@ const TABS = [
   { id: "specialized", label: "Specialized" },
 ];
 
+/* =======================
+   ANIMATION (gentle)
+======================= */
 const container = {
   hidden: {},
   show: {
@@ -49,6 +55,7 @@ export default function CreateResumes() {
     <div className="min-h-screen bg-[#f6f7fb]">
       <div className="max-w-6xl mx-auto px-6 py-12">
 
+        {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
           Choose Resume Type
         </h1>
@@ -56,7 +63,7 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* Tabs */}
+        {/* TABS */}
         <div className="mt-8 flex gap-3 flex-wrap">
           {TABS.map((tab) => (
             <button
@@ -67,14 +74,15 @@ export default function CreateResumes() {
                   activeTab === tab.id
                     ? "bg-black text-white"
                     : "bg-white text-gray-600 hover:bg-gray-100"
-                }`}
+                }
+              `}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        {/* Cards */}
+        {/* CARDS */}
         <motion.div
           key={activeTab}
           variants={container}
@@ -91,12 +99,18 @@ export default function CreateResumes() {
                 variants={item}
                 onClick={() => setSelectedType(type)}
                 className={`
-                  group relative cursor-pointer rounded-2xl border bg-white p-6
+                  group relative cursor-pointer rounded-2xl border p-6
                   transition-all duration-200
                   ${
                     isActive
-                      ? "border-black shadow-lg bg-[#fafafa]"
-                      : "border-gray-200 hover:shadow-md hover:-translate-y-1"
+                      ? `
+                        border-black bg-[#fafafa]
+                        shadow-[0_0_0_3px_rgba(0,0,0,0.08)]
+                      `
+                      : `
+                        border-gray-200 bg-white
+                        hover:shadow-md hover:-translate-y-1
+                      `
                   }
                 `}
               >
@@ -112,7 +126,7 @@ export default function CreateResumes() {
                   Best for: {type.bestFor}
                 </p>
 
-                {/* HOVER ARROW HINT */}
+                {/* Hover arrow hint */}
                 <span
                   className="
                     pointer-events-none absolute bottom-4 right-4
@@ -130,7 +144,7 @@ export default function CreateResumes() {
           })}
         </motion.div>
 
-        {/* Continue */}
+        {/* CONTINUE */}
         <div className="mt-12 flex justify-end">
           <button
             onClick={handleContinue}
