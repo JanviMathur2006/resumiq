@@ -4,6 +4,7 @@ export default function ResumeSlider() {
   return (
     <div className="slider-container">
       <div className="slider">
+        
         {/* Slide 1 */}
         <div className="slide">
           <div className="plus">+</div>
@@ -19,12 +20,6 @@ export default function ResumeSlider() {
           <button>View →</button>
         </div>
 
-        {/* Slide 3 */}
-        <div className="slide">
-          <h2>Resume Samples</h2>
-          <p>Explore professionally written resumes.</p>
-          <button>Browse →</button>
-        </div>
       </div>
     </div>
   );
