@@ -1,54 +1,105 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  signOut,
+  updateProfile,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from "firebase/auth";
 import { auth } from "../firebase";
-import { signOut, updateProfile } from "firebase/auth";
 
 export default function Profile() {
   const navigate = useNavigate();
 
+  // -------- User state --------
   const [user, setUser] = useState(null);
+
+  // -------- Edit profile (name) --------
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [savingName, setSavingName] = useState(false);
 
-  // Load user safely
+  // -------- Change password --------
+  const [showPwdForm, setShowPwdForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState("");
+  const [pwdSuccess, setPwdSuccess] = useState("");
+
+  // -------- Load user safely --------
   useEffect(() => {
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
+    const u = auth.currentUser;
+    if (!u) {
       navigate("/login");
       return;
     }
-
-    setUser(currentUser);
-    setName(currentUser.displayName || "");
+    setUser(u);
+    setName(u.displayName || "");
   }, [navigate]);
 
-  // Save edited name
-  const handleSave = async () => {
+  // -------- Save name --------
+  const handleSaveName = async () => {
     if (!name.trim()) return;
-
     try {
-      setSaving(true);
-      await updateProfile(auth.currentUser, {
-        displayName: name.trim(),
-      });
-
-      // Refresh local user state
-      setUser({
-        ...auth.currentUser,
-        displayName: name.trim(),
-      });
-
+      setSavingName(true);
+      await updateProfile(auth.currentUser, { displayName: name.trim() });
+      // refresh local snapshot
+      setUser({ ...auth.currentUser, displayName: name.trim() });
       setEditing(false);
-    } catch (err) {
-      console.error("Profile update error:", err);
+    } catch (e) {
+      console.error("Update name failed:", e);
     } finally {
-      setSaving(false);
+      setSavingName(false);
     }
   };
 
-  // Logout
+  // -------- Change password --------
+  const handleChangePassword = async () => {
+    setPwdError("");
+    setPwdSuccess("");
+
+    if (!currentPassword || !newPassword) {
+      setPwdError("All fields are required");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPwdError("New password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setPwdLoading(true);
+      const u = auth.currentUser;
+
+      const credential = EmailAuthProvider.credential(
+        u.email,
+        currentPassword
+      );
+
+      // Re-authenticate (required by Firebase)
+      await reauthenticateWithCredential(u, credential);
+
+      // Update password
+      await updatePassword(u, newPassword);
+
+      setPwdSuccess("Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setShowPwdForm(false);
+    } catch (e) {
+      if (e.code === "auth/wrong-password") {
+        setPwdError("Current password is incorrect");
+      } else {
+        setPwdError("Failed to change password");
+      }
+    } finally {
+      setPwdLoading(false);
+    }
+  };
+
+  // -------- Logout --------
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/login");
@@ -57,7 +108,7 @@ export default function Profile() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading profile...
+        Loading profile…
       </div>
     );
   }
@@ -75,11 +126,9 @@ export default function Profile() {
 
       {/* Profile Info */}
       <div className="bg-white p-6 rounded-lg shadow space-y-4">
-
         {/* Name */}
         <div>
           <p className="text-sm text-gray-500">Full Name</p>
-
           {!editing ? (
             <p className="text-lg font-medium">
               {user.displayName || "Not set"}
@@ -99,7 +148,7 @@ export default function Profile() {
           <p className="text-lg font-medium">{user.email}</p>
         </div>
 
-        {/* Joined */}
+        {/* Member Since */}
         <div>
           <p className="text-sm text-gray-500">Member Since</p>
           <p className="text-lg font-medium">
@@ -108,7 +157,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Actions */}
+      {/* Edit Profile Actions */}
       <div className="bg-white p-6 rounded-lg shadow flex gap-4">
         {!editing ? (
           <button
@@ -120,13 +169,12 @@ export default function Profile() {
         ) : (
           <>
             <button
-              onClick={handleSave}
-              disabled={saving}
+              onClick={handleSaveName}
+              disabled={savingName}
               className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
             >
-              {saving ? "Saving..." : "Save"}
+              {savingName ? "Saving…" : "Save"}
             </button>
-
             <button
               onClick={() => {
                 setEditing(false);
@@ -140,7 +188,64 @@ export default function Profile() {
         )}
       </div>
 
-      {/* Logout – LAST */}
+      {/* Change Password */}
+      <div className="bg-white p-6 rounded-lg shadow space-y-4">
+        <h2 className="text-lg font-semibold">Change Password</h2>
+
+        {!showPwdForm ? (
+          <button
+            onClick={() => setShowPwdForm(true)}
+            className="px-4 py-2 border rounded hover:bg-gray-100 transition"
+          >
+            Change Password
+          </button>
+        ) : (
+          <>
+            {pwdError && <p className="text-red-500 text-sm">{pwdError}</p>}
+            {pwdSuccess && (
+              <p className="text-green-600 text-sm">{pwdSuccess}</p>
+            )}
+
+            <input
+              type="password"
+              placeholder="Current password"
+              className="w-full border p-2 rounded"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+
+            <input
+              type="password"
+              placeholder="New password"
+              className="w-full border p-2 rounded"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleChangePassword}
+                disabled={pwdLoading}
+                className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
+              >
+                {pwdLoading ? "Updating…" : "Update Password"}
+              </button>
+              <button
+                onClick={() => {
+                  setShowPwdForm(false);
+                  setPwdError("");
+                  setPwdSuccess("");
+                }}
+                className="px-4 py-2 border rounded hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Logout (LAST) */}
       <div className="bg-white p-6 rounded-lg shadow flex justify-end">
         <button
           onClick={handleLogout}
