@@ -6,6 +6,7 @@ import {
   updateEmail,
   updatePassword,
   deleteUser,
+  sendEmailVerification,
   EmailAuthProvider,
   reauthenticateWithCredential,
 } from "firebase/auth";
@@ -28,6 +29,10 @@ export default function Profile() {
   const [emailPassword, setEmailPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [emailSaving, setEmailSaving] = useState(false);
+
+  /* ================= EMAIL VERIFICATION ================= */
+  const [verifying, setVerifying] = useState(false);
+  const [verifyMsg, setVerifyMsg] = useState("");
 
   /* ================= CHANGE PASSWORD ================= */
   const [showPwdForm, setShowPwdForm] = useState(false);
@@ -62,8 +67,6 @@ export default function Profile() {
       await updateProfile(auth.currentUser, { displayName: name.trim() });
       setUser({ ...auth.currentUser, displayName: name.trim() });
       setEditingName(false);
-    } catch (e) {
-      console.error(e);
     } finally {
       setSavingName(false);
     }
@@ -106,6 +109,25 @@ export default function Profile() {
     }
   };
 
+  /* ================= EMAIL VERIFICATION ================= */
+  const handleVerifyEmail = async () => {
+    try {
+      setVerifying(true);
+      setVerifyMsg("");
+      await sendEmailVerification(auth.currentUser);
+      setVerifyMsg("Verification email sent. Check your inbox.");
+    } catch {
+      setVerifyMsg("Failed to send verification email.");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const refreshVerification = async () => {
+    await auth.currentUser.reload();
+    setUser({ ...auth.currentUser });
+  };
+
   /* ================= CHANGE PASSWORD ================= */
   const handleChangePassword = async () => {
     setPwdError("");
@@ -130,7 +152,7 @@ export default function Profile() {
       setShowPwdForm(false);
       setCurrentPassword("");
       setNewPassword("");
-    } catch (e) {
+    } catch {
       setPwdError("Failed to update password");
     } finally {
       setPwdLoading(false);
@@ -251,6 +273,38 @@ export default function Profile() {
         )}
       </div>
 
+      {/* EMAIL VERIFICATION */}
+      <div className="bg-white p-6 rounded shadow space-y-2">
+        <h2 className="font-semibold">Email Verification</h2>
+
+        {user.emailVerified ? (
+          <p className="text-green-600 text-sm">✅ Email verified</p>
+        ) : (
+          <>
+            <p className="text-red-600 text-sm">❌ Email not verified</p>
+
+            <button
+              onClick={handleVerifyEmail}
+              disabled={verifying}
+              className="text-blue-600 text-sm"
+            >
+              {verifying ? "Sending..." : "Send verification email"}
+            </button>
+
+            <button
+              onClick={refreshVerification}
+              className="text-blue-600 text-sm block"
+            >
+              Refresh status
+            </button>
+
+            {verifyMsg && (
+              <p className="text-gray-600 text-sm">{verifyMsg}</p>
+            )}
+          </>
+        )}
+      </div>
+
       {/* CHANGE PASSWORD */}
       <div className="bg-white p-6 rounded shadow space-y-2">
         <h2 className="font-semibold">Change Password</h2>
@@ -286,9 +340,6 @@ export default function Profile() {
       {/* DELETE ACCOUNT */}
       <div className="bg-white p-6 rounded shadow border border-red-200 space-y-3">
         <h2 className="font-semibold text-red-600">Delete Account</h2>
-        <p className="text-sm text-gray-600">
-          This action is permanent and cannot be undone.
-        </p>
 
         {!showDelete ? (
           <button
@@ -302,7 +353,7 @@ export default function Profile() {
             {deleteError && <p className="text-red-500 text-sm">{deleteError}</p>}
             <input
               type="password"
-              placeholder="Enter current password"
+              placeholder="Current password"
               className="border p-2 rounded w-full"
               value={deletePassword}
               onChange={(e) => setDeletePassword(e.target.value)}
