@@ -14,34 +14,32 @@ import { auth } from "../firebase";
 
 export default function Profile() {
   const navigate = useNavigate();
-
-  /* ================= USER ================= */
   const [user, setUser] = useState(null);
 
-  /* ================= EDIT NAME ================= */
+  /* ================= NAME ================= */
   const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState("");
   const [savingName, setSavingName] = useState(false);
 
-  /* ================= EDIT EMAIL ================= */
+  /* ================= EMAIL ================= */
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [emailPassword, setEmailPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [emailSaving, setEmailSaving] = useState(false);
 
-  /* ================= EMAIL VERIFICATION ================= */
+  /* ================= VERIFY ================= */
   const [verifying, setVerifying] = useState(false);
   const [verifyMsg, setVerifyMsg] = useState("");
 
-  /* ================= CHANGE PASSWORD ================= */
+  /* ================= PASSWORD ================= */
   const [showPwdForm, setShowPwdForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [pwdError, setPwdError] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
 
-  /* ================= DELETE ACCOUNT ================= */
+  /* ================= DELETE ================= */
   const [showDelete, setShowDelete] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
@@ -59,23 +57,27 @@ export default function Profile() {
     setNewEmail(u.email || "");
   }, [navigate]);
 
-  /* ================= SAVE NAME ================= */
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading profile...
+      </div>
+    );
+  }
+
+  /* ================= ACTIONS ================= */
+
   const handleSaveName = async () => {
     if (!name.trim()) return;
-    try {
-      setSavingName(true);
-      await updateProfile(auth.currentUser, { displayName: name.trim() });
-      setUser({ ...auth.currentUser, displayName: name.trim() });
-      setEditingName(false);
-    } finally {
-      setSavingName(false);
-    }
+    setSavingName(true);
+    await updateProfile(auth.currentUser, { displayName: name.trim() });
+    setUser({ ...auth.currentUser, displayName: name.trim() });
+    setEditingName(false);
+    setSavingName(false);
   };
 
-  /* ================= SAVE EMAIL ================= */
   const handleSaveEmail = async () => {
     setEmailError("");
-
     if (!newEmail || !emailPassword) {
       setEmailError("All fields are required");
       return;
@@ -83,72 +85,44 @@ export default function Profile() {
 
     try {
       setEmailSaving(true);
-      const u = auth.currentUser;
-
-      const credential = EmailAuthProvider.credential(
-        u.email,
+      const cred = EmailAuthProvider.credential(
+        user.email,
         emailPassword
       );
-
-      await reauthenticateWithCredential(u, credential);
-      await updateEmail(u, newEmail);
-
-      setUser({ ...u, email: newEmail });
+      await reauthenticateWithCredential(user, cred);
+      await updateEmail(user, newEmail);
+      setUser({ ...user, email: newEmail });
       setEditingEmail(false);
       setEmailPassword("");
     } catch (e) {
-      if (e.code === "auth/wrong-password") {
-        setEmailError("Incorrect password");
-      } else if (e.code === "auth/email-already-in-use") {
-        setEmailError("Email already in use");
-      } else {
-        setEmailError("Failed to update email");
-      }
+      setEmailError("Failed to update email");
     } finally {
       setEmailSaving(false);
     }
   };
 
-  /* ================= EMAIL VERIFICATION ================= */
   const handleVerifyEmail = async () => {
-    try {
-      setVerifying(true);
-      setVerifyMsg("");
-      await sendEmailVerification(auth.currentUser);
-      setVerifyMsg("Verification email sent. Check your inbox.");
-    } catch {
-      setVerifyMsg("Failed to send verification email.");
-    } finally {
-      setVerifying(false);
-    }
+    setVerifying(true);
+    await sendEmailVerification(user);
+    setVerifyMsg("Verification email sent");
+    setVerifying(false);
   };
 
-  const refreshVerification = async () => {
-    await auth.currentUser.reload();
-    setUser({ ...auth.currentUser });
-  };
-
-  /* ================= CHANGE PASSWORD ================= */
   const handleChangePassword = async () => {
     setPwdError("");
-
     if (!currentPassword || !newPassword) {
-      setPwdError("All fields are required");
+      setPwdError("All fields required");
       return;
     }
 
     try {
       setPwdLoading(true);
-      const u = auth.currentUser;
-
-      const credential = EmailAuthProvider.credential(
-        u.email,
+      const cred = EmailAuthProvider.credential(
+        user.email,
         currentPassword
       );
-
-      await reauthenticateWithCredential(u, credential);
-      await updatePassword(u, newPassword);
-
+      await reauthenticateWithCredential(user, cred);
+      await updatePassword(user, newPassword);
       setShowPwdForm(false);
       setCurrentPassword("");
       setNewPassword("");
@@ -159,225 +133,221 @@ export default function Profile() {
     }
   };
 
-  /* ================= DELETE ACCOUNT ================= */
   const handleDeleteAccount = async () => {
     setDeleteError("");
-
     if (!deletePassword) {
-      setDeleteError("Password is required");
+      setDeleteError("Password required");
       return;
     }
 
     try {
       setDeleting(true);
-      const u = auth.currentUser;
-
-      const credential = EmailAuthProvider.credential(
-        u.email,
+      const cred = EmailAuthProvider.credential(
+        user.email,
         deletePassword
       );
-
-      await reauthenticateWithCredential(u, credential);
-      await deleteUser(u);
-
+      await reauthenticateWithCredential(user, cred);
+      await deleteUser(user);
       navigate("/signup");
-    } catch (e) {
-      if (e.code === "auth/wrong-password") {
-        setDeleteError("Incorrect password");
-      } else {
-        setDeleteError("Failed to delete account");
-      }
+    } catch {
+      setDeleteError("Incorrect password");
     } finally {
       setDeleting(false);
     }
   };
 
-  /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/login");
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading profile...
-      </div>
-    );
-  }
+  /* ================= UI ================= */
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-3xl mx-auto space-y-6">
 
-      {/* HEADER */}
-      <div className="bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-semibold">Your Profile</h1>
-        <p className="text-gray-500">Manage your account</p>
-      </div>
+        {/* HEADER */}
+        <div className="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-600">
+            {name.slice(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold">{name || "User"}</h1>
+            <p className="text-sm text-gray-600 flex gap-2 items-center">
+              {user.email}
+              {!user.emailVerified && (
+                <span className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">
+                  Not verified
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
 
-      {/* NAME */}
-      <div className="bg-white p-6 rounded shadow space-y-2">
-        <p className="text-sm text-gray-500">Full Name</p>
-        {!editingName ? (
-          <p className="text-lg">{user.displayName || "Not set"}</p>
-        ) : (
-          <input
-            className="border p-2 rounded w-full"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        )}
-
-        {!editingName ? (
-          <button onClick={() => setEditingName(true)} className="text-blue-600 text-sm">
-            Edit Name
+        {/* NAME */}
+        <div className="bg-white rounded-xl shadow-sm p-6 flex justify-between items-center">
+          <div>
+            <p className="text-sm text-gray-500">Full Name</p>
+            {!editingName ? (
+              <p className="font-medium">{user.displayName || "Not set"}</p>
+            ) : (
+              <input
+                className="border rounded px-3 py-2 mt-1"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            )}
+          </div>
+          <button
+            onClick={editingName ? handleSaveName : () => setEditingName(true)}
+            className="border px-4 py-2 rounded-lg hover:bg-gray-100"
+          >
+            {savingName ? "Saving..." : editingName ? "Save" : "Edit"}
           </button>
-        ) : (
-          <button onClick={handleSaveName} className="text-blue-600 text-sm">
-            {savingName ? "Saving..." : "Save"}
-          </button>
-        )}
-      </div>
+        </div>
 
-      {/* EMAIL */}
-      <div className="bg-white p-6 rounded shadow space-y-2">
-        <p className="text-sm text-gray-500">Email</p>
-        {!editingEmail ? (
-          <p className="text-lg">{user.email}</p>
-        ) : (
-          <>
-            {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-            <input
-              className="border p-2 rounded w-full"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Current password"
-              className="border p-2 rounded w-full"
-              value={emailPassword}
-              onChange={(e) => setEmailPassword(e.target.value)}
-            />
-          </>
-        )}
+        {/* EMAIL */}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <p className="text-sm text-gray-500 mb-2">Email</p>
 
-        {!editingEmail ? (
-          <button onClick={() => setEditingEmail(true)} className="text-blue-600 text-sm">
-            Edit Email
-          </button>
-        ) : (
-          <button onClick={handleSaveEmail} className="text-blue-600 text-sm">
-            {emailSaving ? "Saving..." : "Save Email"}
-          </button>
-        )}
-      </div>
+          {!editingEmail ? (
+            <div className="flex justify-between items-center">
+              <p className="font-medium">{user.email}</p>
+              <button
+                onClick={() => setEditingEmail(true)}
+                className="border px-4 py-2 rounded-lg hover:bg-gray-100"
+              >
+                Edit
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {emailError && <p className="text-sm text-red-500">{emailError}</p>}
+              <input
+                className="border rounded px-3 py-2 w-full"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Current password"
+                className="border rounded px-3 py-2 w-full"
+                value={emailPassword}
+                onChange={(e) => setEmailPassword(e.target.value)}
+              />
+              <button
+                onClick={handleSaveEmail}
+                className="border px-4 py-2 rounded-lg hover:bg-gray-100"
+              >
+                {emailSaving ? "Saving..." : "Save Email"}
+              </button>
+            </div>
+          )}
+        </div>
 
-      {/* EMAIL VERIFICATION */}
-      <div className="bg-white p-6 rounded shadow space-y-2">
-        <h2 className="font-semibold">Email Verification</h2>
-
-        {user.emailVerified ? (
-          <p className="text-green-600 text-sm">✅ Email verified</p>
-        ) : (
-          <>
-            <p className="text-red-600 text-sm">❌ Email not verified</p>
-
+        {/* EMAIL VERIFICATION */}
+        {!user.emailVerified && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex justify-between items-center">
+            <div>
+              <p className="font-medium text-red-600">
+                Email not verified
+              </p>
+              {verifyMsg && (
+                <p className="text-sm text-gray-600">{verifyMsg}</p>
+              )}
+            </div>
             <button
               onClick={handleVerifyEmail}
               disabled={verifying}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+            >
+              {verifying ? "Sending..." : "Send verification"}
+            </button>
+          </div>
+        )}
+
+        {/* CHANGE PASSWORD */}
+        <div className="bg-white rounded-xl shadow-sm p-6 space-y-2">
+          <p className="font-medium">Change Password</p>
+          {!showPwdForm ? (
+            <button
+              onClick={() => setShowPwdForm(true)}
               className="text-blue-600 text-sm"
             >
-              {verifying ? "Sending..." : "Send verification email"}
+              Change password
             </button>
+          ) : (
+            <>
+              {pwdError && <p className="text-red-500 text-sm">{pwdError}</p>}
+              <input
+                type="password"
+                placeholder="Current password"
+                className="border rounded px-3 py-2 w-full"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="New password"
+                className="border rounded px-3 py-2 w-full"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                onClick={handleChangePassword}
+                className="border px-4 py-2 rounded-lg hover:bg-gray-100"
+              >
+                {pwdLoading ? "Updating..." : "Update password"}
+              </button>
+            </>
+          )}
+        </div>
 
+        {/* DELETE ACCOUNT */}
+        <div className="bg-white rounded-xl shadow-sm p-6 space-y-3">
+          <p className="font-medium text-red-600">Delete Account</p>
+
+          {!showDelete ? (
             <button
-              onClick={refreshVerification}
-              className="text-blue-600 text-sm block"
+              onClick={() => setShowDelete(true)}
+              className="border border-red-400 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
             >
-              Refresh status
+              Delete account
             </button>
+          ) : (
+            <>
+              {deleteError && (
+                <p className="text-sm text-red-500">{deleteError}</p>
+              )}
+              <input
+                type="password"
+                placeholder="Current password"
+                className="border rounded px-3 py-2 w-full"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+              />
+              <button
+                onClick={handleDeleteAccount}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg"
+              >
+                {deleting ? "Deleting..." : "Confirm delete"}
+              </button>
+            </>
+          )}
+        </div>
 
-            {verifyMsg && (
-              <p className="text-gray-600 text-sm">{verifyMsg}</p>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* CHANGE PASSWORD */}
-      <div className="bg-white p-6 rounded shadow space-y-2">
-        <h2 className="font-semibold">Change Password</h2>
-
-        {!showPwdForm ? (
-          <button onClick={() => setShowPwdForm(true)} className="text-blue-600 text-sm">
-            Change Password
-          </button>
-        ) : (
-          <>
-            {pwdError && <p className="text-red-500 text-sm">{pwdError}</p>}
-            <input
-              type="password"
-              placeholder="Current password"
-              className="border p-2 rounded w-full"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="New password"
-              className="border p-2 rounded w-full"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <button onClick={handleChangePassword} className="text-blue-600 text-sm">
-              {pwdLoading ? "Updating..." : "Update Password"}
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* DELETE ACCOUNT */}
-      <div className="bg-white p-6 rounded shadow border border-red-200 space-y-3">
-        <h2 className="font-semibold text-red-600">Delete Account</h2>
-
-        {!showDelete ? (
+        {/* LOGOUT */}
+        <div className="flex justify-end">
           <button
-            onClick={() => setShowDelete(true)}
-            className="border border-red-500 text-red-600 px-4 py-2 rounded"
+            onClick={handleLogout}
+            className="bg-black text-white px-6 py-2 rounded-lg"
           >
-            Delete Account
+            Logout
           </button>
-        ) : (
-          <>
-            {deleteError && <p className="text-red-500 text-sm">{deleteError}</p>}
-            <input
-              type="password"
-              placeholder="Current password"
-              className="border p-2 rounded w-full"
-              value={deletePassword}
-              onChange={(e) => setDeletePassword(e.target.value)}
-            />
-            <button
-              onClick={handleDeleteAccount}
-              className="bg-red-600 text-white px-4 py-2 rounded"
-            >
-              {deleting ? "Deleting..." : "Confirm Delete"}
-            </button>
-          </>
-        )}
-      </div>
+        </div>
 
-      {/* LOGOUT */}
-      <div className="bg-white p-6 rounded shadow flex justify-end">
-        <button
-          onClick={handleLogout}
-          className="bg-black text-white px-6 py-2 rounded"
-        >
-          Logout
-        </button>
       </div>
-
     </div>
   );
 }
