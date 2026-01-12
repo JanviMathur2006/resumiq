@@ -16,14 +16,45 @@ import { auth } from "../firebase";
 function Modal({ title, children, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-      />
-      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-scaleIn">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative bg-white dark:bg-[#111827] rounded-xl shadow-xl w-full max-w-md p-6 animate-scaleIn">
         <h2 className="text-lg font-semibold mb-4">{title}</h2>
         {children}
       </div>
+    </div>
+  );
+}
+
+/* ================= ACTIVITY FEED ================= */
+function ActivityFeed({ activities }) {
+  return (
+    <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-semibold text-lg">Worked on</h2>
+        <button className="text-sm text-blue-600 hover:underline">
+          View all
+        </button>
+      </div>
+
+      {activities.length === 0 ? (
+        <p className="text-sm text-gray-500">No recent activity</p>
+      ) : (
+        <ul className="space-y-4">
+          {activities.map((a, i) => (
+            <li key={i} className="flex gap-3">
+              <div className="w-9 h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-sm">
+                {a.type}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">{a.title}</p>
+                <p className="text-xs text-gray-500">
+                  {a.context} · {a.time}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -49,6 +80,28 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [verifyMsg, setVerifyMsg] = useState("");
+
+  /* ================= ACTIVITY (DUMMY FOR NOW) ================= */
+  const activities = [
+    {
+      type: "R",
+      title: "Created Resume",
+      context: "Software Engineer Resume",
+      time: "Today",
+    },
+    {
+      type: "E",
+      title: "Updated Profile",
+      context: "Changed email address",
+      time: "Yesterday",
+    },
+    {
+      type: "D",
+      title: "Downloaded Resume",
+      context: "PDF export",
+      time: "2 days ago",
+    },
+  ];
 
   /* ================= LOAD USER ================= */
   useEffect(() => {
@@ -89,10 +142,7 @@ export default function Profile() {
     }
     try {
       setLoading(true);
-      const cred = EmailAuthProvider.credential(
-        user.email,
-        emailPassword
-      );
+      const cred = EmailAuthProvider.credential(user.email, emailPassword);
       await reauthenticateWithCredential(user, cred);
       await updateEmail(user, newEmail);
       setUser({ ...user, email: newEmail });
@@ -108,10 +158,7 @@ export default function Profile() {
     setError("");
     try {
       setLoading(true);
-      const cred = EmailAuthProvider.credential(
-        user.email,
-        currentPassword
-      );
+      const cred = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, cred);
       await updatePassword(user, newPassword);
       setEditPassword(false);
@@ -126,10 +173,7 @@ export default function Profile() {
     setError("");
     try {
       setLoading(true);
-      const cred = EmailAuthProvider.credential(
-        user.email,
-        deletePassword
-      );
+      const cred = EmailAuthProvider.credential(user.email, deletePassword);
       await reauthenticateWithCredential(user, cred);
       await deleteUser(user);
       navigate("/signup");
@@ -153,7 +197,7 @@ export default function Profile() {
   /* ================= UI ================= */
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#030712]">
 
       {/* COVER */}
       <div className="h-48 bg-gradient-to-r from-blue-200 to-indigo-200" />
@@ -163,37 +207,31 @@ export default function Profile() {
 
           {/* LEFT SIDEBAR */}
           <aside className="w-72 shrink-0">
-            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <div className="w-24 h-24 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-semibold text-indigo-600">
+            <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm p-6 text-center">
+              <div className="w-24 h-24 mx-auto rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl font-semibold">
                 {name.slice(0, 2).toUpperCase()}
               </div>
               <h2 className="mt-4 font-semibold text-lg">{name}</h2>
               <p className="text-sm text-gray-600">{user.email}</p>
 
-              <button className="mt-4 px-4 py-2 border rounded-lg w-full hover:bg-gray-100">
+              <button className="mt-4 w-full border rounded-lg px-4 py-2 hover:bg-gray-100">
                 Manage your account
               </button>
-            </div>
-
-            {/* ABOUT */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mt-6 space-y-3">
-              <p className="text-xs font-semibold text-gray-500">ABOUT</p>
-              <InfoRow label="Job title" value="—" />
-              <InfoRow label="Department" value="—" />
-              <InfoRow label="Organization" value="Resumiq" />
-              <InfoRow label="Location" value="India" />
             </div>
           </aside>
 
           {/* RIGHT CONTENT */}
           <main className="flex-1 space-y-6">
 
-            {/* ACTIONS */}
-            <div className="bg-white rounded-xl shadow-sm divide-y">
+            {/* ACCOUNT ACTIONS */}
+            <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm divide-y">
               <ActionRow label="Full name" value={name || "Not set"} onEdit={() => setEditName(true)} />
               <ActionRow label="Email" value={user.email} onEdit={() => setEditEmail(true)} />
               <ActionRow label="Password" value="••••••••" onEdit={() => setEditPassword(true)} />
             </div>
+
+            {/* ACTIVITY FEED */}
+            <ActivityFeed activities={activities} />
 
             {/* EMAIL VERIFICATION */}
             {!user.emailVerified && (
@@ -219,7 +257,6 @@ export default function Profile() {
               >
                 Delete account
               </button>
-
               <button
                 onClick={logout}
                 className="bg-black text-white px-6 py-2 rounded-lg"
@@ -235,11 +272,7 @@ export default function Profile() {
 
       {editName && (
         <Modal title="Edit name" onClose={() => setEditName(false)}>
-          <input
-            className="border rounded px-3 py-2 w-full mb-4"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input className="input mb-4" value={name} onChange={(e) => setName(e.target.value)} />
           <ModalActions onCancel={() => setEditName(false)} onSave={saveName} loading={loading} />
         </Modal>
       )}
@@ -247,15 +280,11 @@ export default function Profile() {
       {editEmail && (
         <Modal title="Edit email" onClose={() => setEditEmail(false)}>
           {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
-          <input
-            className="border rounded px-3 py-2 w-full mb-2"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-          />
+          <input className="input" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
           <input
             type="password"
             placeholder="Current password"
-            className="border rounded px-3 py-2 w-full mb-4"
+            className="input mb-4"
             value={emailPassword}
             onChange={(e) => setEmailPassword(e.target.value)}
           />
@@ -269,14 +298,14 @@ export default function Profile() {
           <input
             type="password"
             placeholder="Current password"
-            className="border rounded px-3 py-2 w-full mb-2"
+            className="input"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
           />
           <input
             type="password"
             placeholder="New password"
-            className="border rounded px-3 py-2 w-full mb-4"
+            className="input mb-4"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
@@ -290,7 +319,7 @@ export default function Profile() {
           <input
             type="password"
             placeholder="Current password"
-            className="border rounded px-3 py-2 w-full mb-4"
+            className="input mb-4"
             value={deletePassword}
             onChange={(e) => setDeletePassword(e.target.value)}
           />
@@ -310,21 +339,9 @@ function ActionRow({ label, value, onEdit }) {
         <p className="text-sm text-gray-500">{label}</p>
         <p className="font-medium">{value}</p>
       </div>
-      <button
-        onClick={onEdit}
-        className="border px-4 py-2 rounded-lg hover:bg-gray-100"
-      >
+      <button onClick={onEdit} className="border px-4 py-2 rounded-lg hover:bg-gray-100">
         Edit
       </button>
-    </div>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div className="flex justify-between text-sm">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-medium">{value}</span>
     </div>
   );
 }
