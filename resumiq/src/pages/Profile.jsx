@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   signOut,
   updateProfile,
+  updateEmail,
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
@@ -12,15 +13,22 @@ import { auth } from "../firebase";
 export default function Profile() {
   const navigate = useNavigate();
 
-  // -------- User state --------
+  /* ================= USER ================= */
   const [user, setUser] = useState(null);
 
-  // -------- Edit profile (name) --------
-  const [editing, setEditing] = useState(false);
+  /* ================= EDIT NAME ================= */
+  const [editingName, setEditingName] = useState(false);
   const [name, setName] = useState("");
   const [savingName, setSavingName] = useState(false);
 
-  // -------- Change password --------
+  /* ================= EDIT EMAIL ================= */
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [emailPassword, setEmailPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [emailSaving, setEmailSaving] = useState(false);
+
+  /* ================= CHANGE PASSWORD ================= */
   const [showPwdForm, setShowPwdForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -28,7 +36,7 @@ export default function Profile() {
   const [pwdError, setPwdError] = useState("");
   const [pwdSuccess, setPwdSuccess] = useState("");
 
-  // -------- Load user safely --------
+  /* ================= LOAD USER ================= */
   useEffect(() => {
     const u = auth.currentUser;
     if (!u) {
@@ -37,35 +45,73 @@ export default function Profile() {
     }
     setUser(u);
     setName(u.displayName || "");
+    setNewEmail(u.email || "");
   }, [navigate]);
 
-  // -------- Save name --------
+  /* ================= SAVE NAME ================= */
   const handleSaveName = async () => {
     if (!name.trim()) return;
     try {
       setSavingName(true);
-      await updateProfile(auth.currentUser, { displayName: name.trim() });
-      // refresh local snapshot
+      await updateProfile(auth.currentUser, {
+        displayName: name.trim(),
+      });
       setUser({ ...auth.currentUser, displayName: name.trim() });
-      setEditing(false);
+      setEditingName(false);
     } catch (e) {
-      console.error("Update name failed:", e);
+      console.error(e);
     } finally {
       setSavingName(false);
     }
   };
 
-  // -------- Change password --------
+  /* ================= SAVE EMAIL ================= */
+  const handleSaveEmail = async () => {
+    setEmailError("");
+
+    if (!newEmail || !emailPassword) {
+      setEmailError("All fields are required");
+      return;
+    }
+
+    try {
+      setEmailSaving(true);
+
+      const u = auth.currentUser;
+      const credential = EmailAuthProvider.credential(
+        u.email,
+        emailPassword
+      );
+
+      // 🔐 Re-authenticate
+      await reauthenticateWithCredential(u, credential);
+
+      // ✉️ Update email
+      await updateEmail(u, newEmail);
+
+      setUser({ ...u, email: newEmail });
+      setEditingEmail(false);
+      setEmailPassword("");
+    } catch (e) {
+      if (e.code === "auth/wrong-password") {
+        setEmailError("Incorrect password");
+      } else if (e.code === "auth/email-already-in-use") {
+        setEmailError("Email already in use");
+      } else {
+        setEmailError("Failed to update email");
+      }
+    } finally {
+      setEmailSaving(false);
+    }
+  };
+
+  /* ================= CHANGE PASSWORD ================= */
   const handleChangePassword = async () => {
     setPwdError("");
     setPwdSuccess("");
 
     if (!currentPassword || !newPassword) {
       setPwdError("All fields are required");
-      return;
-    }
-    if (newPassword.length < 6) {
-      setPwdError("New password must be at least 6 characters");
       return;
     }
 
@@ -78,28 +124,21 @@ export default function Profile() {
         currentPassword
       );
 
-      // Re-authenticate (required by Firebase)
       await reauthenticateWithCredential(u, credential);
-
-      // Update password
       await updatePassword(u, newPassword);
 
       setPwdSuccess("Password updated successfully");
+      setShowPwdForm(false);
       setCurrentPassword("");
       setNewPassword("");
-      setShowPwdForm(false);
     } catch (e) {
-      if (e.code === "auth/wrong-password") {
-        setPwdError("Current password is incorrect");
-      } else {
-        setPwdError("Failed to change password");
-      }
+      setPwdError("Failed to update password");
     } finally {
       setPwdLoading(false);
     }
   };
 
-  // -------- Logout --------
+  /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/login");
@@ -108,7 +147,7 @@ export default function Profile() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading profile…
+        Loading profile...
       </div>
     );
   }
@@ -116,86 +155,96 @@ export default function Profile() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
 
-      {/* Header */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      {/* HEADER */}
+      <div className="bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-semibold">Your Profile</h1>
-        <p className="text-gray-500 mt-1">
-          Manage your personal information
-        </p>
+        <p className="text-gray-500">Manage your account details</p>
       </div>
 
-      {/* Profile Info */}
-      <div className="bg-white p-6 rounded-lg shadow space-y-4">
-        {/* Name */}
-        <div>
-          <p className="text-sm text-gray-500">Full Name</p>
-          {!editing ? (
-            <p className="text-lg font-medium">
-              {user.displayName || "Not set"}
-            </p>
-          ) : (
-            <input
-              className="border p-2 rounded w-full mt-1"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          )}
-        </div>
+      {/* NAME */}
+      <div className="bg-white p-6 rounded shadow space-y-3">
+        <p className="text-sm text-gray-500">Full Name</p>
+        {!editingName ? (
+          <p className="text-lg">{user.displayName || "Not set"}</p>
+        ) : (
+          <input
+            className="border p-2 rounded w-full"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
 
-        {/* Email */}
-        <div>
-          <p className="text-sm text-gray-500">Email</p>
-          <p className="text-lg font-medium">{user.email}</p>
-        </div>
-
-        {/* Member Since */}
-        <div>
-          <p className="text-sm text-gray-500">Member Since</p>
-          <p className="text-lg font-medium">
-            {new Date(user.metadata.creationTime).toDateString()}
-          </p>
-        </div>
-      </div>
-
-      {/* Edit Profile Actions */}
-      <div className="bg-white p-6 rounded-lg shadow flex gap-4">
-        {!editing ? (
+        {!editingName ? (
           <button
-            onClick={() => setEditing(true)}
-            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
+            onClick={() => setEditingName(true)}
+            className="text-blue-600 text-sm"
           >
-            Edit Profile
+            Edit Name
           </button>
         ) : (
-          <>
-            <button
-              onClick={handleSaveName}
-              disabled={savingName}
-              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
-            >
-              {savingName ? "Saving…" : "Save"}
-            </button>
-            <button
-              onClick={() => {
-                setEditing(false);
-                setName(user.displayName || "");
-              }}
-              className="px-4 py-2 border border-gray-400 rounded hover:bg-gray-100 transition"
-            >
-              Cancel
-            </button>
-          </>
+          <button
+            onClick={handleSaveName}
+            className="text-blue-600 text-sm"
+          >
+            {savingName ? "Saving..." : "Save"}
+          </button>
         )}
       </div>
 
-      {/* Change Password */}
-      <div className="bg-white p-6 rounded-lg shadow space-y-4">
-        <h2 className="text-lg font-semibold">Change Password</h2>
+      {/* EMAIL */}
+      <div className="bg-white p-6 rounded shadow space-y-3">
+        <p className="text-sm text-gray-500">Email</p>
+
+        {!editingEmail ? (
+          <p className="text-lg">{user.email}</p>
+        ) : (
+          <>
+            {emailError && (
+              <p className="text-red-500 text-sm">{emailError}</p>
+            )}
+
+            <input
+              type="email"
+              className="border p-2 rounded w-full"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
+
+            <input
+              type="password"
+              className="border p-2 rounded w-full"
+              placeholder="Current password"
+              value={emailPassword}
+              onChange={(e) => setEmailPassword(e.target.value)}
+            />
+          </>
+        )}
+
+        {!editingEmail ? (
+          <button
+            onClick={() => setEditingEmail(true)}
+            className="text-blue-600 text-sm"
+          >
+            Edit Email
+          </button>
+        ) : (
+          <button
+            onClick={handleSaveEmail}
+            className="text-blue-600 text-sm"
+          >
+            {emailSaving ? "Saving..." : "Save Email"}
+          </button>
+        )}
+      </div>
+
+      {/* CHANGE PASSWORD */}
+      <div className="bg-white p-6 rounded shadow space-y-3">
+        <h2 className="font-semibold">Change Password</h2>
 
         {!showPwdForm ? (
           <button
             onClick={() => setShowPwdForm(true)}
-            className="px-4 py-2 border rounded hover:bg-gray-100 transition"
+            className="text-blue-600 text-sm"
           >
             Change Password
           </button>
@@ -208,48 +257,35 @@ export default function Profile() {
 
             <input
               type="password"
+              className="border p-2 rounded w-full"
               placeholder="Current password"
-              className="w-full border p-2 rounded"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
             />
 
             <input
               type="password"
+              className="border p-2 rounded w-full"
               placeholder="New password"
-              className="w-full border p-2 rounded"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleChangePassword}
-                disabled={pwdLoading}
-                className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
-              >
-                {pwdLoading ? "Updating…" : "Update Password"}
-              </button>
-              <button
-                onClick={() => {
-                  setShowPwdForm(false);
-                  setPwdError("");
-                  setPwdSuccess("");
-                }}
-                className="px-4 py-2 border rounded hover:bg-gray-100 transition"
-              >
-                Cancel
-              </button>
-            </div>
+            <button
+              onClick={handleChangePassword}
+              className="text-blue-600 text-sm"
+            >
+              {pwdLoading ? "Updating..." : "Update Password"}
+            </button>
           </>
         )}
       </div>
 
-      {/* Logout (LAST) */}
-      <div className="bg-white p-6 rounded-lg shadow flex justify-end">
+      {/* LOGOUT */}
+      <div className="bg-white p-6 rounded shadow flex justify-end">
         <button
           onClick={handleLogout}
-          className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          className="px-6 py-2 bg-red-600 text-white rounded"
         >
           Logout
         </button>
