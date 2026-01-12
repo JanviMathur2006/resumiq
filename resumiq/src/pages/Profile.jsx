@@ -12,38 +12,43 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 
+/* ================= MODAL ================= */
+function Modal({ title, children, onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-scaleIn">
+        <h2 className="text-lg font-semibold mb-4">{title}</h2>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  /* ================= NAME ================= */
-  const [editingName, setEditingName] = useState(false);
-  const [name, setName] = useState("");
-  const [savingName, setSavingName] = useState(false);
+  /* ================= MODAL STATES ================= */
+  const [editName, setEditName] = useState(false);
+  const [editEmail, setEditEmail] = useState(false);
+  const [editPassword, setEditPassword] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
-  /* ================= EMAIL ================= */
-  const [editingEmail, setEditingEmail] = useState(false);
+  /* ================= FORM STATES ================= */
+  const [name, setName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [emailPassword, setEmailPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [emailSaving, setEmailSaving] = useState(false);
-
-  /* ================= VERIFY ================= */
-  const [verifying, setVerifying] = useState(false);
-  const [verifyMsg, setVerifyMsg] = useState("");
-
-  /* ================= PASSWORD ================= */
-  const [showPwdForm, setShowPwdForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [pwdError, setPwdError] = useState("");
-  const [pwdLoading, setPwdLoading] = useState(false);
-
-  /* ================= DELETE ================= */
-  const [showDelete, setShowDelete] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
-  const [deleteError, setDeleteError] = useState("");
-  const [deleting, setDeleting] = useState(false);
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [verifyMsg, setVerifyMsg] = useState("");
 
   /* ================= LOAD USER ================= */
   useEffect(() => {
@@ -67,24 +72,24 @@ export default function Profile() {
 
   /* ================= ACTIONS ================= */
 
-  const handleSaveName = async () => {
+  const saveName = async () => {
     if (!name.trim()) return;
-    setSavingName(true);
-    await updateProfile(auth.currentUser, { displayName: name.trim() });
-    setUser({ ...auth.currentUser, displayName: name.trim() });
-    setEditingName(false);
-    setSavingName(false);
+    setLoading(true);
+    await updateProfile(user, { displayName: name.trim() });
+    setUser({ ...user, displayName: name.trim() });
+    setEditName(false);
+    setLoading(false);
   };
 
-  const handleSaveEmail = async () => {
-    setEmailError("");
+  const saveEmail = async () => {
+    setError("");
     if (!newEmail || !emailPassword) {
-      setEmailError("All fields are required");
+      setError("All fields required");
       return;
     }
 
     try {
-      setEmailSaving(true);
+      setLoading(true);
       const cred = EmailAuthProvider.credential(
         user.email,
         emailPassword
@@ -92,56 +97,46 @@ export default function Profile() {
       await reauthenticateWithCredential(user, cred);
       await updateEmail(user, newEmail);
       setUser({ ...user, email: newEmail });
-      setEditingEmail(false);
-      setEmailPassword("");
-    } catch (e) {
-      setEmailError("Failed to update email");
+      setEditEmail(false);
+    } catch {
+      setError("Failed to update email");
     } finally {
-      setEmailSaving(false);
+      setLoading(false);
     }
   };
 
-  const handleVerifyEmail = async () => {
-    setVerifying(true);
-    await sendEmailVerification(user);
-    setVerifyMsg("Verification email sent");
-    setVerifying(false);
-  };
-
-  const handleChangePassword = async () => {
-    setPwdError("");
+  const changePassword = async () => {
+    setError("");
     if (!currentPassword || !newPassword) {
-      setPwdError("All fields required");
+      setError("All fields required");
       return;
     }
 
     try {
-      setPwdLoading(true);
+      setLoading(true);
       const cred = EmailAuthProvider.credential(
         user.email,
         currentPassword
       );
       await reauthenticateWithCredential(user, cred);
       await updatePassword(user, newPassword);
-      setShowPwdForm(false);
-      setCurrentPassword("");
-      setNewPassword("");
+      setEditPassword(false);
     } catch {
-      setPwdError("Failed to update password");
+      setError("Failed to update password");
     } finally {
-      setPwdLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleDeleteAccount = async () => {
-    setDeleteError("");
+  const deleteAccount = async () => {
+    setError("");
     if (!deletePassword) {
-      setDeleteError("Password required");
+      setError("Password required");
       return;
     }
 
     try {
-      setDeleting(true);
+      setLoading(true);
       const cred = EmailAuthProvider.credential(
         user.email,
         deletePassword
@@ -150,13 +145,18 @@ export default function Profile() {
       await deleteUser(user);
       navigate("/signup");
     } catch {
-      setDeleteError("Incorrect password");
+      setError("Incorrect password");
     } finally {
-      setDeleting(false);
+      setLoading(false);
     }
   };
 
-  const handleLogout = async () => {
+  const sendVerify = async () => {
+    await sendEmailVerification(user);
+    setVerifyMsg("Verification email sent");
+  };
+
+  const logout = async () => {
     await signOut(auth);
     navigate("/login");
   };
@@ -174,10 +174,10 @@ export default function Profile() {
           </div>
           <div>
             <h1 className="text-lg font-semibold">{name || "User"}</h1>
-            <p className="text-sm text-gray-600 flex gap-2 items-center">
+            <p className="text-sm text-gray-600 flex gap-2">
               {user.email}
               {!user.emailVerified && (
-                <span className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-gray-200 px-2 rounded-full">
                   Not verified
                 </span>
               )}
@@ -185,162 +185,40 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* NAME */}
-        <div className="bg-white rounded-xl shadow-sm p-6 flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-500">Full Name</p>
-            {!editingName ? (
-              <p className="font-medium">{user.displayName || "Not set"}</p>
-            ) : (
-              <input
-                className="border rounded px-3 py-2 mt-1"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            )}
-          </div>
-          <button
-            onClick={editingName ? handleSaveName : () => setEditingName(true)}
-            className="border px-4 py-2 rounded-lg hover:bg-gray-100"
-          >
-            {savingName ? "Saving..." : editingName ? "Save" : "Edit"}
-          </button>
-        </div>
-
-        {/* EMAIL */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <p className="text-sm text-gray-500 mb-2">Email</p>
-
-          {!editingEmail ? (
-            <div className="flex justify-between items-center">
-              <p className="font-medium">{user.email}</p>
-              <button
-                onClick={() => setEditingEmail(true)}
-                className="border px-4 py-2 rounded-lg hover:bg-gray-100"
-              >
-                Edit
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {emailError && <p className="text-sm text-red-500">{emailError}</p>}
-              <input
-                className="border rounded px-3 py-2 w-full"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Current password"
-                className="border rounded px-3 py-2 w-full"
-                value={emailPassword}
-                onChange={(e) => setEmailPassword(e.target.value)}
-              />
-              <button
-                onClick={handleSaveEmail}
-                className="border px-4 py-2 rounded-lg hover:bg-gray-100"
-              >
-                {emailSaving ? "Saving..." : "Save Email"}
-              </button>
-            </div>
-          )}
+        {/* ACTION ROWS */}
+        <div className="bg-white rounded-xl shadow-sm divide-y">
+          <Row label="Full Name" value={user.displayName || "Not set"} action={() => setEditName(true)} />
+          <Row label="Email" value={user.email} action={() => setEditEmail(true)} />
+          <Row label="Password" value="••••••••" action={() => setEditPassword(true)} />
         </div>
 
         {/* EMAIL VERIFICATION */}
         {!user.emailVerified && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex justify-between items-center">
             <div>
-              <p className="font-medium text-red-600">
-                Email not verified
-              </p>
-              {verifyMsg && (
-                <p className="text-sm text-gray-600">{verifyMsg}</p>
-              )}
+              <p className="font-medium text-red-600">Email not verified</p>
+              {verifyMsg && <p className="text-sm text-gray-600">{verifyMsg}</p>}
             </div>
             <button
-              onClick={handleVerifyEmail}
-              disabled={verifying}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              onClick={sendVerify}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg"
             >
-              {verifying ? "Sending..." : "Send verification"}
+              Send verification
             </button>
           </div>
         )}
 
-        {/* CHANGE PASSWORD */}
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-2">
-          <p className="font-medium">Change Password</p>
-          {!showPwdForm ? (
-            <button
-              onClick={() => setShowPwdForm(true)}
-              className="text-blue-600 text-sm"
-            >
-              Change password
-            </button>
-          ) : (
-            <>
-              {pwdError && <p className="text-red-500 text-sm">{pwdError}</p>}
-              <input
-                type="password"
-                placeholder="Current password"
-                className="border rounded px-3 py-2 w-full"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="New password"
-                className="border rounded px-3 py-2 w-full"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <button
-                onClick={handleChangePassword}
-                className="border px-4 py-2 rounded-lg hover:bg-gray-100"
-              >
-                {pwdLoading ? "Updating..." : "Update password"}
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* DELETE ACCOUNT */}
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-3">
-          <p className="font-medium text-red-600">Delete Account</p>
-
-          {!showDelete ? (
-            <button
-              onClick={() => setShowDelete(true)}
-              className="border border-red-400 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
-            >
-              Delete account
-            </button>
-          ) : (
-            <>
-              {deleteError && (
-                <p className="text-sm text-red-500">{deleteError}</p>
-              )}
-              <input
-                type="password"
-                placeholder="Current password"
-                className="border rounded px-3 py-2 w-full"
-                value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
-              />
-              <button
-                onClick={handleDeleteAccount}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg"
-              >
-                {deleting ? "Deleting..." : "Confirm delete"}
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* LOGOUT */}
-        <div className="flex justify-end">
+        {/* DELETE + LOGOUT */}
+        <div className="flex justify-between">
           <button
-            onClick={handleLogout}
+            onClick={() => setDeleteModal(true)}
+            className="border border-red-400 text-red-600 px-4 py-2 rounded-lg"
+          >
+            Delete account
+          </button>
+
+          <button
+            onClick={logout}
             className="bg-black text-white px-6 py-2 rounded-lg"
           >
             Logout
@@ -348,6 +226,116 @@ export default function Profile() {
         </div>
 
       </div>
+
+      {/* ================= MODALS ================= */}
+
+      {editName && (
+        <Modal title="Edit name" onClose={() => setEditName(false)}>
+          <input
+            className="border rounded px-3 py-2 w-full mb-4"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <ModalActions onCancel={() => setEditName(false)} onSave={saveName} loading={loading} />
+        </Modal>
+      )}
+
+      {editEmail && (
+        <Modal title="Edit email" onClose={() => setEditEmail(false)}>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+          <input
+            className="border rounded px-3 py-2 w-full mb-2"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Current password"
+            className="border rounded px-3 py-2 w-full mb-4"
+            value={emailPassword}
+            onChange={(e) => setEmailPassword(e.target.value)}
+          />
+          <ModalActions onCancel={() => setEditEmail(false)} onSave={saveEmail} loading={loading} />
+        </Modal>
+      )}
+
+      {editPassword && (
+        <Modal title="Change password" onClose={() => setEditPassword(false)}>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+          <input
+            type="password"
+            placeholder="Current password"
+            className="border rounded px-3 py-2 w-full mb-2"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="New password"
+            className="border rounded px-3 py-2 w-full mb-4"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <ModalActions onCancel={() => setEditPassword(false)} onSave={changePassword} loading={loading} />
+        </Modal>
+      )}
+
+      {deleteModal && (
+        <Modal title="Delete account" onClose={() => setDeleteModal(false)}>
+          {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+          <input
+            type="password"
+            placeholder="Current password"
+            className="border rounded px-3 py-2 w-full mb-4"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+          />
+          <ModalActions
+            danger
+            onCancel={() => setDeleteModal(false)}
+            onSave={deleteAccount}
+            loading={loading}
+          />
+        </Modal>
+      )}
+
+    </div>
+  );
+}
+
+/* ================= SMALL COMPONENTS ================= */
+
+function Row({ label, value, action }) {
+  return (
+    <div className="p-6 flex justify-between items-center">
+      <div>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="font-medium">{value}</p>
+      </div>
+      <button
+        onClick={action}
+        className="border px-4 py-2 rounded-lg hover:bg-gray-100"
+      >
+        Edit
+      </button>
+    </div>
+  );
+}
+
+function ModalActions({ onCancel, onSave, loading, danger }) {
+  return (
+    <div className="flex justify-end gap-3">
+      <button onClick={onCancel} className="px-4 py-2 rounded-lg border">
+        Cancel
+      </button>
+      <button
+        onClick={onSave}
+        className={`px-4 py-2 rounded-lg text-white ${
+          danger ? "bg-red-600" : "bg-black"
+        }`}
+      >
+        {loading ? "Saving..." : "Save"}
+      </button>
     </div>
   );
 }
