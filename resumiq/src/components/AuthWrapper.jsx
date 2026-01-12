@@ -1,33 +1,42 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 export default function AuthWrapper() {
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    // Simulate auth check (replace with real auth later)
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
 
-    setIsAuthenticated(loggedIn);
-    setLoading(false);
+    return () => unsubscribe();
   }, []);
 
-  // Show loader while checking auth
+  // 🔄 While Firebase checks auth
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-lg">Checking authentication...</p>
+        <p className="text-gray-600 text-lg">Checking authentication…</p>
       </div>
     );
   }
 
-  // If not logged in → redirect to login
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+  // 🔐 Not logged in → Login
+  if (!user) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location.pathname }}
+      />
+    );
   }
 
-  // If logged in → show protected pages
+  // ✅ Logged in → Allow access
   return <Outlet />;
 }

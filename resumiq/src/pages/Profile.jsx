@@ -1,54 +1,59 @@
-import PageTransition from "../components/PageTransition";
+import { useEffect, useState } from "react";
+import { auth } from "../firebase";
 
 export default function Profile() {
-  // Dummy user data (later can come from backend / context)
-  const user = {
-    name: "John Doe",
-    email: "john@example.com",
-    joined: "March 2024",
-  };
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged((u) => {
+      if (u) {
+        setUser({
+          name: u.displayName || "User",
+          email: u.email,
+          joined: new Date(
+            u.metadata.creationTime
+          ).toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          }),
+        });
+      }
+    });
+
+    return () => unsub();
+  }, []);
+
+  if (!user) {
+    return (
+      <div className="text-center mt-20">
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
-    <PageTransition>
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto mt-10 space-y-6">
+      <div className="bg-white p-6 rounded shadow">
+        <h1 className="text-2xl font-semibold">Your Profile</h1>
+        <p className="text-gray-500">Manage your personal information</p>
+      </div>
 
-        {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h1 className="text-2xl font-semibold">Your Profile</h1>
-          <p className="text-gray-500 mt-1">
-            Manage your personal information
-          </p>
+      <div className="bg-white p-6 rounded shadow space-y-4">
+        <div>
+          <p className="text-gray-500 text-sm">Full Name</p>
+          <p className="text-lg">{user.name}</p>
         </div>
 
-        {/* Profile Info */}
-        <div className="bg-white p-6 rounded-lg shadow space-y-4">
-          <div>
-            <label className="text-sm text-gray-500">Full Name</label>
-            <p className="text-lg font-medium">{user.name}</p>
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-500">Email</label>
-            <p className="text-lg font-medium">{user.email}</p>
-          </div>
-
-          <div>
-            <label className="text-sm text-gray-500">Member Since</label>
-            <p className="text-lg font-medium">{user.joined}</p>
-          </div>
+        <div>
+          <p className="text-gray-500 text-sm">Email</p>
+          <p className="text-lg">{user.email}</p>
         </div>
 
-        {/* Actions */}
-        <div className="bg-white p-6 rounded-lg shadow flex gap-4">
-          <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition">
-            Edit Profile
-          </button>
-
-          <button className="px-4 py-2 border border-gray-400 rounded hover:bg-gray-100 transition">
-            Change Password
-          </button>
+        <div>
+          <p className="text-gray-500 text-sm">Member Since</p>
+          <p className="text-lg">{user.joined}</p>
         </div>
       </div>
-    </PageTransition>
+    </div>
   );
 }
