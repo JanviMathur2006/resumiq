@@ -32,13 +32,13 @@ export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  /* ================= MODAL STATES ================= */
+  /* ================= MODALS ================= */
   const [editName, setEditName] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
   const [editPassword, setEditPassword] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
-  /* ================= FORM STATES ================= */
+  /* ================= FORM STATE ================= */
   const [name, setName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [emailPassword, setEmailPassword] = useState("");
@@ -46,8 +46,8 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [verifyMsg, setVerifyMsg] = useState("");
 
   /* ================= LOAD USER ================= */
@@ -87,7 +87,6 @@ export default function Profile() {
       setError("All fields required");
       return;
     }
-
     try {
       setLoading(true);
       const cred = EmailAuthProvider.credential(
@@ -107,11 +106,6 @@ export default function Profile() {
 
   const changePassword = async () => {
     setError("");
-    if (!currentPassword || !newPassword) {
-      setError("All fields required");
-      return;
-    }
-
     try {
       setLoading(true);
       const cred = EmailAuthProvider.credential(
@@ -130,11 +124,6 @@ export default function Profile() {
 
   const deleteAccount = async () => {
     setError("");
-    if (!deletePassword) {
-      setError("Password required");
-      return;
-    }
-
     try {
       setLoading(true);
       const cred = EmailAuthProvider.credential(
@@ -164,67 +153,82 @@ export default function Profile() {
   /* ================= UI ================= */
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50">
 
-        {/* HEADER */}
-        <div className="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-600">
-            {name.slice(0, 2).toUpperCase()}
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold">{name || "User"}</h1>
-            <p className="text-sm text-gray-600 flex gap-2">
-              {user.email}
-              {!user.emailVerified && (
-                <span className="text-xs bg-gray-200 px-2 rounded-full">
-                  Not verified
-                </span>
-              )}
-            </p>
-          </div>
-        </div>
+      {/* COVER */}
+      <div className="h-48 bg-gradient-to-r from-blue-200 to-indigo-200" />
 
-        {/* ACTION ROWS */}
-        <div className="bg-white rounded-xl shadow-sm divide-y">
-          <Row label="Full Name" value={user.displayName || "Not set"} action={() => setEditName(true)} />
-          <Row label="Email" value={user.email} action={() => setEditEmail(true)} />
-          <Row label="Password" value="••••••••" action={() => setEditPassword(true)} />
-        </div>
+      <div className="max-w-6xl mx-auto px-6 -mt-20">
+        <div className="flex gap-8">
 
-        {/* EMAIL VERIFICATION */}
-        {!user.emailVerified && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex justify-between items-center">
-            <div>
-              <p className="font-medium text-red-600">Email not verified</p>
-              {verifyMsg && <p className="text-sm text-gray-600">{verifyMsg}</p>}
+          {/* LEFT SIDEBAR */}
+          <aside className="w-72 shrink-0">
+            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
+              <div className="w-24 h-24 mx-auto rounded-full bg-indigo-100 flex items-center justify-center text-2xl font-semibold text-indigo-600">
+                {name.slice(0, 2).toUpperCase()}
+              </div>
+              <h2 className="mt-4 font-semibold text-lg">{name}</h2>
+              <p className="text-sm text-gray-600">{user.email}</p>
+
+              <button className="mt-4 px-4 py-2 border rounded-lg w-full hover:bg-gray-100">
+                Manage your account
+              </button>
             </div>
-            <button
-              onClick={sendVerify}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg"
-            >
-              Send verification
-            </button>
-          </div>
-        )}
 
-        {/* DELETE + LOGOUT */}
-        <div className="flex justify-between">
-          <button
-            onClick={() => setDeleteModal(true)}
-            className="border border-red-400 text-red-600 px-4 py-2 rounded-lg"
-          >
-            Delete account
-          </button>
+            {/* ABOUT */}
+            <div className="bg-white rounded-xl shadow-sm p-6 mt-6 space-y-3">
+              <p className="text-xs font-semibold text-gray-500">ABOUT</p>
+              <InfoRow label="Job title" value="—" />
+              <InfoRow label="Department" value="—" />
+              <InfoRow label="Organization" value="Resumiq" />
+              <InfoRow label="Location" value="India" />
+            </div>
+          </aside>
 
-          <button
-            onClick={logout}
-            className="bg-black text-white px-6 py-2 rounded-lg"
-          >
-            Logout
-          </button>
+          {/* RIGHT CONTENT */}
+          <main className="flex-1 space-y-6">
+
+            {/* ACTIONS */}
+            <div className="bg-white rounded-xl shadow-sm divide-y">
+              <ActionRow label="Full name" value={name || "Not set"} onEdit={() => setEditName(true)} />
+              <ActionRow label="Email" value={user.email} onEdit={() => setEditEmail(true)} />
+              <ActionRow label="Password" value="••••••••" onEdit={() => setEditPassword(true)} />
+            </div>
+
+            {/* EMAIL VERIFICATION */}
+            {!user.emailVerified && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex justify-between items-center">
+                <div>
+                  <p className="font-medium text-red-600">Email not verified</p>
+                  {verifyMsg && <p className="text-sm text-gray-600">{verifyMsg}</p>}
+                </div>
+                <button
+                  onClick={sendVerify}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                >
+                  Send verification
+                </button>
+              </div>
+            )}
+
+            {/* FOOTER ACTIONS */}
+            <div className="flex justify-between">
+              <button
+                onClick={() => setDeleteModal(true)}
+                className="border border-red-400 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50"
+              >
+                Delete account
+              </button>
+
+              <button
+                onClick={logout}
+                className="bg-black text-white px-6 py-2 rounded-lg"
+              >
+                Logout
+              </button>
+            </div>
+          </main>
         </div>
-
       </div>
 
       {/* ================= MODALS ================= */}
@@ -290,22 +294,16 @@ export default function Profile() {
             value={deletePassword}
             onChange={(e) => setDeletePassword(e.target.value)}
           />
-          <ModalActions
-            danger
-            onCancel={() => setDeleteModal(false)}
-            onSave={deleteAccount}
-            loading={loading}
-          />
+          <ModalActions danger onCancel={() => setDeleteModal(false)} onSave={deleteAccount} loading={loading} />
         </Modal>
       )}
-
     </div>
   );
 }
 
 /* ================= SMALL COMPONENTS ================= */
 
-function Row({ label, value, action }) {
+function ActionRow({ label, value, onEdit }) {
   return (
     <div className="p-6 flex justify-between items-center">
       <div>
@@ -313,11 +311,20 @@ function Row({ label, value, action }) {
         <p className="font-medium">{value}</p>
       </div>
       <button
-        onClick={action}
+        onClick={onEdit}
         className="border px-4 py-2 rounded-lg hover:bg-gray-100"
       >
         Edit
       </button>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-gray-500">{label}</span>
+      <span className="font-medium">{value}</span>
     </div>
   );
 }
