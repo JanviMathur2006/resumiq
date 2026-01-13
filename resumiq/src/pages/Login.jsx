@@ -32,36 +32,56 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-6">
-      <div className="max-w-6xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+      <div className="max-w-6xl w-full bg-white rounded-[32px] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
         {/* ================= LEFT PANEL ================= */}
-        <div className="hidden md:flex relative bg-gradient-to-br from-[#1E1B4B] to-[#312E81] p-10">
-          {/* Resume preview */}
-          <div className="bg-white rounded-2xl p-6 shadow-xl w-full max-w-sm self-center">
-            <div className="space-y-3">
-              <div className="h-4 w-32 bg-slate-300 rounded" />
-              <div className="h-2 w-48 bg-slate-200 rounded" />
-              <div className="h-2 w-40 bg-slate-200 rounded" />
+        <div className="hidden md:flex relative bg-gradient-to-br from-[#1B1A4A] via-[#2A256E] to-[#3B2F8F] p-12">
 
-              <div className="mt-6 space-y-2">
-                <div className="h-2 w-full bg-slate-200 rounded" />
-                <div className="h-2 w-5/6 bg-slate-200 rounded" />
-                <div className="h-2 w-4/6 bg-slate-200 rounded" />
+          {/* ===== Resume Preview Card ===== */}
+          <div className="absolute top-24 left-12 bg-white rounded-3xl p-8 shadow-2xl w-[420px]">
+
+            {/* Header */}
+            <div className="mb-6">
+              <div className="h-5 w-44 bg-slate-800 rounded-md mb-2" />
+              <div className="h-3 w-60 bg-slate-300 rounded" />
+            </div>
+
+            {/* Experience */}
+            <div className="mb-6">
+              <div className="h-3 w-28 bg-slate-400 rounded mb-3" />
+              <div className="space-y-2">
+                <div className="h-3 w-full bg-slate-200 rounded" />
+                <div className="h-3 w-5/6 bg-slate-200 rounded" />
+                <div className="h-3 w-4/6 bg-slate-200 rounded" />
               </div>
+            </div>
 
-              <div className="mt-6 space-y-2">
-                <div className="h-2 w-full bg-slate-200 rounded" />
-                <div className="h-2 w-3/4 bg-slate-200 rounded" />
+            {/* Skills */}
+            <div>
+              <div className="h-3 w-20 bg-slate-400 rounded mb-3" />
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 text-xs rounded-full bg-slate-100 text-slate-600">
+                  JavaScript
+                </span>
+                <span className="px-3 py-1 text-xs rounded-full bg-slate-100 text-slate-600">
+                  React
+                </span>
+                <span className="px-3 py-1 text-xs rounded-full bg-slate-100 text-slate-600">
+                  HTML
+                </span>
+                <span className="px-3 py-1 text-xs rounded-full bg-slate-100 text-slate-600">
+                  CSS
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Bottom text */}
-          <div className="absolute bottom-10 left-10 text-white">
-            <h3 className="text-xl font-semibold">
+          {/* Bottom Text */}
+          <div className="absolute bottom-14 left-12 text-white">
+            <h3 className="text-2xl font-semibold leading-tight">
               Build resumes recruiters trust
             </h3>
-            <p className="text-sm opacity-80 mt-1">
+            <p className="text-base opacity-80 mt-2">
               Your career starts here.
             </p>
           </div>
@@ -121,7 +141,10 @@ export default function Login() {
 
           <p className="text-sm text-slate-600 mt-6 text-center">
             Don’t have an account?{" "}
-            <Link to="/signup" className="text-blue-600 font-medium hover:underline">
+            <Link
+              to="/signup"
+              className="text-blue-600 font-medium hover:underline"
+            >
               Create one
             </Link>
           </p>
