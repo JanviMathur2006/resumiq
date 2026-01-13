@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
   Lock,
@@ -10,26 +11,44 @@ import {
 import PageTransition from "../components/PageTransition";
 
 /* =====================================================
-   SETTINGS PAGE – FULL IMPLEMENTATION
-   ===================================================== */
+   FRAMER MOTION VARIANTS
+===================================================== */
+const tabVariants = {
+  initial: {
+    opacity: 0,
+    x: 30,
+  },
+  animate: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.35, ease: "easeOut" },
+  },
+  exit: {
+    opacity: 0,
+    x: -30,
+    transition: { duration: 0.25, ease: "easeIn" },
+  },
+};
 
+/* =====================================================
+   SETTINGS PAGE
+===================================================== */
 export default function Settings() {
   /* ---------------- THEME ---------------- */
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
-  /* ---------------- SIDEBAR ---------------- */
+  /* ---------------- ACTIVE TAB ---------------- */
   const [activeTab, setActiveTab] = useState("Account");
 
-  /* ---------------- SETTINGS STATES ---------------- */
+  /* ---------------- SETTINGS STATE ---------------- */
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [dragDrop, setDragDrop] = useState(true);
   const [resumeStrength, setResumeStrength] = useState(true);
   const [autoScrollWeak, setAutoScrollWeak] = useState(false);
   const [atsWarnings, setAtsWarnings] = useState(false);
-
   const [paperSize, setPaperSize] = useState("A4");
   const [editorView, setEditorView] = useState("comfortable");
 
@@ -44,9 +63,7 @@ export default function Settings() {
     }
   }, [darkMode]);
 
-  /* =====================================================
-     SIDEBAR ITEMS
-     ===================================================== */
+  /* ---------------- SIDEBAR TABS ---------------- */
   const tabs = [
     { key: "Account", label: "Account", icon: User },
     { key: "Appearance", label: "Appearance", icon: Palette },
@@ -57,8 +74,8 @@ export default function Settings() {
   ];
 
   /* =====================================================
-     CONTENT RENDER
-     ===================================================== */
+     TAB CONTENT (ANIMATED)
+  ===================================================== */
   const renderContent = () => {
     switch (activeTab) {
       case "Account":
@@ -75,12 +92,7 @@ export default function Settings() {
       case "Appearance":
         return (
           <Section title="Appearance">
-            <Toggle
-              label="Dark Mode"
-              value={darkMode}
-              onChange={setDarkMode}
-            />
-
+            <Toggle label="Dark Mode" value={darkMode} onChange={setDarkMode} />
             <Select
               label="Editor View"
               value={editorView}
@@ -105,10 +117,9 @@ export default function Settings() {
                 { label: "US Letter", value: "US" },
               ]}
             />
-
             <Toggle label="Auto-save while editing" value={autoSave} onChange={setAutoSave} />
             <Toggle label="Enable section drag & drop" value={dragDrop} onChange={setDragDrop} />
-            <Toggle label="Show resume strength indicator" value={resumeStrength} onChange={setResumeStrength} />
+            <Toggle label="Resume strength indicator" value={resumeStrength} onChange={setResumeStrength} />
             <Toggle label="Auto-scroll to weak sections" value={autoScrollWeak} onChange={setAutoScrollWeak} />
             <Toggle label="ATS keyword warnings" value={atsWarnings} onChange={setAtsWarnings} />
           </Section>
@@ -150,18 +161,15 @@ export default function Settings() {
 
   /* =====================================================
      UI
-     ===================================================== */
+  ===================================================== */
   return (
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
 
-          {/* ================= SIDEBAR ================= */}
+          {/* SIDEBAR */}
           <aside className="w-64 bg-[#0F172A] text-slate-300 rounded-2xl p-5">
-            <h1 className="text-white text-lg font-semibold mb-6">
-              Settings
-            </h1>
-
+            <h1 className="text-white text-lg font-semibold mb-6">Settings</h1>
             <nav className="space-y-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -189,10 +197,20 @@ export default function Settings() {
             </nav>
           </aside>
 
-          {/* ================= CONTENT ================= */}
+          {/* CONTENT WITH ANIMATION */}
           <main className="flex-1">
-            <div className="bg-white dark:bg-[#0F172A] rounded-2xl p-8 shadow-sm">
-              {renderContent()}
+            <div className="bg-white dark:bg-[#0F172A] rounded-2xl p-8 shadow-sm overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  variants={tabVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                >
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </main>
 
@@ -203,9 +221,8 @@ export default function Settings() {
 }
 
 /* =====================================================
-   REUSABLE COMPONENTS
-   ===================================================== */
-
+   REUSABLE UI PARTS
+===================================================== */
 function Section({ title, children, danger }) {
   return (
     <section>
@@ -221,11 +238,7 @@ function Toggle({ label, value, onChange }) {
   return (
     <div className="flex items-center justify-between">
       <span>{label}</span>
-      <input
-        type="checkbox"
-        checked={value}
-        onChange={() => onChange(!value)}
-      />
+      <input type="checkbox" checked={value} onChange={() => onChange(!value)} />
     </div>
   );
 }
