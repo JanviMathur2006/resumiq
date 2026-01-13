@@ -11,38 +11,28 @@ import {
 import PageTransition from "../components/PageTransition";
 
 /* =====================================================
-   FRAMER MOTION VARIANTS
+   TAB ANIMATION
 ===================================================== */
 const tabVariants = {
-  initial: {
-    opacity: 0,
-    x: 30,
-  },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.35, ease: "easeOut" },
-  },
-  exit: {
-    opacity: 0,
-    x: -30,
-    transition: { duration: 0.25, ease: "easeIn" },
-  },
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, x: -30, transition: { duration: 0.2 } },
 };
 
 /* =====================================================
    SETTINGS PAGE
 ===================================================== */
 export default function Settings() {
+  /* ---------------- UI STATE ---------------- */
+  const [activeTab, setActiveTab] = useState("Account");
+  const [collapsed, setCollapsed] = useState(false);
+
   /* ---------------- THEME ---------------- */
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
-  /* ---------------- ACTIVE TAB ---------------- */
-  const [activeTab, setActiveTab] = useState("Account");
-
-  /* ---------------- SETTINGS STATE ---------------- */
+  /* ---------------- SETTINGS ---------------- */
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [dragDrop, setDragDrop] = useState(true);
@@ -63,7 +53,7 @@ export default function Settings() {
     }
   }, [darkMode]);
 
-  /* ---------------- SIDEBAR TABS ---------------- */
+  /* ---------------- SIDEBAR ITEMS ---------------- */
   const tabs = [
     { key: "Account", label: "Account", icon: User },
     { key: "Appearance", label: "Appearance", icon: Palette },
@@ -74,7 +64,7 @@ export default function Settings() {
   ];
 
   /* =====================================================
-     TAB CONTENT (ANIMATED)
+     TAB CONTENT
   ===================================================== */
   const renderContent = () => {
     switch (activeTab) {
@@ -167,10 +157,29 @@ export default function Settings() {
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
 
-          {/* SIDEBAR */}
-          <aside className="w-64 bg-[#0F172A] text-slate-300 rounded-2xl p-5">
-            <h1 className="text-white text-lg font-semibold mb-6">Settings</h1>
-            <nav className="space-y-1">
+          {/* ================= SIDEBAR ================= */}
+          <motion.aside
+            animate={{ width: collapsed ? 80 : 256 }}
+            transition={{ duration: 0.25 }}
+            className="bg-[#0F172A] text-slate-300 rounded-2xl p-3 flex flex-col"
+          >
+            {/* TOP */}
+            <div className="flex items-center justify-between px-2 mb-6">
+              {!collapsed && (
+                <span className="text-white font-semibold text-lg">
+                  Settings
+                </span>
+              )}
+              <button
+                onClick={() => setCollapsed(!collapsed)}
+                className="text-slate-400 hover:text-white"
+              >
+                {collapsed ? "➡" : "≡"}
+              </button>
+            </div>
+
+            {/* NAV */}
+            <nav className="space-y-1 flex-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const active = activeTab === tab.key;
@@ -179,7 +188,7 @@ export default function Settings() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition
+                    className={`relative group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition
                       ${
                         active
                           ? "bg-white text-black"
@@ -189,15 +198,32 @@ export default function Settings() {
                       }
                     `}
                   >
-                    <Icon size={18} />
-                    {tab.label}
+                    <Icon size={20} />
+
+                    <AnimatePresence>
+                      {!collapsed && (
+                        <motion.span
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -8 }}
+                        >
+                          {tab.label}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+
+                    {collapsed && (
+                      <span className="absolute left-full ml-3 px-2 py-1 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none">
+                        {tab.label}
+                      </span>
+                    )}
                   </button>
                 );
               })}
             </nav>
-          </aside>
+          </motion.aside>
 
-          {/* CONTENT WITH ANIMATION */}
+          {/* ================= CONTENT ================= */}
           <main className="flex-1">
             <div className="bg-white dark:bg-[#0F172A] rounded-2xl p-8 shadow-sm overflow-hidden">
               <AnimatePresence mode="wait">
@@ -221,7 +247,7 @@ export default function Settings() {
 }
 
 /* =====================================================
-   REUSABLE UI PARTS
+   REUSABLE COMPONENTS
 ===================================================== */
 function Section({ title, children, danger }) {
   return (
