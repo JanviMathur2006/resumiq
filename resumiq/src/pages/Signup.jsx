@@ -9,12 +9,45 @@ import { auth } from "../firebase";
 export default function Signup() {
   const navigate = useNavigate();
 
+  /* ================= STATE ================= */
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /* ================= PASSWORD STRENGTH ================= */
+  const getPasswordStrength = (pwd) => {
+    let score = 0;
+    if (pwd.length >= 6) score++;
+    if (pwd.length >= 10) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    return score;
+  };
+
+  const strength = getPasswordStrength(password);
+
+  const strengthLabel = [
+    "Very weak",
+    "Weak",
+    "Fair",
+    "Good",
+    "Strong",
+    "Very strong",
+  ][strength];
+
+  const strengthColor = [
+    "bg-red-500",
+    "bg-red-500",
+    "bg-yellow-500",
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-green-600",
+  ][strength];
+
+  /* ================= SIGNUP ================= */
   const handleSignup = async () => {
     setError("");
 
@@ -59,7 +92,7 @@ export default function Signup() {
           {/* Resume Preview */}
           <div className="absolute top-24 left-12 bg-white rounded-3xl p-8 shadow-2xl w-[420px]">
             <div className="mb-6">
-              <div className="h-5 w-44 bg-slate-800 rounded-md mb-2" />
+              <div className="h-5 w-44 bg-slate-800 rounded mb-2" />
               <div className="h-3 w-60 bg-slate-300 rounded" />
             </div>
 
@@ -91,12 +124,11 @@ export default function Signup() {
             </div>
           </div>
 
-          {/* Bottom Text */}
           <div className="absolute bottom-14 left-12 text-white">
-            <h3 className="text-2xl font-semibold leading-tight">
+            <h3 className="text-2xl font-semibold">
               Build resumes recruiters trust
             </h3>
-            <p className="text-base opacity-80 mt-2">
+            <p className="opacity-80 mt-2">
               Your career starts here.
             </p>
           </div>
@@ -112,7 +144,7 @@ export default function Signup() {
           </p>
 
           {error && (
-            <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
               {error}
             </div>
           )}
@@ -123,7 +155,7 @@ export default function Signup() {
               placeholder="Full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
             />
 
             <input
@@ -131,16 +163,41 @@ export default function Signup() {
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
             />
 
-            <input
-              type="password"
-              placeholder="Password (min 6 characters)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            {/* PASSWORD + STRENGTH */}
+            <div>
+              <input
+                type="password"
+                placeholder="Password (min 6 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500"
+              />
+
+              {password && (
+                <div className="mt-3">
+                  <div className="flex gap-1 mb-1">
+                    {[...Array(6)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-1.5 flex-1 rounded-full ${
+                          i < strength ? strengthColor : "bg-slate-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-xs text-slate-500">
+                    Password strength:{" "}
+                    <span className="font-medium">
+                      {strengthLabel}
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <button
@@ -153,10 +210,7 @@ export default function Signup() {
 
           <p className="text-sm text-slate-600 mt-6 text-center">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-blue-600 font-medium hover:underline"
-            >
+            <Link to="/login" className="text-blue-600 hover:underline">
               Log in
             </Link>
           </p>
