@@ -5,7 +5,7 @@ import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
 import { resumeTypes } from "../data/resumeTypes";
 
-const TOTAL_SLIDES = 2;
+const TOTAL_SLIDES = 3; // 🔥 UPDATED
 
 export default function Home() {
   const sliderRef = useRef(null);
@@ -85,7 +85,7 @@ export default function Home() {
           </p>
         </motion.div>
 
-        {/* ================= SLIDER SECTION ================= */}
+        {/* ================= SLIDER ================= */}
         <div className="relative">
 
           {/* Left Arrow */}
@@ -128,7 +128,7 @@ export default function Home() {
           >
             <div className="flex gap-12">
 
-              {/* SLIDE 1 */}
+              {/* SLIDE 1 — CREATE */}
               <div className="snap-center min-w-full flex justify-center">
                 <Link to="/app/create" className="w-full max-w-4xl">
                   <motion.div
@@ -164,7 +164,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* SLIDE 2 */}
+              {/* SLIDE 2 — MY RESUMES */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   whileHover={{ y: -6 }}
@@ -190,13 +190,39 @@ export default function Home() {
                 </motion.div>
               </div>
 
+              {/* SLIDE 3 — RESUME SAMPLES 🔥 */}
+              <div className="snap-center min-w-full flex justify-center">
+                <motion.div
+                  whileHover={{ y: -6 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 280, damping: 22 }}
+                  className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                    flex flex-col items-center justify-center
+                    text-center px-10 cursor-pointer"
+                  onClick={() => navigate("/samples")}
+                >
+                  <h2 className="text-3xl font-semibold mb-3">
+                    Resume Samples
+                  </h2>
+
+                  <p className="text-gray-600 text-lg mb-8 max-w-xl">
+                    Explore recruiter-approved resume templates and examples.
+                  </p>
+
+                  <div className="px-8 py-3 rounded-xl bg-black text-white
+                    text-lg font-medium">
+                    View Samples →
+                  </div>
+                </motion.div>
+              </div>
+
             </div>
           </div>
         </div>
 
         {/* Dots */}
         <div className="flex justify-center gap-3 mt-6">
-          {[0, 1].map((i) => (
+          {[0, 1, 2].map((i) => (
             <button
               key={i}
               onClick={() => scrollToSlide(i)}

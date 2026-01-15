@@ -17,11 +17,13 @@ export default function AuthWrapper() {
     return () => unsubscribe();
   }, []);
 
-  // 🔄 While Firebase checks auth
+  // ⏳ While Firebase checks auth
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-lg">Checking authentication…</p>
+        <p className="text-gray-600 text-lg">
+          Checking authentication…
+        </p>
       </div>
     );
   }
@@ -37,6 +39,6 @@ export default function AuthWrapper() {
     );
   }
 
-  // ✅ Logged in → Allow access
+  // ✅ Logged in → allow access
   return <Outlet />;
 }

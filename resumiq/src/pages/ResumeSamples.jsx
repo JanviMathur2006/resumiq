@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { resumeTypeSamples } from "../data/resumeTypeSamples";
+import { useNavigate } from "react-router-dom";
 
 /* =======================
    FILTER TABS
@@ -14,6 +15,7 @@ const TABS = [
 
 export default function ResumeSamples() {
   const [activeTab, setActiveTab] = useState("all");
+  const navigate = useNavigate();
 
   const samplesToShow =
     activeTab === "all"
@@ -24,23 +26,25 @@ export default function ResumeSamples() {
 
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-6 py-12">
 
         {/* HEADER */}
-        <h1 className="text-3xl font-semibold text-gray-900 text-center mb-2">
-          Resume Samples
-        </h1>
-        <p className="text-gray-600 text-center mb-10">
-          Explore professionally written resume samples for different career stages.
-        </p>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-semibold text-gray-900 mb-3">
+            Resume Samples
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Recruiter-approved resume examples for every career stage.
+          </p>
+        </div>
 
         {/* FILTER TABS */}
-        <div className="flex justify-center gap-3 mb-12 flex-wrap">
+        <div className="flex justify-center gap-3 mb-14 flex-wrap">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition
+              className={`px-5 py-2 rounded-full text-sm font-medium transition
                 ${
                   activeTab === tab.id
                     ? "bg-black text-white"
@@ -54,20 +58,50 @@ export default function ResumeSamples() {
         </div>
 
         {/* SAMPLE CARDS */}
-        <div className="space-y-12">
+        <div className="grid grid-cols-1 gap-12">
           {samplesToShow.map((sample, index) => (
             <div
               key={index}
-              className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm"
+              className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10"
             >
-              <h2 className="text-2xl font-semibold text-gray-900 mb-8">
-                {sample.title}
-              </h2>
+              {/* CARD HEADER */}
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-6">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                    {sample.title}
+                  </h2>
+                  <p className="text-gray-600">
+                    Ideal for {sample.bestFor}
+                  </p>
+                </div>
 
-              <SampleBlock title="Summary" items={sample.summary} />
-              <SampleBlock title="Experience" items={sample.experience} />
-              <SampleBlock title="Projects" items={sample.projects} />
-              <SampleBlock title="Skills" items={sample.skills} />
+                <div className="flex gap-3">
+                  <button
+                    className="px-5 py-2 rounded-xl border border-gray-300
+                      text-gray-700 hover:bg-gray-100 transition"
+                  >
+                    Preview
+                  </button>
+
+                  <button
+                    onClick={() => navigate("/app/create")}
+                    className="px-6 py-2 rounded-xl bg-black text-white
+                      hover:bg-gray-800 transition"
+                  >
+                    Use Template →
+                  </button>
+                </div>
+              </div>
+
+              {/* SAMPLE CONTENT */}
+              <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
+
+                <SampleBlock title="Professional Summary" items={sample.summary} />
+                <SampleBlock title="Work Experience" items={sample.experience} />
+                <SampleBlock title="Projects" items={sample.projects} />
+                <SampleBlock title="Skills" items={sample.skills} />
+
+              </div>
             </div>
           ))}
         </div>
@@ -84,13 +118,15 @@ function SampleBlock({ title, items }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="mb-8">
+    <div>
       <h3 className="text-lg font-semibold text-gray-800 mb-3">
         {title}
       </h3>
-      <ul className="list-disc list-inside text-gray-700 space-y-1">
+      <ul className="space-y-2 text-gray-700">
         {items.map((item, i) => (
-          <li key={i}>{item}</li>
+          <li key={i} className="leading-relaxed">
+            • {item}
+          </li>
         ))}
       </ul>
     </div>

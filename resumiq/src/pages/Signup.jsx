@@ -47,7 +47,7 @@ export default function Signup() {
     "bg-green-600",
   ][strength];
 
-  /* ================= SIGNUP ================= */
+  /* ================= SIGNUP HANDLER ================= */
   const handleSignup = async () => {
     setError("");
 
@@ -74,7 +74,8 @@ export default function Signup() {
         displayName: name,
       });
 
-      navigate("/app");
+      // 👉 Redirect to onboarding (IMPORTANT)
+      navigate("/onboarding");
     } catch {
       setError("Email already in use or invalid details");
     } finally {

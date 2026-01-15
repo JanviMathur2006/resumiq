@@ -13,14 +13,15 @@ import { AnimatePresence } from "framer-motion";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Onboarding from "./pages/Onboarding";
 
 /* =======================
    PROTECTED PAGES
 ======================= */
 import Home from "./pages/Home";
-import CreateResumes from "./pages/CreateResumes"; // resume type selection
-import ResumeBuilder from "./pages/ResumeBuilder"; // editor
-import ResumeSamples from "./pages/ResumeSamples"; // ✅ NEW: samples page
+import CreateResumes from "./pages/CreateResumes";
+import ResumeBuilder from "./pages/ResumeBuilder";
+import ResumeSamples from "./pages/ResumeSamples";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
@@ -30,46 +31,37 @@ import Settings from "./pages/Settings";
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
+/* =======================
+   ANIMATED ROUTES
+======================= */
 function AnimatedRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        
-        {/* =======================
-            PUBLIC ROUTES
-        ======================= */}
+
+        {/* PUBLIC */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/onboarding" element={<Onboarding />} />
 
-        {/* =======================
-            PROTECTED ROUTES
-        ======================= */}
+        {/* PROTECTED */}
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
 
-            {/* Dashboard */}
             <Route path="/app" element={<Home />} />
-
-            {/* Create Resume Flow */}
             <Route path="/app/create" element={<CreateResumes />} />
             <Route path="/app/builder" element={<ResumeBuilder />} />
-
-            {/* ✅ Resume Samples Page */}
             <Route path="/app/samples" element={<ResumeSamples />} />
-
-            {/* User Pages */}
             <Route path="/app/profile" element={<Profile />} />
             <Route path="/app/settings" element={<Settings />} />
 
           </Route>
         </Route>
 
-        {/* =======================
-            FALLBACK
-        ======================= */}
+        {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
