@@ -27,6 +27,14 @@ const cardVariant = {
   },
 };
 
+// 🔥 ERROR SHAKE
+const shakeVariant = {
+  shake: {
+    x: [-10, 10, -8, 8, -4, 4, 0],
+    transition: { duration: 0.4 },
+  },
+};
+
 const itemVariant = {
   hidden: { opacity: 0, y: 14 },
   visible: {
@@ -52,6 +60,7 @@ export default function Signup() {
       return;
     }
 
+    setError("");
     navigate("/onboarding");
   };
 
@@ -68,7 +77,7 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
 
-      {/* Animated Card (NO GLOW) */}
+      {/* CARD */}
       <motion.div
         initial="hidden"
         animate="visible"
@@ -92,9 +101,12 @@ export default function Signup() {
           Start building your professional resume
         </motion.p>
 
+        {/* 🔴 ERROR MESSAGE WITH SHAKE */}
         {error && (
           <motion.p
-            variants={itemVariant}
+            key={error}
+            variants={shakeVariant}
+            animate="shake"
             className="text-red-500 text-sm mb-4"
           >
             {error}
