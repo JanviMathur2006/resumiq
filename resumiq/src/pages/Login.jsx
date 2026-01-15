@@ -27,6 +27,14 @@ const cardVariant = {
   },
 };
 
+// 🔥 SHAKE ANIMATION (ERROR)
+const shakeVariant = {
+  shake: {
+    x: [-10, 10, -8, 8, -4, 4, 0],
+    transition: { duration: 0.4 },
+  },
+};
+
 const itemVariant = {
   hidden: { opacity: 0, y: 14 },
   visible: {
@@ -45,10 +53,13 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError("Please fill in all fields");
       return;
     }
+
+    setError("");
     navigate("/app");
   };
 
@@ -65,7 +76,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
 
-      {/* Animated Card (NO GLOW) */}
+      {/* CARD WITH SHAKE */}
       <motion.div
         initial="hidden"
         animate="visible"
@@ -89,9 +100,12 @@ export default function Login() {
           Log in to continue building your resume
         </motion.p>
 
+        {/* 🔴 ERROR MESSAGE */}
         {error && (
           <motion.p
-            variants={itemVariant}
+            key={error} // 👈 important to re-trigger animation
+            variants={shakeVariant}
+            animate="shake"
             className="text-red-500 text-sm mb-4"
           >
             {error}
