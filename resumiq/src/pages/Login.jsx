@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signInWithPopup } from "firebase/auth";
+import { motion } from "framer-motion";
+
+import { auth, googleProvider } from "../firebase";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -8,6 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // 🔐 Email login (mock for now)
   const handleLogin = (e) => {
     e.preventDefault();
 
@@ -16,15 +21,33 @@ export default function Login() {
       return;
     }
 
-    // 🔐 replace with real auth later
+    // replace with real email/password auth later
     navigate("/app");
+  };
+
+  // 🔐 Google login
+  const handleGoogleLogin = async () => {
+    setError("");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate("/app");
+    } catch (err) {
+      console.error(err);
+      setError("Google sign-in failed. Please try again.");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
-      
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        
+
+      {/* 🔥 Animated Login Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8"
+      >
+
         {/* HEADER */}
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Welcome back
@@ -33,44 +56,54 @@ export default function Login() {
           Log in to continue building your resume
         </p>
 
-        {/* ERROR */}
+        {/* ERROR MESSAGE */}
         {error && (
           <p className="text-red-500 text-sm mb-4">{error}</p>
         )}
 
-        {/* FORM */}
+        {/* GOOGLE SIGN-IN */}
+        <button
+          onClick={handleGoogleLogin}
+          className="w-full mb-5 flex items-center justify-center gap-3
+            border border-gray-300 rounded-xl py-3
+            hover:bg-gray-100 transition"
+        >
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          <span className="font-medium text-gray-700">
+            Continue with Google
+          </span>
+        </button>
+
+        {/* DIVIDER */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-sm text-gray-400">or</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* EMAIL LOGIN */}
         <form onSubmit={handleLogin} className="space-y-5">
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-black"
+          />
 
-          <div>
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="text-sm text-gray-600 hover:underline"
-            >
-              Forgot password?
-            </button>
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-black"
+          />
 
           <button
             type="submit"
@@ -89,7 +122,7 @@ export default function Login() {
           </Link>
         </p>
 
-      </div>
+      </motion.div>
     </div>
   );
 }
