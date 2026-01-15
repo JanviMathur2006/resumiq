@@ -8,11 +8,7 @@ import { auth, googleProvider } from "../firebase";
    ANIMATION VARIANTS
 ====================== */
 const cardVariant = {
-  hidden: {
-    opacity: 0,
-    y: 60,
-    scale: 0.96,
-  },
+  hidden: { opacity: 0, y: 60, scale: 0.96 },
   visible: {
     opacity: 1,
     y: 0,
@@ -27,7 +23,6 @@ const cardVariant = {
   },
 };
 
-// 🔥 ERROR SHAKE
 const shakeVariant = {
   shake: {
     x: [-10, 10, -8, 8, -4, 4, 0],
@@ -44,6 +39,15 @@ const itemVariant = {
   },
 };
 
+const inputClass = (hasError) =>
+  `w-full px-4 py-3 rounded-xl border transition
+   ${
+     hasError
+       ? "border-red-500 focus:ring-2 focus:ring-red-500"
+       : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+   }
+   focus:outline-none`;
+
 export default function Signup() {
   const navigate = useNavigate();
 
@@ -51,12 +55,14 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [touched, setTouched] = useState({});
 
   const handleSignup = (e) => {
     e.preventDefault();
 
     if (!name || !email || !password) {
       setError("Please fill in all fields");
+      setTouched({ name: true, email: true, password: true });
       return;
     }
 
@@ -76,32 +82,20 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
-
-      {/* CARD */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={cardVariant}
-        whileHover={{ y: -2 }}
         className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8"
       >
-
-        {/* HEADER */}
-        <motion.h1
-          variants={itemVariant}
-          className="text-2xl font-semibold text-gray-900 mb-2"
-        >
+        <motion.h1 variants={itemVariant} className="text-2xl font-semibold mb-2">
           Create your account
         </motion.h1>
 
-        <motion.p
-          variants={itemVariant}
-          className="text-gray-600 mb-6"
-        >
+        <motion.p variants={itemVariant} className="text-gray-600 mb-6">
           Start building your professional resume
         </motion.p>
 
-        {/* 🔴 ERROR MESSAGE WITH SHAKE */}
         {error && (
           <motion.p
             key={error}
@@ -113,7 +107,7 @@ export default function Signup() {
           </motion.p>
         )}
 
-        {/* GOOGLE SIGN-UP */}
+        {/* GOOGLE SIGNUP */}
         <motion.button
           variants={itemVariant}
           onClick={handleGoogleSignup}
@@ -132,46 +126,39 @@ export default function Signup() {
         </motion.button>
 
         {/* DIVIDER */}
-        <motion.div
-          variants={itemVariant}
-          className="flex items-center gap-3 mb-5"
-        >
+        <motion.div variants={itemVariant} className="flex items-center gap-3 mb-5">
           <div className="flex-1 h-px bg-gray-200" />
           <span className="text-sm text-gray-400">or</span>
           <div className="flex-1 h-px bg-gray-200" />
         </motion.div>
 
         {/* FORM */}
-        <motion.form
-          variants={itemVariant}
-          onSubmit={handleSignup}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSignup} className="space-y-5">
           <input
             type="text"
             placeholder="Full name"
             value={name}
+            onBlur={() => setTouched((t) => ({ ...t, name: true }))}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass(touched.name && !name)}
           />
 
           <input
             type="email"
             placeholder="Email address"
             value={email}
+            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass(touched.email && !email)}
           />
 
           <input
             type="password"
             placeholder="Password"
             value={password}
+            onBlur={() => setTouched((t) => ({ ...t, password: true }))}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass(touched.password && !password)}
           />
 
           <button
@@ -181,19 +168,14 @@ export default function Signup() {
           >
             Create account
           </button>
-        </motion.form>
+        </form>
 
-        {/* FOOTER */}
-        <motion.p
-          variants={itemVariant}
-          className="text-center text-gray-600 mt-6 text-sm"
-        >
+        <motion.p variants={itemVariant} className="text-center text-gray-600 mt-6 text-sm">
           Already have an account?{" "}
-          <Link to="/login" className="text-black font-medium hover:underline">
+          <Link to="/login" className="font-medium hover:underline">
             Log in
           </Link>
         </motion.p>
-
       </motion.div>
     </div>
   );
