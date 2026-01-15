@@ -36,7 +36,7 @@ export default function PageTransition({ children }) {
       className="min-h-screen w-full"
       style={{
         willChange: "opacity, filter, transform",
-        backgroundColor: "rgba(246,247,251,0.95)", // 👈 forces visibility
+        backgroundColor: "rgba(246,247,251,0.95)",
       }}
     >
       {children}
