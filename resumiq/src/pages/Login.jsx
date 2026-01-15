@@ -10,8 +10,8 @@ import { auth, googleProvider } from "../firebase";
 const cardVariant = {
   hidden: {
     opacity: 0,
-    y: 80,
-    scale: 0.9,
+    y: 60,
+    scale: 0.96,
   },
   visible: {
     opacity: 1,
@@ -19,9 +19,8 @@ const cardVariant = {
     scale: 1,
     transition: {
       type: "spring",
-      stiffness: 120,
-      damping: 18,
-      mass: 0.8,
+      stiffness: 110,
+      damping: 20,
       when: "beforeChildren",
       staggerChildren: 0.12,
     },
@@ -29,7 +28,7 @@ const cardVariant = {
 };
 
 const itemVariant = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 14 },
   visible: {
     opacity: 1,
     y: 0,
@@ -66,119 +65,111 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
 
-      {/* 🌊 BLUE GLOW WRAPPER */}
+      {/* Animated Card (NO GLOW) */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={cardVariant}
-        whileHover={{ rotateX: 2, rotateY: -2 }}
-        className="relative w-full max-w-md"
+        whileHover={{ y: -2 }}
+        className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8"
       >
-        {/* BLUE GLOW */}
-        <div
-          className="absolute -inset-1 rounded-3xl
-          bg-gradient-to-r from-blue-500/40 via-sky-400/40 to-cyan-400/40
-          blur-xl opacity-70 animate-pulse"
-        />
 
-        {/* CARD */}
-        <div className="relative bg-white rounded-3xl shadow-2xl p-8">
+        {/* HEADER */}
+        <motion.h1
+          variants={itemVariant}
+          className="text-2xl font-semibold text-gray-900 mb-2"
+        >
+          Welcome back
+        </motion.h1>
 
-          <motion.h1
-            variants={itemVariant}
-            className="text-2xl font-semibold text-gray-900 mb-2"
-          >
-            Welcome back
-          </motion.h1>
+        <motion.p
+          variants={itemVariant}
+          className="text-gray-600 mb-6"
+        >
+          Log in to continue building your resume
+        </motion.p>
 
+        {error && (
           <motion.p
             variants={itemVariant}
-            className="text-gray-600 mb-6"
+            className="text-red-500 text-sm mb-4"
           >
-            Log in to continue building your resume
+            {error}
           </motion.p>
+        )}
 
-          {error && (
-            <motion.p
-              variants={itemVariant}
-              className="text-red-500 text-sm mb-4"
-            >
-              {error}
-            </motion.p>
-          )}
+        {/* GOOGLE LOGIN */}
+        <motion.button
+          variants={itemVariant}
+          onClick={handleGoogleLogin}
+          className="w-full mb-5 flex items-center justify-center gap-3
+            border border-gray-300 rounded-xl py-3
+            hover:bg-gray-100 transition"
+        >
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          <span className="font-medium text-gray-700">
+            Continue with Google
+          </span>
+        </motion.button>
 
-          {/* GOOGLE LOGIN */}
-          <motion.button
-            variants={itemVariant}
-            onClick={handleGoogleLogin}
-            className="w-full mb-5 flex items-center justify-center gap-3
-              border border-gray-300 rounded-xl py-3
-              hover:bg-gray-100 transition"
+        {/* DIVIDER */}
+        <motion.div
+          variants={itemVariant}
+          className="flex items-center gap-3 mb-5"
+        >
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-sm text-gray-400">or</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </motion.div>
+
+        {/* FORM */}
+        <motion.form
+          variants={itemVariant}
+          onSubmit={handleLogin}
+          className="space-y-5"
+        >
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          <button
+            type="submit"
+            className="w-full py-3 rounded-xl bg-black text-white
+              text-lg font-medium hover:bg-gray-800 transition"
           >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google"
-              className="w-5 h-5"
-            />
-            <span className="font-medium text-gray-700">
-              Continue with Google
-            </span>
-          </motion.button>
+            Login
+          </button>
+        </motion.form>
 
-          {/* DIVIDER */}
-          <motion.div
-            variants={itemVariant}
-            className="flex items-center gap-3 mb-5"
-          >
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-sm text-gray-400">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </motion.div>
+        {/* FOOTER */}
+        <motion.p
+          variants={itemVariant}
+          className="text-center text-gray-600 mt-6 text-sm"
+        >
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-black font-medium hover:underline">
+            Create one
+          </Link>
+        </motion.p>
 
-          {/* FORM */}
-          <motion.form
-            variants={itemVariant}
-            onSubmit={handleLogin}
-            className="space-y-5"
-          >
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <button
-              type="submit"
-              className="w-full py-3 rounded-xl bg-black text-white
-                text-lg font-medium hover:bg-gray-800 transition"
-            >
-              Login
-            </button>
-          </motion.form>
-
-          <motion.p
-            variants={itemVariant}
-            className="text-center text-gray-600 mt-6 text-sm"
-          >
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-black font-medium hover:underline">
-              Create one
-            </Link>
-          </motion.p>
-
-        </div>
       </motion.div>
     </div>
   );
