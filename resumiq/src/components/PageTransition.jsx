@@ -3,24 +3,24 @@ import { motion } from "framer-motion";
 const variants = {
   initial: {
     opacity: 0,
-    filter: "blur(4px)",
-    scale: 0.99,
+    filter: "blur(16px)",
+    scale: 0.96,
   },
   animate: {
     opacity: 1,
     filter: "blur(0px)",
     scale: 1,
     transition: {
-      duration: 0.35,
+      duration: 0.7,
       ease: "easeOut",
     },
   },
   exit: {
     opacity: 0,
-    filter: "blur(4px)",
-    scale: 0.99,
+    filter: "blur(16px)",
+    scale: 0.96,
     transition: {
-      duration: 0.25,
+      duration: 0.7,
       ease: "easeIn",
     },
   },
@@ -33,8 +33,11 @@ export default function PageTransition({ children }) {
       initial="initial"
       animate="animate"
       exit="exit"
-      style={{ willChange: "opacity, filter, transform" }}
-      className="h-full"
+      className="min-h-screen w-full"
+      style={{
+        willChange: "opacity, filter, transform",
+        backgroundColor: "rgba(246,247,251,0.95)", // 👈 forces visibility
+      }}
     >
       {children}
     </motion.div>
