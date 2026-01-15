@@ -66,7 +66,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
 
-      {/* 🌟 GLOW WRAPPER */}
+      {/* 🌊 BLUE GLOW WRAPPER */}
       <motion.div
         initial="hidden"
         animate="visible"
@@ -74,9 +74,10 @@ export default function Login() {
         whileHover={{ rotateX: 2, rotateY: -2 }}
         className="relative w-full max-w-md"
       >
-        {/* Glow */}
-        <div className="absolute -inset-1 rounded-3xl
-          bg-gradient-to-r from-indigo-500/40 via-purple-500/40 to-pink-500/40
+        {/* BLUE GLOW */}
+        <div
+          className="absolute -inset-1 rounded-3xl
+          bg-gradient-to-r from-blue-500/40 via-sky-400/40 to-cyan-400/40
           blur-xl opacity-70 animate-pulse"
         />
 
@@ -106,7 +107,7 @@ export default function Login() {
             </motion.p>
           )}
 
-          {/* GOOGLE */}
+          {/* GOOGLE LOGIN */}
           <motion.button
             variants={itemVariant}
             onClick={handleGoogleLogin}
@@ -146,7 +147,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-black"
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
@@ -155,7 +156,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-300
-                focus:outline-none focus:ring-2 focus:ring-black"
+                focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <button
