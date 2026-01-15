@@ -8,11 +8,7 @@ import { auth, googleProvider } from "../firebase";
    ANIMATION VARIANTS
 ====================== */
 const cardVariant = {
-  hidden: {
-    opacity: 0,
-    y: 60,
-    scale: 0.96,
-  },
+  hidden: { opacity: 0, y: 60, scale: 0.96 },
   visible: {
     opacity: 1,
     y: 0,
@@ -27,7 +23,6 @@ const cardVariant = {
   },
 };
 
-// 🔥 SHAKE ANIMATION (ERROR)
 const shakeVariant = {
   shake: {
     x: [-10, 10, -8, 8, -4, 4, 0],
@@ -44,18 +39,29 @@ const itemVariant = {
   },
 };
 
+const inputClass = (hasError) =>
+  `w-full px-4 py-3 rounded-xl border transition
+   ${
+     hasError
+       ? "border-red-500 focus:ring-2 focus:ring-red-500"
+       : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+   }
+   focus:outline-none`;
+
 export default function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [touched, setTouched] = useState({});
 
   const handleLogin = (e) => {
     e.preventDefault();
 
     if (!email || !password) {
       setError("Please fill in all fields");
+      setTouched({ email: true, password: true });
       return;
     }
 
@@ -63,47 +69,25 @@ export default function Login() {
     navigate("/app");
   };
 
-  const handleGoogleLogin = async () => {
-    setError("");
-    try {
-      await signInWithPopup(auth, googleProvider);
-      navigate("/app");
-    } catch {
-      setError("Google sign-in failed");
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
-
-      {/* CARD WITH SHAKE */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={cardVariant}
-        whileHover={{ y: -2 }}
         className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8"
       >
-
-        {/* HEADER */}
-        <motion.h1
-          variants={itemVariant}
-          className="text-2xl font-semibold text-gray-900 mb-2"
-        >
+        <motion.h1 variants={itemVariant} className="text-2xl font-semibold mb-2">
           Welcome back
         </motion.h1>
 
-        <motion.p
-          variants={itemVariant}
-          className="text-gray-600 mb-6"
-        >
+        <motion.p variants={itemVariant} className="text-gray-600 mb-6">
           Log in to continue building your resume
         </motion.p>
 
-        {/* 🔴 ERROR MESSAGE */}
         {error && (
           <motion.p
-            key={error} // 👈 important to re-trigger animation
+            key={error}
             variants={shakeVariant}
             animate="shake"
             className="text-red-500 text-sm mb-4"
@@ -112,78 +96,39 @@ export default function Login() {
           </motion.p>
         )}
 
-        {/* GOOGLE LOGIN */}
-        <motion.button
-          variants={itemVariant}
-          onClick={handleGoogleLogin}
-          className="w-full mb-5 flex items-center justify-center gap-3
-            border border-gray-300 rounded-xl py-3
-            hover:bg-gray-100 transition"
-        >
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            className="w-5 h-5"
-          />
-          <span className="font-medium text-gray-700">
-            Continue with Google
-          </span>
-        </motion.button>
-
-        {/* DIVIDER */}
-        <motion.div
-          variants={itemVariant}
-          className="flex items-center gap-3 mb-5"
-        >
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-sm text-gray-400">or</span>
-          <div className="flex-1 h-px bg-gray-200" />
-        </motion.div>
-
-        {/* FORM */}
-        <motion.form
-          variants={itemVariant}
-          onSubmit={handleLogin}
-          className="space-y-5"
-        >
+        <form onSubmit={handleLogin} className="space-y-5">
           <input
             type="email"
             placeholder="Email address"
             value={email}
+            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass(touched.email && !email)}
           />
 
           <input
             type="password"
             placeholder="Password"
             value={password}
+            onBlur={() => setTouched((t) => ({ ...t, password: true }))}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300
-              focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputClass(touched.password && !password)}
           />
 
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-black text-white
-              text-lg font-medium hover:bg-gray-800 transition"
+            className="w-full py-3 rounded-xl bg-black text-white text-lg font-medium hover:bg-gray-800 transition"
           >
             Login
           </button>
-        </motion.form>
+        </form>
 
-        {/* FOOTER */}
-        <motion.p
-          variants={itemVariant}
-          className="text-center text-gray-600 mt-6 text-sm"
-        >
+        <p className="text-center text-gray-600 mt-6 text-sm">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-black font-medium hover:underline">
+          <Link to="/signup" className="font-medium hover:underline">
             Create one
           </Link>
-        </motion.p>
-
+        </p>
       </motion.div>
     </div>
   );
