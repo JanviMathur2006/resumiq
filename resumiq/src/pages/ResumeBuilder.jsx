@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import BuilderTransition from "../components/BuilderTransition";
 
 /* ===================================================== */
 /* =================== CONSTANTS ======================= */
@@ -242,185 +243,187 @@ export default function ResumeBuilder() {
   /* ===================================================== */
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
+    <BuilderTransition>
+      <div className="max-w-5xl mx-auto px-6 py-10">
 
-      <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
+        <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
 
-      {/* ===== Versions ===== */}
-      <Box>
-        <Row between>
-          <strong>Resume Versions</strong>
-          <button onClick={addVersion}>+ New</button>
-        </Row>
-
-        {activeVersions.map(v => (
-          <Row key={v.id} between>
-            <input
-              value={v.name}
-              onChange={e => renameVersion(v.id, e.target.value)}
-            />
-            <div>
-              <button onClick={() => setActiveId(v.id)}>Open</button>
-              <button onClick={() => softDeleteVersion(v.id)} style={{ color: "red" }}>
-                Delete
-              </button>
-            </div>
-          </Row>
-        ))}
-      </Box>
-
-      {/* ===== Trash ===== */}
-      {deletedVersions.length > 0 && (
+        {/* ===== Versions ===== */}
         <Box>
-          <strong>Trash</strong>
-          {deletedVersions.map(v => (
+          <Row between>
+            <strong>Resume Versions</strong>
+            <button onClick={addVersion}>+ New</button>
+          </Row>
+
+          {activeVersions.map(v => (
             <Row key={v.id} between>
-              <span>{v.name}</span>
+              <input
+                value={v.name}
+                onChange={e => renameVersion(v.id, e.target.value)}
+              />
               <div>
-                <button onClick={() => restoreVersion(v.id)}>Restore</button>
-                <button onClick={() => deleteForever(v.id)} style={{ color: "red" }}>
-                  Delete Forever
+                <button onClick={() => setActiveId(v.id)}>Open</button>
+                <button onClick={() => softDeleteVersion(v.id)} style={{ color: "red" }}>
+                  Delete
                 </button>
               </div>
             </Row>
           ))}
         </Box>
-      )}
 
-      {/* ===== Score ===== */}
-      <div className="mb-6">
-        <p>Resume Strength: {score}%</p>
-        <div style={{ height: 6, background: "#e5e7eb" }}>
-          <div style={{ width: `${score}%`, height: 6, background: "black" }} />
+        {/* ===== Trash ===== */}
+        {deletedVersions.length > 0 && (
+          <Box>
+            <strong>Trash</strong>
+            {deletedVersions.map(v => (
+              <Row key={v.id} between>
+                <span>{v.name}</span>
+                <div>
+                  <button onClick={() => restoreVersion(v.id)}>Restore</button>
+                  <button onClick={() => deleteForever(v.id)} style={{ color: "red" }}>
+                    Delete Forever
+                  </button>
+                </div>
+              </Row>
+            ))}
+          </Box>
+        )}
+
+        {/* ===== Score ===== */}
+        <div className="mb-6">
+          <p>Resume Strength: {score}%</p>
+          <div style={{ height: 6, background: "#e5e7eb" }}>
+            <div style={{ width: `${score}%`, height: 6, background: "black" }} />
+          </div>
         </div>
-      </div>
 
-      {/* ===== Typography ===== */}
-      <Box>
-        <strong>Typography & Layout</strong>
+        {/* ===== Typography ===== */}
+        <Box>
+          <strong>Typography & Layout</strong>
 
-        <Row>
-          <select value={s.fontFamily} onChange={e => updateStyle("fontFamily", e.target.value)}>
-            {[
-              "Inter","Arial","Helvetica","Roboto","Calibri",
-              "Times New Roman","Georgia","Cambria","Garamond",
-              "Poppins","Montserrat","Source Sans Pro","IBM Plex Sans","Lato","Open Sans"
-            ].map(f => (
-              <option key={f} value={f}>{f}</option>
-            ))}
-          </select>
+          <Row>
+            <select value={s.fontFamily} onChange={e => updateStyle("fontFamily", e.target.value)}>
+              {[
+                "Inter","Arial","Helvetica","Roboto","Calibri",
+                "Times New Roman","Georgia","Cambria","Garamond",
+                "Poppins","Montserrat","Source Sans Pro","IBM Plex Sans","Lato","Open Sans"
+              ].map(f => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
 
-          <select value={s.fontSize} onChange={e => updateStyle("fontSize", Number(e.target.value))}>
-            {[11,12,13,14,15,16,17,18].map(n => (
-              <option key={n} value={n}>{n}px</option>
-            ))}
-          </select>
-        </Row>
-
-        <Row>
-          <label>Line Spacing</label>
-          <input
-            type="range"
-            min="1.2"
-            max="2"
-            step="0.1"
-            value={s.lineHeight}
-            onChange={e => updateStyle("lineHeight", Number(e.target.value))}
-          />
-          <span>{s.lineHeight}</span>
-        </Row>
-
-        <Row>
-          <label>Page Margin</label>
-          <input
-            type="range"
-            min="20"
-            max="80"
-            step="5"
-            value={s.margin}
-            onChange={e => updateStyle("margin", Number(e.target.value))}
-          />
-          <span>{s.margin}px</span>
-        </Row>
-      </Box>
-
-      {/* ===== History ===== */}
-      <Box>
-        <strong>Version History</strong>
-        {activeVersion.history.slice().reverse().map((h, i) => (
-          <Row key={i} between>
-            <span>{h.action}</span>
-            <button onClick={() =>
-              setVersions(prev =>
-                prev.map(v =>
-                  v.id === activeId
-                    ? { ...v, data: h.dataSnapshot, style: h.styleSnapshot }
-                    : v
-                )
-              )
-            }>
-              Restore
-            </button>
+            <select value={s.fontSize} onChange={e => updateStyle("fontSize", Number(e.target.value))}>
+              {[11,12,13,14,15,16,17,18].map(n => (
+                <option key={n} value={n}>{n}px</option>
+              ))}
+            </select>
           </Row>
-        ))}
-      </Box>
 
-      {/* ===== Edit ===== */}
-      {!previewMode && (
-        <>
-          <button onClick={undo}>Undo</button>
-          {Object.keys(EMPTY_RESUME).map(key => (
-            <Box key={key}>
-              <strong>{key.toUpperCase()}</strong>
-              <textarea
-                value={d[key]}
-                rows={4}
-                onChange={e => updateField(key, e.target.value)}
-              />
-            </Box>
+          <Row>
+            <label>Line Spacing</label>
+            <input
+              type="range"
+              min="1.2"
+              max="2"
+              step="0.1"
+              value={s.lineHeight}
+              onChange={e => updateStyle("lineHeight", Number(e.target.value))}
+            />
+            <span>{s.lineHeight}</span>
+          </Row>
+
+          <Row>
+            <label>Page Margin</label>
+            <input
+              type="range"
+              min="20"
+              max="80"
+              step="5"
+              value={s.margin}
+              onChange={e => updateStyle("margin", Number(e.target.value))}
+            />
+            <span>{s.margin}px</span>
+          </Row>
+        </Box>
+
+        {/* ===== History ===== */}
+        <Box>
+          <strong>Version History</strong>
+          {activeVersion.history.slice().reverse().map((h, i) => (
+            <Row key={i} between>
+              <span>{h.action}</span>
+              <button onClick={() =>
+                setVersions(prev =>
+                  prev.map(v =>
+                    v.id === activeId
+                      ? { ...v, data: h.dataSnapshot, style: h.styleSnapshot }
+                      : v
+                  )
+                )
+              }>
+                Restore
+              </button>
+            </Row>
           ))}
-        </>
-      )}
+        </Box>
 
-      {/* ===== Preview ===== */}
-      {previewMode && (
-        <div
-          ref={pdfRef}
-          style={{
-            fontFamily: s.fontFamily,
-            fontSize: s.fontSize,
-            lineHeight: s.lineHeight,
-            padding: s.margin,
-            background: "white",
-          }}
-        >
-          <h1>{d.name}</h1>
-          <p>{d.title}</p>
-          <p>{[d.email,d.phone,d.location,d.linkedin].filter(Boolean).join(" • ")}</p>
+        {/* ===== Edit ===== */}
+        {!previewMode && (
+          <>
+            <button onClick={undo}>Undo</button>
+            {Object.keys(EMPTY_RESUME).map(key => (
+              <Box key={key}>
+                <strong>{key.toUpperCase()}</strong>
+                <textarea
+                  value={d[key]}
+                  rows={4}
+                  onChange={e => updateField(key, e.target.value)}
+                />
+              </Box>
+            ))}
+          </>
+        )}
 
-          {Object.entries(d).map(([k,v]) =>
-            v && !["name","title","email","phone","location","linkedin"].includes(k) && (
-              <section key={k}>
-                <h3>{k.toUpperCase()}</h3>
-                <p>{v}</p>
-              </section>
-            )
-          )}
-        </div>
-      )}
+        {/* ===== Preview ===== */}
+        {previewMode && (
+          <div
+            ref={pdfRef}
+            style={{
+              fontFamily: s.fontFamily,
+              fontSize: s.fontSize,
+              lineHeight: s.lineHeight,
+              padding: s.margin,
+              background: "white",
+            }}
+          >
+            <h1>{d.name}</h1>
+            <p>{d.title}</p>
+            <p>{[d.email,d.phone,d.location,d.linkedin].filter(Boolean).join(" • ")}</p>
 
-      {/* ===== Actions ===== */}
-      <Row between>
-        <small>{saveStatus === "Saving…" ? "Saving…" : getSaveText()}</small>
-        <div>
-          <button onClick={() => setPreviewMode(!previewMode)}>
-            {previewMode ? "Edit" : "Preview"}
-          </button>
-          {previewMode && <button onClick={downloadPDF}>Download PDF</button>}
-        </div>
-      </Row>
+            {Object.entries(d).map(([k,v]) =>
+              v && !["name","title","email","phone","location","linkedin"].includes(k) && (
+                <section key={k}>
+                  <h3>{k.toUpperCase()}</h3>
+                  <p>{v}</p>
+                </section>
+              )
+            )}
+          </div>
+        )}
 
-    </div>
+        {/* ===== Actions ===== */}
+        <Row between>
+          <small>{saveStatus === "Saving…" ? "Saving…" : getSaveText()}</small>
+          <div>
+            <button onClick={() => setPreviewMode(!previewMode)}>
+              {previewMode ? "Edit" : "Preview"}
+            </button>
+            {previewMode && <button onClick={downloadPDF}>Download PDF</button>}
+          </div>
+        </Row>
+
+      </div>
+    </BuilderTransition>
   );
 }
 
