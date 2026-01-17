@@ -40,7 +40,7 @@ export default function Landing() {
 
               <div className="flex gap-4 justify-center">
 
-                {/* LOGIN — SOLID BLACK */}
+                {/* LOGIN */}
                 <button
                   onClick={() => navigate("/login")}
                   className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition"
@@ -48,10 +48,10 @@ export default function Landing() {
                   Login
                 </button>
 
-                {/* SIGN UP — BLACK OUTLINE */}
+                {/* SIGN UP */}
                 <button
                   onClick={() => navigate("/signup")}
-                  className="px-8 py-3 border-2 border-black text-black rounded-lg font-medium hover:bg-black hover:text-white transition"
+                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
                 >
                   Sign Up
                 </button>
