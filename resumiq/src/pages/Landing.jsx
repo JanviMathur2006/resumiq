@@ -6,6 +6,7 @@ export default function Landing() {
   const [showButtons, setShowButtons] = useState(false);
   const navigate = useNavigate();
 
+  // Show buttons after delay
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowButtons(true);
@@ -13,6 +14,18 @@ export default function Landing() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // ENTER → LOGIN shortcut
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter" && showButtons) {
+        navigate("/login");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showButtons, navigate]);
 
   return (
     <PageTransition>
@@ -53,6 +66,11 @@ export default function Landing() {
                   Sign Up
                 </button>
               </div>
+
+              {/* Hint */}
+              <p className="text-xs text-gray-400 mt-6">
+                Press <span className="font-medium">Enter</span> to login
+              </p>
             </div>
           )}
 
