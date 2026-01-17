@@ -6,7 +6,6 @@ export default function Landing() {
   const [showButtons, setShowButtons] = useState(false);
   const navigate = useNavigate();
 
-  // Show buttons after delay
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowButtons(true);
@@ -15,24 +14,12 @@ export default function Landing() {
     return () => clearTimeout(timer);
   }, []);
 
-  // ENTER → LOGIN shortcut
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter" && showButtons) {
-        navigate("/login");
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showButtons, navigate]);
-
   return (
     <PageTransition>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
 
-          {/* INTRO — FADE */}
+          {/* INTRO */}
           {!showButtons && (
             <div className="transition-opacity duration-700 opacity-100">
               <h1 className="text-5xl font-bold text-gray-900 mb-4">
@@ -44,7 +31,7 @@ export default function Landing() {
             </div>
           )}
 
-          {/* CTA — FADE + SCALE */}
+          {/* BUTTONS */}
           {showButtons && (
             <div className="transition-all duration-700 opacity-100 scale-100">
               <h2 className="text-3xl font-semibold text-gray-900 mb-8">
@@ -66,11 +53,6 @@ export default function Landing() {
                   Sign Up
                 </button>
               </div>
-
-              {/* Hint */}
-              <p className="text-xs text-gray-400 mt-6">
-                Press <span className="font-medium">Enter</span> to login
-              </p>
             </div>
           )}
 

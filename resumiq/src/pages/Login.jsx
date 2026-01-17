@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithPopup } from "firebase/auth";
 import { motion } from "framer-motion";
 import { auth, googleProvider } from "../firebase";
 
@@ -44,7 +43,7 @@ const inputClass = (hasError) =>
    ${
      hasError
        ? "border-red-500 focus:ring-2 focus:ring-red-500"
-       : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+       : "border-gray-300 focus:ring-2 focus:ring-black"
    }
    focus:outline-none`;
 
@@ -56,16 +55,20 @@ export default function Login() {
   const [error, setError] = useState("");
   const [touched, setTouched] = useState({});
 
+  const canSubmit = email.trim() !== "" && password.trim() !== "";
+
   const handleLogin = (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!canSubmit) {
       setError("Please fill in all fields");
       setTouched({ email: true, password: true });
       return;
     }
 
     setError("");
+
+    // 🔐 Auth logic goes here
     navigate("/app");
   };
 
@@ -77,11 +80,17 @@ export default function Login() {
         variants={cardVariant}
         className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8"
       >
-        <motion.h1 variants={itemVariant} className="text-2xl font-semibold mb-2">
+        <motion.h1
+          variants={itemVariant}
+          className="text-2xl font-semibold mb-2"
+        >
           Welcome back
         </motion.h1>
 
-        <motion.p variants={itemVariant} className="text-gray-600 mb-6">
+        <motion.p
+          variants={itemVariant}
+          className="text-gray-600 mb-6"
+        >
           Log in to continue building your resume
         </motion.p>
 
@@ -96,7 +105,9 @@ export default function Login() {
           </motion.p>
         )}
 
+        {/* FORM */}
         <form onSubmit={handleLogin} className="space-y-5">
+          {/* EMAIL */}
           <input
             type="email"
             placeholder="Email address"
@@ -106,6 +117,7 @@ export default function Login() {
             className={inputClass(touched.email && !email)}
           />
 
+          {/* PASSWORD */}
           <input
             type="password"
             placeholder="Password"
@@ -115,9 +127,15 @@ export default function Login() {
             className={inputClass(touched.password && !password)}
           />
 
+          {/* SUBMIT */}
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-black text-white text-lg font-medium hover:bg-gray-800 transition"
+            disabled={!canSubmit}
+            className={`w-full py-3 rounded-xl text-lg font-medium transition ${
+              canSubmit
+                ? "bg-black text-white hover:bg-gray-800"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
             Login
           </button>
