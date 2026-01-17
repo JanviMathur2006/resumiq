@@ -16,38 +16,49 @@ export default function Landing() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center px-4">
-        
-        {!showButtons ? (
-          <>
-            <h1 className="text-5xl font-bold mb-4">Resumiq</h1>
-            <p className="text-lg text-gray-600">
-              Create, manage & showcase your resume.
-            </p>
-          </>
-        ) : (
-          <>
-            <h2 className="text-3xl font-semibold mb-6">
-              Welcome to Resumiq
-            </h2>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="text-center">
+          
+          {!showButtons && (
+            <>
+              <h1 className="text-5xl font-bold text-gray-900 mb-4">
+                Resumiq
+              </h1>
+              <p className="text-lg text-gray-500">
+                Create, manage & showcase your resume
+              </p>
+            </>
+          )}
 
-            <div className="flex gap-4">
-              <button
-                onClick={() => navigate("/login")}
-                className="px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition"
-              >
-                Login
-              </button>
+          {showButtons && (
+            <>
+              <h2 className="text-3xl font-semibold text-gray-900 mb-8">
+                Welcome to Resumiq
+              </h2>
 
-              <button
-                onClick={() => navigate("/signup")}
-                className="px-6 py-3 border border-black rounded hover:bg-gray-200 transition"
-              >
-                Sign Up
-              </button>
-            </div>
-          </>
-        )}
+              <div className="flex gap-4 justify-center">
+                
+                {/* LOGIN */}
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-7 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition"
+                >
+                  Login
+                </button>
+
+                {/* SIGN UP — FIXED */}
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="px-7 py-3 border border-gray-400 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition"
+                >
+                  Sign Up
+                </button>
+
+              </div>
+            </>
+          )}
+
+        </div>
       </div>
     </PageTransition>
   );
