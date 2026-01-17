@@ -19,7 +19,7 @@ export default function Landing() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
 
-          {/* INTRO (FADE IN) */}
+          {/* INTRO — FADE */}
           {!showButtons && (
             <div className="transition-opacity duration-700 opacity-100">
               <h1 className="text-5xl font-bold text-gray-900 mb-4">
@@ -31,9 +31,9 @@ export default function Landing() {
             </div>
           )}
 
-          {/* BUTTONS (FADE + SLIDE UP) */}
+          {/* CTA — FADE + SCALE */}
           {showButtons && (
-            <div className="transition-all duration-700 opacity-100 translate-y-0">
+            <div className="transition-all duration-700 opacity-100 scale-100">
               <h2 className="text-3xl font-semibold text-gray-900 mb-8">
                 Welcome to Resumiq
               </h2>
@@ -41,14 +41,14 @@ export default function Landing() {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => navigate("/login")}
-                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition"
+                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition transform hover:scale-[1.03] active:scale-[0.97]"
                 >
                   Login
                 </button>
 
                 <button
                   onClick={() => navigate("/signup")}
-                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
+                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition transform hover:scale-[1.03] active:scale-[0.97]"
                 >
                   Sign Up
                 </button>
