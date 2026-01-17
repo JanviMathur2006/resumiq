@@ -18,7 +18,8 @@ export default function Landing() {
     <PageTransition>
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
-          
+
+          {/* INTRO / BRAND */}
           {!showButtons && (
             <>
               <h1 className="text-5xl font-bold text-gray-900 mb-4">
@@ -30,6 +31,7 @@ export default function Landing() {
             </>
           )}
 
+          {/* ACTIONS */}
           {showButtons && (
             <>
               <h2 className="text-3xl font-semibold text-gray-900 mb-8">
@@ -38,18 +40,18 @@ export default function Landing() {
 
               <div className="flex gap-4 justify-center">
                 
-                {/* LOGIN */}
+                {/* LOGIN — PRIMARY */}
                 <button
                   onClick={() => navigate("/login")}
-                  className="px-7 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition"
+                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition"
                 >
                   Login
                 </button>
 
-                {/* SIGN UP — FIXED */}
+                {/* SIGN UP — SECONDARY */}
                 <button
                   onClick={() => navigate("/signup")}
-                  className="px-7 py-3 border border-gray-400 text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition"
+                  className="px-8 py-3 bg-white text-black border border-gray-300 rounded-lg font-medium hover:bg-gray-100 transition"
                 >
                   Sign Up
                 </button>
