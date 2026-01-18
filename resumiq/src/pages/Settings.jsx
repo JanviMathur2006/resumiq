@@ -145,7 +145,7 @@ export default function Settings() {
     { key: "Resume", label: "Resume Preferences", icon: FileText },
     { key: "Notifications", label: "Notifications", icon: Bell },
     { key: "Security", label: "Security", icon: Lock },
-    { key: "Danger", label: "Danger Zone", icon: AlertTriangle, danger: true },
+    { key: "Danger", label: "Delete Account", icon: AlertTriangle, danger: true },
   ];
 
   /* =====================================================
@@ -158,7 +158,6 @@ export default function Settings() {
       case "Account":
         return (
           <Section title="Account">
-            {/* NAME */}
             <Input
               label="Name"
               value={name}
@@ -193,7 +192,6 @@ export default function Settings() {
               </div>
             )}
 
-            {/* EMAIL */}
             <Input label="Email" value={user.email} disabled />
 
             {!editingEmail ? (
@@ -246,21 +244,16 @@ export default function Settings() {
           </Section>
         );
 
-      case "Security":
-        return (
-          <Section title="Security">
-            <p className="text-sm text-gray-500">
-              Password and sensitive account settings.
-            </p>
-          </Section>
-        );
-
       case "Danger":
         return (
-          <Section title="Danger Zone" danger>
+          <Section title="Delete Account">
+            <p className="text-sm text-gray-500 mb-4">
+              This action is permanent and cannot be undone.
+            </p>
+
             <button
               onClick={handleDeleteAccount}
-              className="bg-red-600 text-white px-4 py-2 rounded"
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
             >
               Delete Account
             </button>
@@ -320,12 +313,10 @@ export default function Settings() {
 /* =====================================================
    REUSABLE COMPONENTS
 ===================================================== */
-function Section({ title, children, danger }) {
+function Section({ title, children }) {
   return (
     <section>
-      <h2 className={`text-lg font-semibold mb-6 ${danger ? "text-red-600" : ""}`}>
-        {title}
-      </h2>
+      <h2 className="text-lg font-semibold mb-6">{title}</h2>
       <div className="space-y-4">{children}</div>
     </section>
   );
