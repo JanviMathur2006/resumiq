@@ -248,9 +248,10 @@
 }
 
 /* ================================================= */
-/* SMOOTH THEME TRANSITION (NEW ADDITION) */
+/* SMOOTH THEME TRANSITION + BLUR (NEW ADDITION) */
 /* ================================================= */
 
+/* Smooth color & blur transitions */
 body,
 .page,
 .card,
@@ -263,9 +264,16 @@ button {
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
 }
 
+/* Slight blur when theme class changes */
+html.theme-switching body {
+  filter: blur(2px);
+}
+
+/* Prevent flash on load */
 html {
   transition: background-color 0.25s ease;
 }
