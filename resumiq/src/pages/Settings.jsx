@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User,
-  Lock,
   Palette,
-  Bell,
   FileText,
+  Bell,
+  Lock,
   AlertTriangle,
 } from "lucide-react";
 import {
@@ -19,9 +19,7 @@ import {
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
 
-/* =====================================================
-   TAB ANIMATION
-===================================================== */
+/* ================= TAB ANIMATION ================= */
 const tabVariants = {
   initial: { opacity: 0, x: 30 },
   animate: { opacity: 1, x: 0, transition: { duration: 0.3 } },
@@ -29,32 +27,39 @@ const tabVariants = {
 };
 
 export default function Settings() {
-  /* ---------------- AUTH ---------------- */
+  /* ================= AUTH ================= */
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  /* ---------------- NAME ---------------- */
+  /* ================= ACCOUNT ================= */
   const [name, setName] = useState("");
   const [editingName, setEditingName] = useState(false);
-  const [savingName, setSavingName] = useState(false);
 
-  /* ---------------- EMAIL ---------------- */
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
-  const [emailLoading, setEmailLoading] = useState(false);
   const [emailMessage, setEmailMessage] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
 
-  /* ---------------- UI ---------------- */
+  /* ================= UI ================= */
   const [activeTab, setActiveTab] = useState("Account");
-  const [collapsed, setCollapsed] = useState(false);
 
-  /* ---------------- THEME ---------------- */
+  /* ================= APPEARANCE ================= */
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
-  /* ---------------- AUTH EFFECT ---------------- */
+  /* ================= RESUME PREFS ================= */
+  const [paperSize, setPaperSize] = useState("A4");
+  const [autoSave, setAutoSave] = useState(true);
+  const [dragDrop, setDragDrop] = useState(true);
+  const [resumeStrength, setResumeStrength] = useState(true);
+
+  /* ================= NOTIFICATIONS ================= */
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [productUpdates, setProductUpdates] = useState(false);
+
+  /* ================= AUTH EFFECT ================= */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -64,7 +69,7 @@ export default function Settings() {
     return () => unsub();
   }, []);
 
-  /* ---------------- THEME EFFECT ---------------- */
+  /* ================= THEME EFFECT ================= */
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -75,36 +80,26 @@ export default function Settings() {
     }
   }, [darkMode]);
 
-  /* ---------------- SAVE NAME ---------------- */
+  /* ================= SAVE NAME ================= */
   const handleSaveName = async () => {
-    if (!user || !name.trim()) return;
-    try {
-      setSavingName(true);
-      await updateProfile(user, { displayName: name.trim() });
-      setEditingName(false);
-    } catch {
-      alert("Failed to update name");
-    } finally {
-      setSavingName(false);
-    }
+    if (!name.trim()) return;
+    await updateProfile(user, { displayName: name.trim() });
+    setEditingName(false);
   };
 
-  /* ---------------- CHANGE EMAIL ---------------- */
+  /* ================= CHANGE EMAIL ================= */
   const handleChangeEmail = async () => {
-    if (!user || !newEmail || !currentPassword) {
-      setEmailMessage("All fields are required");
+    if (!newEmail || !currentPassword) {
+      setEmailMessage("All fields required");
       return;
     }
 
     try {
       setEmailLoading(true);
-      setEmailMessage("");
-
       const credential = EmailAuthProvider.credential(
         user.email,
         currentPassword
       );
-
       await reauthenticateWithCredential(user, credential);
       await updateEmail(user, newEmail);
 
@@ -112,47 +107,32 @@ export default function Settings() {
       setEditingEmail(false);
       setNewEmail("");
       setCurrentPassword("");
-    } catch (err) {
-      if (err.code === "auth/wrong-password") {
-        setEmailMessage("Incorrect password");
-      } else if (err.code === "auth/email-already-in-use") {
-        setEmailMessage("Email already in use");
-      } else {
-        setEmailMessage("Failed to update email");
-      }
+    } catch {
+      setEmailMessage("Failed to update email");
     } finally {
       setEmailLoading(false);
     }
   };
 
-  /* ---------------- DELETE ACCOUNT ---------------- */
+  /* ================= DELETE ACCOUNT ================= */
   const handleDeleteAccount = async () => {
-    if (!user) return;
     if (!confirm("This will permanently delete your account. Continue?")) return;
-
-    try {
-      await deleteUser(user);
-      alert("Account deleted");
-    } catch {
-      alert("Please re-login before deleting your account");
-    }
+    await deleteUser(user);
   };
 
-  /* ---------------- SIDEBAR ---------------- */
+  /* ================= SIDEBAR ================= */
   const tabs = [
     { key: "Account", label: "Account", icon: User },
     { key: "Appearance", label: "Appearance", icon: Palette },
     { key: "Resume", label: "Resume Preferences", icon: FileText },
     { key: "Notifications", label: "Notifications", icon: Bell },
     { key: "Security", label: "Security", icon: Lock },
-    { key: "Danger", label: "Delete Account", icon: AlertTriangle, danger: true },
+    { key: "Delete", label: "Delete Account", icon: AlertTriangle, danger: true },
   ];
 
-  /* =====================================================
-     TAB CONTENT
-  ===================================================== */
+  /* ================= CONTENT ================= */
   const renderContent = () => {
-    if (loadingUser) return <p>Loading…</p>;
+    if (loadingUser) return null;
 
     switch (activeTab) {
       case "Account":
@@ -161,48 +141,24 @@ export default function Settings() {
             <Input
               label="Name"
               value={name}
-              onChange={setName}
               disabled={!editingName}
+              onChange={setName}
             />
 
             {!editingName ? (
-              <button
-                onClick={() => setEditingName(true)}
-                className="text-blue-600 text-sm"
-              >
-                Edit Name
-              </button>
+              <Action onClick={() => setEditingName(true)}>Edit Name</Action>
             ) : (
-              <div className="flex gap-3">
-                <button
-                  onClick={handleSaveName}
-                  className="px-4 py-2 bg-black text-white rounded"
-                >
-                  {savingName ? "Saving..." : "Save"}
-                </button>
-                <button
-                  onClick={() => {
-                    setName(user.displayName || "");
-                    setEditingName(false);
-                  }}
-                  className="px-4 py-2 bg-gray-200 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
+              <Action onClick={handleSaveName}>Save Name</Action>
             )}
 
             <Input label="Email" value={user.email} disabled />
 
             {!editingEmail ? (
-              <button
-                onClick={() => setEditingEmail(true)}
-                className="text-blue-600 text-sm"
-              >
+              <Action onClick={() => setEditingEmail(true)}>
                 Edit Email
-              </button>
+              </Action>
             ) : (
-              <div className="space-y-3">
+              <>
                 <Input
                   label="New Email"
                   value={newEmail}
@@ -214,43 +170,77 @@ export default function Settings() {
                   value={currentPassword}
                   onChange={setCurrentPassword}
                 />
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleChangeEmail}
-                    disabled={emailLoading}
-                    className="px-4 py-2 bg-black text-white rounded"
-                  >
-                    {emailLoading ? "Updating..." : "Save Email"}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingEmail(false);
-                      setNewEmail("");
-                      setCurrentPassword("");
-                      setEmailMessage("");
-                    }}
-                    className="px-4 py-2 bg-gray-200 rounded"
-                  >
-                    Cancel
-                  </button>
-                </div>
-
+                <Action onClick={handleChangeEmail}>
+                  {emailLoading ? "Saving..." : "Save Email"}
+                </Action>
                 {emailMessage && (
                   <p className="text-sm text-gray-600">{emailMessage}</p>
                 )}
-              </div>
+              </>
             )}
           </Section>
         );
 
-      case "Danger":
+      case "Appearance":
+        return (
+          <Section title="Appearance">
+            <Toggle
+              label="Dark Mode"
+              value={darkMode}
+              onChange={setDarkMode}
+            />
+          </Section>
+        );
+
+      case "Resume":
+        return (
+          <Section title="Resume Preferences">
+            <Select
+              label="Paper Size"
+              value={paperSize}
+              onChange={setPaperSize}
+              options={[
+                { label: "A4 (Recommended)", value: "A4" },
+                { label: "US Letter", value: "US" },
+              ]}
+            />
+            <Toggle label="Auto-save resumes" value={autoSave} onChange={setAutoSave} />
+            <Toggle label="Drag & drop sections" value={dragDrop} onChange={setDragDrop} />
+            <Toggle label="Resume strength indicator" value={resumeStrength} onChange={setResumeStrength} />
+          </Section>
+        );
+
+      case "Notifications":
+        return (
+          <Section title="Notifications">
+            <Toggle
+              label="Email notifications"
+              value={emailNotifications}
+              onChange={setEmailNotifications}
+            />
+            <Toggle
+              label="Product updates"
+              value={productUpdates}
+              onChange={setProductUpdates}
+            />
+          </Section>
+        );
+
+      case "Security":
+        return (
+          <Section title="Security">
+            <p className="text-sm text-gray-600">
+              Password changes and advanced security options can be added here.
+            </p>
+          </Section>
+        );
+
+      case "Delete":
         return (
           <Section title="Delete Account">
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               This action is permanent and cannot be undone.
             </p>
-
             <button
               onClick={handleDeleteAccount}
               className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -261,58 +251,45 @@ export default function Settings() {
         );
 
       default:
-        return <Section title={activeTab}>Coming soon</Section>;
+        return null;
     }
   };
 
-  /* =====================================================
-     UI
-  ===================================================== */
   return (
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
-
           {/* SIDEBAR */}
-          <motion.aside
-            animate={{ width: collapsed ? 80 : 256 }}
-            className="bg-[#0F172A] text-slate-300 rounded-2xl p-3"
-          >
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`w-full flex gap-3 px-3 py-2 rounded ${
-                    tab.danger ? "text-red-400" : ""
-                  }`}
-                >
-                  <Icon size={20} />
-                  {!collapsed && tab.label}
-                </button>
-              );
-            })}
-          </motion.aside>
+          <aside className="w-64 bg-[#0F172A] rounded-xl p-3 text-white">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded ${
+                  t.danger ? "text-red-400" : ""
+                }`}
+              >
+                <t.icon size={18} />
+                {t.label}
+              </button>
+            ))}
+          </aside>
 
           {/* CONTENT */}
-          <main className="flex-1 bg-white dark:bg-[#0F172A] rounded-2xl p-8">
+          <main className="flex-1 bg-white dark:bg-[#0F172A] rounded-xl p-8">
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} {...tabVariants}>
                 {renderContent()}
               </motion.div>
             </AnimatePresence>
           </main>
-
         </div>
       </div>
     </PageTransition>
   );
 }
 
-/* =====================================================
-   REUSABLE COMPONENTS
-===================================================== */
+/* ================= REUSABLE ================= */
 function Section({ title, children }) {
   return (
     <section>
@@ -334,5 +311,41 @@ function Input({ label, value, onChange, type = "text", disabled }) {
         className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
       />
     </div>
+  );
+}
+
+function Toggle({ label, value, onChange }) {
+  return (
+    <div className="flex justify-between">
+      <span>{label}</span>
+      <input type="checkbox" checked={value} onChange={() => onChange(!value)} />
+    </div>
+  );
+}
+
+function Select({ label, value, onChange, options }) {
+  return (
+    <div>
+      <label className="block text-sm mb-1">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function Action({ children, onClick }) {
+  return (
+    <button onClick={onClick} className="text-blue-600 text-sm">
+      {children}
+    </button>
   );
 }
