@@ -8,7 +8,14 @@ import {
   FileText,
   AlertTriangle,
 } from "lucide-react";
-import { onAuthStateChanged, updateProfile } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  updateProfile,
+  updateEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  deleteUser,
+} from "firebase/auth";
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
 
@@ -26,10 +33,16 @@ export default function Settings() {
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  /* ---------------- EDIT NAME ---------------- */
+  /* ---------------- ACCOUNT ---------------- */
   const [name, setName] = useState("");
   const [editingName, setEditingName] = useState(false);
   const [savingName, setSavingName] = useState(false);
+
+  /* ---------------- CHANGE EMAIL ---------------- */
+  const [newEmail, setNewEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailMessage, setEmailMessage] = useState("");
 
   /* ---------------- UI ---------------- */
   const [activeTab, setActiveTab] = useState("Account");
@@ -40,7 +53,7 @@ export default function Settings() {
     localStorage.getItem("theme") === "dark"
   );
 
-  /* ---------------- SETTINGS ---------------- */
+  /* ---------------- PREFERENCES ---------------- */
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [dragDrop, setDragDrop] = useState(true);
@@ -74,16 +87,62 @@ export default function Settings() {
   /* ---------------- SAVE NAME ---------------- */
   const handleSaveName = async () => {
     if (!user || !name.trim()) return;
-
     try {
       setSavingName(true);
       await updateProfile(user, { displayName: name.trim() });
       setEditingName(false);
-    } catch (err) {
+    } catch {
       alert("Failed to update name");
-      console.error(err);
     } finally {
       setSavingName(false);
+    }
+  };
+
+  /* ---------------- CHANGE EMAIL ---------------- */
+  const handleChangeEmail = async () => {
+    if (!user || !newEmail || !currentPassword) {
+      setEmailMessage("All fields are required");
+      return;
+    }
+
+    try {
+      setEmailLoading(true);
+      setEmailMessage("");
+
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        currentPassword
+      );
+
+      await reauthenticateWithCredential(user, credential);
+      await updateEmail(user, newEmail);
+
+      setEmailMessage("Email updated successfully");
+      setNewEmail("");
+      setCurrentPassword("");
+    } catch (err) {
+      if (err.code === "auth/wrong-password") {
+        setEmailMessage("Incorrect password");
+      } else if (err.code === "auth/email-already-in-use") {
+        setEmailMessage("Email already in use");
+      } else {
+        setEmailMessage("Failed to update email");
+      }
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  /* ---------------- DELETE ACCOUNT ---------------- */
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    if (!confirm("This will permanently delete your account. Continue?")) return;
+
+    try {
+      await deleteUser(user);
+      alert("Account deleted");
+    } catch {
+      alert("Re-login required before deleting account");
     }
   };
 
@@ -101,35 +160,24 @@ export default function Settings() {
      TAB CONTENT
   ===================================================== */
   const renderContent = () => {
-    if (loadingUser) return <p>Loading account…</p>;
+    if (loadingUser) return <p>Loading…</p>;
 
     switch (activeTab) {
       case "Account":
         return (
           <Section title="Account">
-            {/* NAME */}
-            <div>
-              <label className="block text-sm mb-1">Name</label>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={!editingName}
-                className={`w-full border p-2 rounded ${
-                  editingName
-                    ? "bg-white dark:bg-gray-900"
-                    : "bg-gray-100 dark:bg-gray-800"
-                }`}
-              />
-            </div>
+            <Input
+              label="Name"
+              value={name}
+              onChange={setName}
+              disabled={!editingName}
+            />
+            <Input label="Email" value={user.email} disabled />
 
-            {/* EMAIL */}
-            <Input label="Email" value={user?.email || "-"} disabled />
-
-            {/* ACTIONS */}
             {!editingName ? (
               <button
                 onClick={() => setEditingName(true)}
-                className="text-blue-600 text-sm hover:underline"
+                className="text-blue-600 text-sm"
               >
                 Edit Name
               </button>
@@ -137,7 +185,6 @@ export default function Settings() {
               <div className="flex gap-3">
                 <button
                   onClick={handleSaveName}
-                  disabled={savingName}
                   className="px-4 py-2 bg-black text-white rounded"
                 >
                   {savingName ? "Saving..." : "Save"}
@@ -147,7 +194,7 @@ export default function Settings() {
                     setName(user.displayName || "");
                     setEditingName(false);
                   }}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-800 rounded"
+                  className="px-4 py-2 bg-gray-200 rounded"
                 >
                   Cancel
                 </button>
@@ -186,7 +233,7 @@ export default function Settings() {
             />
             <Toggle label="Auto-save" value={autoSave} onChange={setAutoSave} />
             <Toggle label="Drag & drop sections" value={dragDrop} onChange={setDragDrop} />
-            <Toggle label="Resume strength" value={resumeStrength} onChange={setResumeStrength} />
+            <Toggle label="Resume strength indicator" value={resumeStrength} onChange={setResumeStrength} />
             <Toggle label="Auto-scroll weak sections" value={autoScrollWeak} onChange={setAutoScrollWeak} />
             <Toggle label="ATS warnings" value={atsWarnings} onChange={setAtsWarnings} />
           </Section>
@@ -205,17 +252,33 @@ export default function Settings() {
 
       case "Security":
         return (
-          <Section title="Security">
-            <button className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800">
-              Change Password
+          <Section title="Change Email">
+            <Input label="New Email" value={newEmail} onChange={setNewEmail} />
+            <Input
+              label="Current Password"
+              type="password"
+              value={currentPassword}
+              onChange={setCurrentPassword}
+            />
+            <button
+              onClick={handleChangeEmail}
+              className="px-4 py-2 bg-black text-white rounded"
+            >
+              {emailLoading ? "Updating..." : "Update Email"}
             </button>
+            {emailMessage && (
+              <p className="text-sm text-gray-600">{emailMessage}</p>
+            )}
           </Section>
         );
 
       case "Danger":
         return (
           <Section title="Danger Zone" danger>
-            <button className="bg-red-600 text-white px-4 py-2 rounded">
+            <button
+              onClick={handleDeleteAccount}
+              className="bg-red-600 text-white px-4 py-2 rounded"
+            >
               Delete Account
             </button>
           </Section>
@@ -233,27 +296,30 @@ export default function Settings() {
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
+
+          {/* SIDEBAR */}
           <motion.aside
             animate={{ width: collapsed ? 80 : 256 }}
             className="bg-[#0F172A] text-slate-300 rounded-2xl p-3"
           >
-            <nav className="space-y-1">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                    className="w-full flex gap-3 px-3 py-2 rounded hover:bg-white/10"
-                  >
-                    <Icon size={20} />
-                    {!collapsed && tab.label}
-                  </button>
-                );
-              })}
-            </nav>
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`w-full flex gap-3 px-3 py-2 rounded ${
+                    tab.danger ? "text-red-400" : ""
+                  }`}
+                >
+                  <Icon size={20} />
+                  {!collapsed && tab.label}
+                </button>
+              );
+            })}
           </motion.aside>
 
+          {/* CONTENT */}
           <main className="flex-1 bg-white dark:bg-[#0F172A] rounded-2xl p-8">
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} {...tabVariants}>
@@ -261,6 +327,7 @@ export default function Settings() {
               </motion.div>
             </AnimatePresence>
           </main>
+
         </div>
       </div>
     </PageTransition>
@@ -268,7 +335,7 @@ export default function Settings() {
 }
 
 /* =====================================================
-   REUSABLE
+   REUSABLE COMPONENTS
 ===================================================== */
 function Section({ title, children, danger }) {
   return (
@@ -276,7 +343,7 @@ function Section({ title, children, danger }) {
       <h2 className={`text-lg font-semibold mb-6 ${danger ? "text-red-600" : ""}`}>
         {title}
       </h2>
-      <div className="space-y-5">{children}</div>
+      <div className="space-y-4">{children}</div>
     </section>
   );
 }
@@ -290,11 +357,17 @@ function Toggle({ label, value, onChange }) {
   );
 }
 
-function Input({ label, value, disabled }) {
+function Input({ label, value, onChange, type = "text", disabled }) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
-      <input value={value} disabled={disabled} className="w-full border p-2 rounded bg-gray-100" />
+      <input
+        type={type}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange?.(e.target.value)}
+        className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
+      />
     </div>
   );
 }
@@ -303,7 +376,11 @@ function Select({ label, value, onChange, options }) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full border p-2 rounded bg-gray-100">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
+      >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
