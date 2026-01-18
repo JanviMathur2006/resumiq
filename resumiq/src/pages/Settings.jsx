@@ -8,7 +8,7 @@ import {
   FileText,
   AlertTriangle,
 } from "lucide-react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
 
@@ -21,15 +21,17 @@ const tabVariants = {
   exit: { opacity: 0, x: -30, transition: { duration: 0.2 } },
 };
 
-/* =====================================================
-   SETTINGS PAGE
-===================================================== */
 export default function Settings() {
-  /* ---------------- AUTH USER ---------------- */
+  /* ---------------- AUTH ---------------- */
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  /* ---------------- UI STATE ---------------- */
+  /* ---------------- EDIT NAME ---------------- */
+  const [name, setName] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  const [savingName, setSavingName] = useState(false);
+
+  /* ---------------- UI ---------------- */
   const [activeTab, setActiveTab] = useState("Account");
   const [collapsed, setCollapsed] = useState(false);
 
@@ -52,6 +54,7 @@ export default function Settings() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setName(currentUser?.displayName || "");
       setLoadingUser(false);
     });
     return () => unsub();
@@ -68,7 +71,23 @@ export default function Settings() {
     }
   }, [darkMode]);
 
-  /* ---------------- SIDEBAR ITEMS ---------------- */
+  /* ---------------- SAVE NAME ---------------- */
+  const handleSaveName = async () => {
+    if (!user || !name.trim()) return;
+
+    try {
+      setSavingName(true);
+      await updateProfile(user, { displayName: name.trim() });
+      setEditingName(false);
+    } catch (err) {
+      alert("Failed to update name");
+      console.error(err);
+    } finally {
+      setSavingName(false);
+    }
+  };
+
+  /* ---------------- SIDEBAR ---------------- */
   const tabs = [
     { key: "Account", label: "Account", icon: User },
     { key: "Appearance", label: "Appearance", icon: Palette },
@@ -82,23 +101,58 @@ export default function Settings() {
      TAB CONTENT
   ===================================================== */
   const renderContent = () => {
-    if (loadingUser) {
-      return <p className="text-sm text-gray-500">Loading account…</p>;
-    }
+    if (loadingUser) return <p>Loading account…</p>;
 
     switch (activeTab) {
       case "Account":
         return (
           <Section title="Account">
-            <Input
-              label="Name"
-              value={user?.displayName || "No name set"}
-              disabled
-            />
+            {/* NAME */}
+            <div>
+              <label className="block text-sm mb-1">Name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={!editingName}
+                className={`w-full border p-2 rounded ${
+                  editingName
+                    ? "bg-white dark:bg-gray-900"
+                    : "bg-gray-100 dark:bg-gray-800"
+                }`}
+              />
+            </div>
+
+            {/* EMAIL */}
             <Input label="Email" value={user?.email || "-"} disabled />
-            <button className="text-blue-600 text-sm hover:underline">
-              Change Password
-            </button>
+
+            {/* ACTIONS */}
+            {!editingName ? (
+              <button
+                onClick={() => setEditingName(true)}
+                className="text-blue-600 text-sm hover:underline"
+              >
+                Edit Name
+              </button>
+            ) : (
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSaveName}
+                  disabled={savingName}
+                  className="px-4 py-2 bg-black text-white rounded"
+                >
+                  {savingName ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={() => {
+                    setName(user.displayName || "");
+                    setEditingName(false);
+                  }}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-800 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </Section>
         );
 
@@ -130,11 +184,11 @@ export default function Settings() {
                 { label: "US Letter", value: "US" },
               ]}
             />
-            <Toggle label="Auto-save while editing" value={autoSave} onChange={setAutoSave} />
-            <Toggle label="Enable section drag & drop" value={dragDrop} onChange={setDragDrop} />
-            <Toggle label="Resume strength indicator" value={resumeStrength} onChange={setResumeStrength} />
-            <Toggle label="Auto-scroll to weak sections" value={autoScrollWeak} onChange={setAutoScrollWeak} />
-            <Toggle label="ATS keyword warnings" value={atsWarnings} onChange={setAtsWarnings} />
+            <Toggle label="Auto-save" value={autoSave} onChange={setAutoSave} />
+            <Toggle label="Drag & drop sections" value={dragDrop} onChange={setDragDrop} />
+            <Toggle label="Resume strength" value={resumeStrength} onChange={setResumeStrength} />
+            <Toggle label="Auto-scroll weak sections" value={autoScrollWeak} onChange={setAutoScrollWeak} />
+            <Toggle label="ATS warnings" value={atsWarnings} onChange={setAtsWarnings} />
           </Section>
         );
 
@@ -161,7 +215,7 @@ export default function Settings() {
       case "Danger":
         return (
           <Section title="Danger Zone" danger>
-            <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+            <button className="bg-red-600 text-white px-4 py-2 rounded">
               Delete Account
             </button>
           </Section>
@@ -179,71 +233,34 @@ export default function Settings() {
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
-
-          {/* ================= SIDEBAR ================= */}
           <motion.aside
             animate={{ width: collapsed ? 80 : 256 }}
-            transition={{ duration: 0.25 }}
-            className="bg-[#0F172A] text-slate-300 rounded-2xl p-3 flex flex-col"
+            className="bg-[#0F172A] text-slate-300 rounded-2xl p-3"
           >
-            <div className="flex items-center justify-between px-2 mb-6">
-              {!collapsed && (
-                <span className="text-white font-semibold text-lg">
-                  Settings
-                </span>
-              )}
-              <button
-                onClick={() => setCollapsed(!collapsed)}
-                className="text-slate-400 hover:text-white"
-              >
-                {collapsed ? "➡" : "≡"}
-              </button>
-            </div>
-
-            <nav className="space-y-1 flex-1">
+            <nav className="space-y-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
-                const active = activeTab === tab.key;
-
                 return (
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition
-                      ${
-                        active
-                          ? "bg-white text-black"
-                          : tab.danger
-                          ? "text-red-400 hover:bg-red-500/10"
-                          : "hover:bg-white/10"
-                      }
-                    `}
+                    className="w-full flex gap-3 px-3 py-2 rounded hover:bg-white/10"
                   >
                     <Icon size={20} />
-                    {!collapsed && <span>{tab.label}</span>}
+                    {!collapsed && tab.label}
                   </button>
                 );
               })}
             </nav>
           </motion.aside>
 
-          {/* ================= CONTENT ================= */}
-          <main className="flex-1">
-            <div className="bg-white dark:bg-[#0F172A] rounded-2xl p-8 shadow-sm">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  variants={tabVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                >
-                  {renderContent()}
-                </motion.div>
-              </AnimatePresence>
-            </div>
+          <main className="flex-1 bg-white dark:bg-[#0F172A] rounded-2xl p-8">
+            <AnimatePresence mode="wait">
+              <motion.div key={activeTab} {...tabVariants}>
+                {renderContent()}
+              </motion.div>
+            </AnimatePresence>
           </main>
-
         </div>
       </div>
     </PageTransition>
@@ -251,7 +268,7 @@ export default function Settings() {
 }
 
 /* =====================================================
-   REUSABLE COMPONENTS
+   REUSABLE
 ===================================================== */
 function Section({ title, children, danger }) {
   return (
@@ -266,7 +283,7 @@ function Section({ title, children, danger }) {
 
 function Toggle({ label, value, onChange }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex justify-between">
       <span>{label}</span>
       <input type="checkbox" checked={value} onChange={() => onChange(!value)} />
     </div>
@@ -277,11 +294,7 @@ function Input({ label, value, disabled }) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
-      <input
-        value={value}
-        disabled={disabled}
-        className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
-      />
+      <input value={value} disabled={disabled} className="w-full border p-2 rounded bg-gray-100" />
     </div>
   );
 }
@@ -290,14 +303,10 @@ function Select({ label, value, onChange, options }) {
   return (
     <div>
       <label className="block text-sm mb-1">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full border p-2 rounded bg-gray-100">
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
           </option>
         ))}
       </select>

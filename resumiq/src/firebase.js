@@ -29,8 +29,6 @@ export const auth = getAuth(app);
    GOOGLE AUTH PROVIDER
 ===================================================== */
 export const googleProvider = new GoogleAuthProvider();
-
-// Optional: force account chooser every time
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
