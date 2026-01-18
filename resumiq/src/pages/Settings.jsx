@@ -22,7 +22,7 @@ import PageTransition from "../components/PageTransition";
 /* ================= TAB ANIMATION ================= */
 const tabVariants = {
   initial: { opacity: 0, x: 30 },
-  animate: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.25 } },
   exit: { opacity: 0, x: -30, transition: { duration: 0.2 } },
 };
 
@@ -45,8 +45,16 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState("Account");
 
   /* ================= APPEARANCE ================= */
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
+  const [themeMode, setThemeMode] = useState(
+    localStorage.getItem("themeMode") || "system"
+  );
+
+  const [density, setDensity] = useState(
+    localStorage.getItem("density") || "comfortable"
+  );
+
+  const [accent, setAccent] = useState(
+    localStorage.getItem("accent") || "blue"
   );
 
   /* ================= RESUME PREFS ================= */
@@ -71,14 +79,33 @@ export default function Settings() {
 
   /* ================= THEME EFFECT ================= */
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+    const root = document.documentElement;
+
+    if (themeMode === "dark") {
+      root.classList.add("dark");
+    } else if (themeMode === "light") {
+      root.classList.remove("dark");
     } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      root.classList.toggle("dark", prefersDark);
     }
-  }, [darkMode]);
+
+    localStorage.setItem("themeMode", themeMode);
+  }, [themeMode]);
+
+  /* ================= DENSITY EFFECT ================= */
+  useEffect(() => {
+    document.documentElement.dataset.density = density;
+    localStorage.setItem("density", density);
+  }, [density]);
+
+  /* ================= ACCENT EFFECT ================= */
+  useEffect(() => {
+    document.documentElement.dataset.accent = accent;
+    localStorage.setItem("accent", accent);
+  }, [accent]);
 
   /* ================= SAVE NAME ================= */
   const handleSaveName = async () => {
@@ -103,10 +130,10 @@ export default function Settings() {
       await reauthenticateWithCredential(user, credential);
       await updateEmail(user, newEmail);
 
-      setEmailMessage("Email updated successfully");
       setEditingEmail(false);
       setNewEmail("");
       setCurrentPassword("");
+      setEmailMessage("Email updated successfully");
     } catch {
       setEmailMessage("Failed to update email");
     } finally {
@@ -159,11 +186,7 @@ export default function Settings() {
               </Action>
             ) : (
               <>
-                <Input
-                  label="New Email"
-                  value={newEmail}
-                  onChange={setNewEmail}
-                />
+                <Input label="New Email" value={newEmail} onChange={setNewEmail} />
                 <Input
                   label="Current Password"
                   type="password"
@@ -184,11 +207,49 @@ export default function Settings() {
       case "Appearance":
         return (
           <Section title="Appearance">
-            <Toggle
-              label="Dark Mode"
-              value={darkMode}
-              onChange={setDarkMode}
+            <Select
+              label="Theme"
+              value={themeMode}
+              onChange={setThemeMode}
+              options={[
+                { label: "System", value: "system" },
+                { label: "Light", value: "light" },
+                { label: "Dark", value: "dark" },
+              ]}
             />
+
+            <Select
+              label="UI Density"
+              value={density}
+              onChange={setDensity}
+              options={[
+                { label: "Comfortable", value: "comfortable" },
+                { label: "Compact", value: "compact" },
+              ]}
+            />
+
+            <div>
+              <label className="block text-sm mb-2">Accent Color</label>
+              <div className="flex gap-3">
+                {["blue", "purple", "green"].map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setAccent(c)}
+                    className={`w-8 h-8 rounded-full border-2 ${
+                      accent === c ? "border-black dark:border-white" : "border-transparent"
+                    }`}
+                    style={{
+                      background:
+                        c === "blue"
+                          ? "#3b82f6"
+                          : c === "purple"
+                          ? "#8b5cf6"
+                          : "#22c55e",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
           </Section>
         );
 
@@ -230,7 +291,7 @@ export default function Settings() {
         return (
           <Section title="Security">
             <p className="text-sm text-gray-600">
-              Password changes and advanced security options can be added here.
+              Password change and advanced security options can be added here.
             </p>
           </Section>
         );

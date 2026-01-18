@@ -227,3 +227,56 @@
     animation: scaleIn 0.15s ease-out;
   }
 }
+
+/* ================================================= */
+/* NEW: APPEARANCE EXTENSIONS (SAFE ADDITIONS ONLY) */
+/* ================================================= */
+
+/* ---------- UI DENSITY ---------- */
+:root[data-density="comfortable"] {
+  --ui-spacing: 1rem;
+}
+
+:root[data-density="compact"] {
+  --ui-spacing: 0.5rem;
+}
+
+/* Apply density without breaking layout */
+.page,
+.card {
+  padding: calc(var(--ui-spacing, 1rem) * 1.5);
+}
+
+.nav-links a {
+  margin-left: var(--ui-spacing, 1rem);
+}
+
+/* ---------- ACCENT COLORS ---------- */
+:root[data-accent="blue"] {
+  --accent-color: #3b82f6;
+}
+
+:root[data-accent="purple"] {
+  --accent-color: #8b5cf6;
+}
+
+:root[data-accent="green"] {
+  --accent-color: #22c55e;
+}
+
+/* Accent usage */
+a,
+.btn,
+button {
+  background-color: var(--accent-color, black);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent-color, black);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--accent-color, black);
+}
