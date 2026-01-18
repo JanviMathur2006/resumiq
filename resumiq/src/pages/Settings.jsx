@@ -8,6 +8,8 @@ import {
   FileText,
   AlertTriangle,
 } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
 
 /* =====================================================
@@ -23,6 +25,10 @@ const tabVariants = {
    SETTINGS PAGE
 ===================================================== */
 export default function Settings() {
+  /* ---------------- AUTH USER ---------------- */
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
   /* ---------------- UI STATE ---------------- */
   const [activeTab, setActiveTab] = useState("Account");
   const [collapsed, setCollapsed] = useState(false);
@@ -41,6 +47,15 @@ export default function Settings() {
   const [atsWarnings, setAtsWarnings] = useState(false);
   const [paperSize, setPaperSize] = useState("A4");
   const [editorView, setEditorView] = useState("comfortable");
+
+  /* ---------------- AUTH EFFECT ---------------- */
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoadingUser(false);
+    });
+    return () => unsub();
+  }, []);
 
   /* ---------------- THEME EFFECT ---------------- */
   useEffect(() => {
@@ -67,12 +82,20 @@ export default function Settings() {
      TAB CONTENT
   ===================================================== */
   const renderContent = () => {
+    if (loadingUser) {
+      return <p className="text-sm text-gray-500">Loading account…</p>;
+    }
+
     switch (activeTab) {
       case "Account":
         return (
           <Section title="Account">
-            <Input label="Name" value="John Doe" disabled />
-            <Input label="Email" value="john@example.com" disabled />
+            <Input
+              label="Name"
+              value={user?.displayName || "No name set"}
+              disabled
+            />
+            <Input label="Email" value={user?.email || "-"} disabled />
             <button className="text-blue-600 text-sm hover:underline">
               Change Password
             </button>
@@ -163,7 +186,6 @@ export default function Settings() {
             transition={{ duration: 0.25 }}
             className="bg-[#0F172A] text-slate-300 rounded-2xl p-3 flex flex-col"
           >
-            {/* TOP */}
             <div className="flex items-center justify-between px-2 mb-6">
               {!collapsed && (
                 <span className="text-white font-semibold text-lg">
@@ -178,7 +200,6 @@ export default function Settings() {
               </button>
             </div>
 
-            {/* NAV */}
             <nav className="space-y-1 flex-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -188,7 +209,7 @@ export default function Settings() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`relative group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition
                       ${
                         active
                           ? "bg-white text-black"
@@ -199,24 +220,7 @@ export default function Settings() {
                     `}
                   >
                     <Icon size={20} />
-
-                    <AnimatePresence>
-                      {!collapsed && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -8 }}
-                        >
-                          {tab.label}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-
-                    {collapsed && (
-                      <span className="absolute left-full ml-3 px-2 py-1 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition pointer-events-none">
-                        {tab.label}
-                      </span>
-                    )}
+                    {!collapsed && <span>{tab.label}</span>}
                   </button>
                 );
               })}
@@ -225,7 +229,7 @@ export default function Settings() {
 
           {/* ================= CONTENT ================= */}
           <main className="flex-1">
-            <div className="bg-white dark:bg-[#0F172A] rounded-2xl p-8 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-[#0F172A] rounded-2xl p-8 shadow-sm">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}

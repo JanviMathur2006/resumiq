@@ -1,7 +1,11 @@
 // src/firebase.js
+
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
+/* =====================================================
+   FIREBASE CONFIG
+===================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyDvSjtZUiUug8Bde9duUG3vXahghzYjHMI",
   authDomain: "resumiq-6b928.firebaseapp.com",
@@ -11,11 +15,22 @@ const firebaseConfig = {
   appId: "1:87304273740:web:b1e5a04c4c140bdc7a59e9",
 };
 
-// Initialize Firebase
+/* =====================================================
+   INITIALIZE FIREBASE
+===================================================== */
 const app = initializeApp(firebaseConfig);
 
-// Firebase Auth
+/* =====================================================
+   AUTH
+===================================================== */
 export const auth = getAuth(app);
 
-// ✅ ADD THIS FOR GOOGLE LOGIN
+/* =====================================================
+   GOOGLE AUTH PROVIDER
+===================================================== */
 export const googleProvider = new GoogleAuthProvider();
+
+// Optional: force account chooser every time
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+});
