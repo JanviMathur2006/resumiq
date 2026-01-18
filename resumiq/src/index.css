@@ -29,7 +29,7 @@
     }
   }
 
-  /* ================= UI DENSITY VARIABLES ================= */
+  /* ================= UI DENSITY ================= */
   :root {
     --ui-padding: 1rem;
   }
@@ -112,7 +112,6 @@
     background: #f9fafb;
     color: #111827;
     outline: none;
-    transition: border-color 0.2s ease, background 0.2s ease;
   }
 
   .input:focus,
@@ -141,7 +140,6 @@
     border: none;
     cursor: pointer;
     border-radius: 8px;
-    transition: opacity 0.2s ease, transform 0.1s ease;
   }
 
   .btn:hover,
@@ -247,4 +245,27 @@
   .animate-scaleIn {
     animation: scaleIn 0.15s ease-out;
   }
+}
+
+/* ================================================= */
+/* SMOOTH THEME TRANSITION (NEW ADDITION) */
+/* ================================================= */
+
+body,
+.page,
+.card,
+.modal,
+input,
+textarea,
+select,
+button {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+html {
+  transition: background-color 0.25s ease;
 }
