@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { auth, googleProvider } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
 /* ======================
    ANIMATION VARIANTS
@@ -54,10 +55,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [touched, setTouched] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const canSubmit = email.trim() !== "" && password.trim() !== "";
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!canSubmit) {
@@ -66,10 +68,20 @@ export default function Login() {
       return;
     }
 
-    setError("");
+    try {
+      setError("");
+      setLoading(true);
 
-    // 🔐 Auth logic goes here
-    navigate("/app");
+      // ✅ REAL AUTH (this was missing)
+      await signInWithEmailAndPassword(auth, email, password);
+
+      // ✅ Navigate ONCE after successful login
+      navigate("/app", { replace: true });
+    } catch (err) {
+      setError("Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -130,14 +142,14 @@ export default function Login() {
           {/* SUBMIT */}
           <button
             type="submit"
-            disabled={!canSubmit}
+            disabled={!canSubmit || loading}
             className={`w-full py-3 rounded-xl text-lg font-medium transition ${
               canSubmit
                 ? "bg-black text-white hover:bg-gray-800"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
