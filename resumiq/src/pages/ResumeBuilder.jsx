@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import BuilderTransition from "../components/BuilderTransition";
@@ -21,11 +22,11 @@ const EMPTY_RESUME = {
   skills: "",
 };
 
-const createVersion = (name = "New Resume") => ({
+const createVersion = (name = "New Resume", data = EMPTY_RESUME) => ({
   id: "v_" + Date.now(),
   name,
   deletedAt: null,
-  data: { ...EMPTY_RESUME },
+  data: { ...data },
   style: {
     fontFamily: "Inter",
     fontSize: 14,
@@ -41,13 +42,14 @@ const createVersion = (name = "New Resume") => ({
 
 export default function ResumeBuilder() {
   const pdfRef = useRef(null);
+  const { state } = useLocation();
+  const resumeType = state?.resumeType || "student";
 
   /* ---------------- Versions ---------------- */
   const [versions, setVersions] = useState([]);
   const [activeId, setActiveId] = useState(null);
 
   const activeVersion = versions.find(v => v.id === activeId);
-
   const activeVersions = versions.filter(v => !v.deletedAt);
   const deletedVersions = versions.filter(v => v.deletedAt);
 
@@ -57,7 +59,7 @@ export default function ResumeBuilder() {
   const [lastSavedAt, setLastSavedAt] = useState(null);
 
   /* ===================================================== */
-  /* ================= LOAD / SAVE ======================= */
+  /* ================= INITIAL LOAD ===================== */
   /* ===================================================== */
 
   useEffect(() => {
@@ -65,12 +67,29 @@ export default function ResumeBuilder() {
     if (stored) {
       setVersions(stored.versions);
       setActiveId(stored.activeId);
-    } else {
-      const initial = createVersion("Default Resume");
-      setVersions([initial]);
-      setActiveId(initial.id);
+      return;
     }
-  }, []);
+
+    let initialData = { ...EMPTY_RESUME };
+
+    if (resumeType === "student" || resumeType === "internship") {
+      initialData.title = "Student / Fresher";
+    }
+    if (resumeType === "professional") {
+      initialData.title = "Experienced Professional";
+    }
+    if (resumeType === "career") {
+      initialData.title = "Career Transition Candidate";
+    }
+
+    const initial = createVersion("Primary Resume", initialData);
+    setVersions([initial]);
+    setActiveId(initial.id);
+  }, [resumeType]);
+
+  /* ===================================================== */
+  /* ================= SAVE ============================== */
+  /* ===================================================== */
 
   useEffect(() => {
     if (!versions.length) return;
@@ -172,7 +191,7 @@ export default function ResumeBuilder() {
   /* ===================================================== */
 
   const addVersion = () => {
-    const v = createVersion();
+    const v = createVersion("New Resume");
     setVersions([...versions, v]);
     setActiveId(v.id);
   };
@@ -231,9 +250,7 @@ export default function ResumeBuilder() {
     pdf.save("resume.pdf");
   };
 
-  if (!activeVersion) {
-    return <p className="p-10">No resume selected</p>;
-  }
+  if (!activeVersion) return null;
 
   const d = activeVersion.data;
   const s = activeVersion.style;
@@ -246,7 +263,12 @@ export default function ResumeBuilder() {
     <BuilderTransition>
       <div className="max-w-5xl mx-auto px-6 py-10">
 
-        <h1 className="text-3xl font-bold mb-6">Resume Builder</h1>
+        <h1 className="text-3xl font-bold mb-6">
+          Resume Builder
+          <span className="ml-3 text-sm text-gray-500">
+            ({resumeType})
+          </span>
+        </h1>
 
         {/* ===== Versions ===== */}
         <Box>
@@ -297,77 +319,7 @@ export default function ResumeBuilder() {
           </div>
         </div>
 
-        {/* ===== Typography ===== */}
-        <Box>
-          <strong>Typography & Layout</strong>
-
-          <Row>
-            <select value={s.fontFamily} onChange={e => updateStyle("fontFamily", e.target.value)}>
-              {[
-                "Inter","Arial","Helvetica","Roboto","Calibri",
-                "Times New Roman","Georgia","Cambria","Garamond",
-                "Poppins","Montserrat","Source Sans Pro","IBM Plex Sans","Lato","Open Sans"
-              ].map(f => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
-
-            <select value={s.fontSize} onChange={e => updateStyle("fontSize", Number(e.target.value))}>
-              {[11,12,13,14,15,16,17,18].map(n => (
-                <option key={n} value={n}>{n}px</option>
-              ))}
-            </select>
-          </Row>
-
-          <Row>
-            <label>Line Spacing</label>
-            <input
-              type="range"
-              min="1.2"
-              max="2"
-              step="0.1"
-              value={s.lineHeight}
-              onChange={e => updateStyle("lineHeight", Number(e.target.value))}
-            />
-            <span>{s.lineHeight}</span>
-          </Row>
-
-          <Row>
-            <label>Page Margin</label>
-            <input
-              type="range"
-              min="20"
-              max="80"
-              step="5"
-              value={s.margin}
-              onChange={e => updateStyle("margin", Number(e.target.value))}
-            />
-            <span>{s.margin}px</span>
-          </Row>
-        </Box>
-
-        {/* ===== History ===== */}
-        <Box>
-          <strong>Version History</strong>
-          {activeVersion.history.slice().reverse().map((h, i) => (
-            <Row key={i} between>
-              <span>{h.action}</span>
-              <button onClick={() =>
-                setVersions(prev =>
-                  prev.map(v =>
-                    v.id === activeId
-                      ? { ...v, data: h.dataSnapshot, style: h.styleSnapshot }
-                      : v
-                  )
-                )
-              }>
-                Restore
-              </button>
-            </Row>
-          ))}
-        </Box>
-
-        {/* ===== Edit ===== */}
+        {/* ===== Editor ===== */}
         {!previewMode && (
           <>
             <button onClick={undo}>Undo</button>
@@ -375,8 +327,8 @@ export default function ResumeBuilder() {
               <Box key={key}>
                 <strong>{key.toUpperCase()}</strong>
                 <textarea
-                  value={d[key]}
                   rows={4}
+                  value={d[key]}
                   onChange={e => updateField(key, e.target.value)}
                 />
               </Box>
@@ -398,9 +350,9 @@ export default function ResumeBuilder() {
           >
             <h1>{d.name}</h1>
             <p>{d.title}</p>
-            <p>{[d.email,d.phone,d.location,d.linkedin].filter(Boolean).join(" • ")}</p>
+            <p>{[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(" • ")}</p>
 
-            {Object.entries(d).map(([k,v]) =>
+            {Object.entries(d).map(([k, v]) =>
               v && !["name","title","email","phone","location","linkedin"].includes(k) && (
                 <section key={k}>
                   <h3>{k.toUpperCase()}</h3>
