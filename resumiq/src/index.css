@@ -207,6 +207,88 @@
   .dark .modal {
     background: #111827;
   }
+
+  /* ================================================= */
+  /* WELCOME SCREEN (NEW – RESUMIQ REDESIGN) */
+  /* ================================================= */
+
+  .welcome-root {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+  }
+
+  .welcome-card {
+    width: 420px;
+    background: white;
+    border-radius: 18px;
+    padding: 48px 44px;
+    text-align: center;
+
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.06),
+      0 1px 0 rgba(0, 0, 0, 0.04);
+  }
+
+  .dark .welcome-card {
+    background: #111827;
+  }
+
+  .welcome-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .welcome-subtitle {
+    font-size: 15px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  .dark .welcome-subtitle {
+    color: #9ca3af;
+  }
+
+  .welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .welcome-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .welcome-btn.primary {
+    background: black;
+    color: white;
+  }
+
+  .welcome-btn.secondary {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+  }
+
+  .dark .welcome-btn.secondary {
+    border-color: #374151;
+    color: #f9fafb;
+  }
+
+  .welcome-footer {
+    margin-top: 26px;
+    font-size: 13px;
+    color: #9ca3af;
+  }
 }
 
 /* ============================= */
@@ -248,10 +330,9 @@
 }
 
 /* ================================================= */
-/* SMOOTH THEME TRANSITION + BLUR (NEW ADDITION) */
+/* SMOOTH THEME TRANSITION + BLUR */
 /* ================================================= */
 
-/* Smooth color & blur transitions */
 body,
 .page,
 .card,
@@ -259,7 +340,8 @@ body,
 input,
 textarea,
 select,
-button {
+button,
+.welcome-card {
   transition:
     background-color 0.25s ease,
     color 0.25s ease,
@@ -268,12 +350,10 @@ button {
     filter 0.25s ease;
 }
 
-/* Slight blur when theme class changes */
 html.theme-switching body {
   filter: blur(2px);
 }
 
-/* Prevent flash on load */
 html {
   transition: background-color 0.25s ease;
 }

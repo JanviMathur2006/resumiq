@@ -20,7 +20,7 @@ import Onboarding from "./pages/Onboarding";
 ======================= */
 import Home from "./pages/Home";
 import CreateResumes from "./pages/CreateResumes";
-import ChooseResumeType from "./pages/ChooseResumeType"; // ✅ ADD THIS
+import ChooseResumeType from "./pages/ChooseResumeType";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import ResumeSamples from "./pages/ResumeSamples";
 import Profile from "./pages/Profile";
@@ -42,22 +42,19 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-        {/* ================= PUBLIC ================= */}
+        {/* ================= PUBLIC ROUTES ================= */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/onboarding" element={<Onboarding />} />
 
-        {/* ================= PROTECTED ================= */}
+        {/* ================= PROTECTED ROUTES ================= */}
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
 
             <Route path="/app" element={<Home />} />
             <Route path="/app/create" element={<CreateResumes />} />
-
-            {/* ✅ THIS IS THE FIX */}
             <Route path="/app/choose" element={<ChooseResumeType />} />
-
             <Route path="/app/builder" element={<ResumeBuilder />} />
             <Route path="/app/samples" element={<ResumeSamples />} />
             <Route path="/app/profile" element={<Profile />} />
@@ -74,6 +71,9 @@ function AnimatedRoutes() {
   );
 }
 
+/* =======================
+   ROOT APP
+======================= */
 export default function App() {
   return (
     <BrowserRouter>

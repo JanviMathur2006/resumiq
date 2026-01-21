@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import PageTransition from "../components/PageTransition";
 
 export default function Landing() {
@@ -16,47 +17,64 @@ export default function Landing() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="text-center">
-
+      <div className="welcome-root">
+        <motion.div
+          className="welcome-card"
+          initial={{ opacity: 0, y: 30, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           {/* INTRO */}
           {!showButtons && (
-            <div className="transition-opacity duration-700 opacity-100">
-              <h1 className="text-5xl font-bold text-gray-900 mb-4">
-                Resumiq
-              </h1>
-              <p className="text-lg text-gray-500">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="welcome-title">Resumiq</h1>
+              <p className="welcome-subtitle">
                 Create, manage & showcase your resume
               </p>
-            </div>
+            </motion.div>
           )}
 
           {/* BUTTONS */}
           {showButtons && (
-            <div className="transition-all duration-700 opacity-100 scale-100">
-              <h2 className="text-3xl font-semibold text-gray-900 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="welcome-title" style={{ fontSize: "24px" }}>
                 Welcome to Resumiq
               </h2>
 
-              <div className="flex gap-4 justify-center">
+              <p className="welcome-subtitle">
+                Build professional, ATS-friendly resumes that actually get shortlisted.
+              </p>
+
+              <div className="welcome-actions">
                 <button
+                  className="welcome-btn primary"
                   onClick={() => navigate("/login")}
-                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition transform hover:scale-[1.03] active:scale-[0.97]"
                 >
                   Login
                 </button>
 
                 <button
+                  className="welcome-btn secondary"
                   onClick={() => navigate("/signup")}
-                  className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition transform hover:scale-[1.03] active:scale-[0.97]"
                 >
                   Sign Up
                 </button>
               </div>
-            </div>
-          )}
 
-        </div>
+              <div className="welcome-footer">
+                Fast • Clean • Recruiter-ready
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </PageTransition>
   );
