@@ -5,6 +5,11 @@ import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
 import { resumeTypes } from "../data/resumeTypes";
 
+/* 🔒 FIREBASE (LOGIC ONLY) */
+import { auth, db } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+
 const TOTAL_SLIDES = 3;
 
 export default function Home() {
@@ -12,7 +17,13 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
 
+  /* 🔥 USER RESUMES STATE */
+  const [myResumes, setMyResumes] = useState([]);
+  const [loadingResumes, setLoadingResumes] = useState(true);
+
   const resumeNames = resumeTypes.map((type) => type.name);
+
+  /* ================= SLIDER LOGIC ================= */
 
   const scrollToSlide = (index) => {
     const slider = sliderRef.current;
@@ -41,7 +52,8 @@ export default function Home() {
     setActiveSlide(index);
   };
 
-  // Keyboard navigation
+  /* ================= KEYBOARD ================= */
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "ArrowLeft") scrollLeft();
@@ -51,6 +63,35 @@ export default function Home() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeSlide]);
+
+  /* ================= FETCH USER RESUMES (NO UI CHANGE) ================= */
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setMyResumes([]);
+        setLoadingResumes(false);
+        return;
+      }
+
+      const q = query(
+        collection(db, "resumes"),
+        where("userId", "==", user.uid)
+      );
+
+      const snap = await getDocs(q);
+      setMyResumes(
+        snap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+
+      setLoadingResumes(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <PageTransition>
@@ -117,7 +158,7 @@ export default function Home() {
             →
           </button>
 
-          {/* SLIDER */}
+          {/* SLIDER TRACK */}
           <div
             ref={sliderRef}
             onScroll={handleScroll}
@@ -155,7 +196,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* SLIDE 2 — MY RESUMES ✅ FIXED */}
+              {/* SLIDE 2 — MY RESUMES */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   onClick={() => navigate("/app/resumes")}
@@ -226,6 +267,23 @@ export default function Home() {
         <p className="text-center text-gray-400 mt-4 text-sm">
           Swipe, use arrows, dots, or ← →
         </p>
+
+        {/* ================= USER RESUMES (UNDER CARD, NO UI CHANGE ABOVE) ================= */}
+        {!loadingResumes && myResumes.length > 0 && (
+          <div className="mt-10 max-w-4xl mx-auto">
+            {myResumes.map((resume) => (
+              <div
+                key={resume.id}
+                onClick={() =>
+                  navigate(`/app/builder?id=${resume.id}`)
+                }
+                className="bg-white rounded-xl shadow px-6 py-4 mb-3 cursor-pointer hover:shadow-lg"
+              >
+                {resume.title || "Untitled Resume"}
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
     </PageTransition>
