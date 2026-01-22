@@ -5,14 +5,13 @@ import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
 import { resumeTypes } from "../data/resumeTypes";
 
-const TOTAL_SLIDES = 3; // 🔥 UPDATED
+const TOTAL_SLIDES = 3;
 
 export default function Home() {
   const sliderRef = useRef(null);
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // extract resume names for typing
   const resumeNames = resumeTypes.map((type) => type.name);
 
   const scrollToSlide = (index) => {
@@ -88,11 +87,10 @@ export default function Home() {
         {/* ================= SLIDER ================= */}
         <div className="relative">
 
-          {/* Left Arrow */}
+          {/* LEFT ARROW */}
           <button
             onClick={scrollLeft}
             disabled={activeSlide === 0}
-            aria-label="Previous slide"
             className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
               h-12 w-12 items-center justify-center rounded-full shadow-lg transition
               ${
@@ -104,11 +102,10 @@ export default function Home() {
             ←
           </button>
 
-          {/* Right Arrow */}
+          {/* RIGHT ARROW */}
           <button
             onClick={scrollRight}
             disabled={activeSlide === TOTAL_SLIDES - 1}
-            aria-label="Next slide"
             className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
               h-12 w-12 items-center justify-center rounded-full shadow-lg transition
               ${
@@ -120,7 +117,7 @@ export default function Home() {
             →
           </button>
 
-          {/* Slider */}
+          {/* SLIDER */}
           <div
             ref={sliderRef}
             onScroll={handleScroll}
@@ -134,46 +131,39 @@ export default function Home() {
                   <motion.div
                     whileHover={{ y: -6 }}
                     whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 280, damping: 22 }}
                     className="h-[420px] bg-white rounded-3xl shadow-xl
                       flex flex-col items-center justify-center
                       text-center px-10 cursor-pointer"
                   >
-                    <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="w-20 h-20 rounded-full bg-gray-100
-                        flex items-center justify-center text-4xl mb-6"
-                    >
+                    <div className="w-20 h-20 rounded-full bg-gray-100
+                      flex items-center justify-center text-4xl mb-6">
                       +
-                    </motion.div>
+                    </div>
 
                     <h2 className="text-3xl font-semibold mb-3">
                       Create New Resume
                     </h2>
 
                     <p className="text-gray-600 text-lg mb-8 max-w-xl">
-                      Build a professional, ATS-friendly resume in just minutes.
+                      Build a professional, ATS-friendly resume in minutes.
                     </p>
 
-                    <div className="px-8 py-3 rounded-xl bg-black text-white
-                      text-lg font-medium">
+                    <div className="px-8 py-3 rounded-xl bg-black text-white text-lg">
                       Create Resume →
                     </div>
                   </motion.div>
                 </Link>
               </div>
 
-              {/* SLIDE 2 — MY RESUMES */}
+              {/* SLIDE 2 — MY RESUMES ✅ FIXED */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
+                  onClick={() => navigate("/app/resumes")}
                   whileHover={{ y: -6 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 280, damping: 22 }}
                   className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center
                     text-center px-10 cursor-pointer"
-                  onClick={() => navigate("/app")}
                 >
                   <h2 className="text-3xl font-semibold mb-3">
                     My Resumes
@@ -183,34 +173,31 @@ export default function Home() {
                     View, edit, and download all your resumes in one place.
                   </p>
 
-                  <div className="px-8 py-3 rounded-xl bg-black text-white
-                    text-lg font-medium">
+                  <div className="px-8 py-3 rounded-xl bg-black text-white text-lg">
                     View Resumes →
                   </div>
                 </motion.div>
               </div>
 
-              {/* SLIDE 3 — RESUME SAMPLES 🔥 */}
+              {/* SLIDE 3 — SAMPLES */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
+                  onClick={() => navigate("/app/samples")}
                   whileHover={{ y: -6 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 280, damping: 22 }}
                   className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center
                     text-center px-10 cursor-pointer"
-                  onClick={() => navigate("/samples")}
                 >
                   <h2 className="text-3xl font-semibold mb-3">
                     Resume Samples
                   </h2>
 
                   <p className="text-gray-600 text-lg mb-8 max-w-xl">
-                    Explore recruiter-approved resume templates and examples.
+                    Explore recruiter-approved resume examples.
                   </p>
 
-                  <div className="px-8 py-3 rounded-xl bg-black text-white
-                    text-lg font-medium">
+                  <div className="px-8 py-3 rounded-xl bg-black text-white text-lg">
                     View Samples →
                   </div>
                 </motion.div>
@@ -220,7 +207,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Dots */}
+        {/* DOTS */}
         <div className="flex justify-center gap-3 mt-6">
           {[0, 1, 2].map((i) => (
             <button
@@ -237,7 +224,7 @@ export default function Home() {
         </div>
 
         <p className="text-center text-gray-400 mt-4 text-sm">
-          Swipe, use arrows, dots, or ← → keys to explore
+          Swipe, use arrows, dots, or ← →
         </p>
 
       </div>
