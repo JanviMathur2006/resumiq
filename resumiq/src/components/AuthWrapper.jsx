@@ -17,24 +17,24 @@ export default function AuthWrapper() {
     return () => unsubscribe();
   }, []);
 
-  // ⏳ While Firebase checks auth
+  // ⏳ Wait for Firebase to resolve auth state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600 text-lg">
+        <p className="text-gray-500 text-lg">
           Checking authentication…
         </p>
       </div>
     );
   }
 
-  // 🔐 Not logged in → Login
+  // ❌ Not logged in → redirect to login
   if (!user) {
     return (
       <Navigate
         to="/login"
         replace
-        state={{ from: location.pathname }}
+        state={{ from: location }}
       />
     );
   }

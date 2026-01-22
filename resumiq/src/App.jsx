@@ -52,7 +52,12 @@ function AnimatedRoutes() {
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
 
+            {/* MAIN */}
             <Route path="/app" element={<Home />} />
+
+            {/* ✅ FIX: MY RESUMES ROUTE */}
+            <Route path="/app/resumes" element={<CreateResumes />} />
+
             <Route path="/app/create" element={<CreateResumes />} />
             <Route path="/app/choose" element={<ChooseResumeType />} />
             <Route path="/app/builder" element={<ResumeBuilder />} />
