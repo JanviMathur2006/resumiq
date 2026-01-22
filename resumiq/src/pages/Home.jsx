@@ -17,13 +17,13 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
 
-  /* 🔵 CARD 2 — USER RESUMES */
+  /* CARD 2 — USER RESUMES */
   const [userResumes, setUserResumes] = useState([]);
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
 
   const resumeNames = resumeTypes.map((type) => type.name);
 
-  /* ================= SLIDER CONTROLS ================= */
+  /* ================= SLIDER FUNCTIONS ================= */
 
   const scrollToSlide = (index) => {
     const slider = sliderRef.current;
@@ -38,28 +38,41 @@ export default function Home() {
   };
 
   const scrollLeft = () => {
-    if (activeSlide > 0) scrollToSlide(activeSlide - 1);
+    if (activeSlide > 0) {
+      scrollToSlide(activeSlide - 1);
+    }
   };
 
   const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1)
+    if (activeSlide < TOTAL_SLIDES - 1) {
       scrollToSlide(activeSlide + 1);
+    }
   };
 
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const index = Math.round(
-      slider.scrollLeft / slider.offsetWidth
-    );
+    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
     setActiveSlide(index);
   };
+
+  /* ================= KEYBOARD NAVIGATION ================= */
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") scrollLeft();
+      if (e.key === "ArrowRight") scrollRight();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeSlide]);
 
   /* ================= FETCH USER RESUMES ================= */
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         setUserResumes([]);
         setLoadingUserResumes(false);
@@ -83,7 +96,7 @@ export default function Home() {
       setLoadingUserResumes(false);
     });
 
-    return () => unsub();
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -118,7 +131,7 @@ export default function Home() {
         {/* ================= SLIDER ================= */}
         <div className="relative">
 
-          {/* ⬅ LEFT ARROW */}
+          {/* LEFT ARROW */}
           <button
             onClick={scrollLeft}
             disabled={activeSlide === 0}
@@ -133,7 +146,7 @@ export default function Home() {
             ←
           </button>
 
-          {/* ➡ RIGHT ARROW */}
+          {/* RIGHT ARROW */}
           <button
             onClick={scrollRight}
             disabled={activeSlide === TOTAL_SLIDES - 1}
@@ -156,7 +169,7 @@ export default function Home() {
           >
             <div className="flex gap-12">
 
-              {/* 🟢 CARD 1 — CATEGORIES */}
+              {/* CARD 1 — CATEGORIES */}
               <div className="snap-center min-w-full flex justify-center">
                 <Link to="/app/create" className="w-full max-w-4xl">
                   <motion.div
@@ -176,7 +189,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* 🔵 CARD 2 — MY RESUMES */}
+              {/* CARD 2 — MY RESUMES */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   whileHover={{ y: -6 }}
@@ -190,13 +203,9 @@ export default function Home() {
                   </h2>
 
                   {loadingUserResumes ? (
-                    <p className="text-gray-500">
-                      Loading…
-                    </p>
+                    <p className="text-gray-500">Loading…</p>
                   ) : userResumes.length === 0 ? (
-                    <p className="text-gray-500">
-                      Nothing created yet
-                    </p>
+                    <p className="text-gray-500">Nothing created yet</p>
                   ) : (
                     <div className="w-full max-w-md flex flex-col gap-3">
                       {userResumes.map((resume) => (
@@ -216,7 +225,7 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* 🟣 CARD 3 — SAMPLES */}
+              {/* CARD 3 — SAMPLES */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   onClick={() => navigate("/app/samples")}
