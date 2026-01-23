@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const TABS = ["Recommended", "Students", "Professionals", "Specialized"];
 
@@ -124,18 +124,30 @@ export default function ChooseResumeType() {
                   ? { scale: [1, 0.97, 1] }
                   : { scale: 1 }
               }
-              transition={{
-                duration: 0.18,
-                ease: "easeOut",
-              }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
               onClick={() => setSelected(card.id)}
-              className={`cursor-pointer rounded-2xl p-6 bg-white
+              className={`relative cursor-pointer rounded-2xl p-6 bg-white
                 ${
                   isSelected
                     ? "border-2 border-black shadow-lg"
                     : "border border-gray-200 hover:shadow-md"
                 }`}
             >
+              {/* ✅ Checkmark */}
+              <AnimatePresence>
+                {isSelected && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute top-4 right-4 w-7 h-7 rounded-full bg-black text-white flex items-center justify-center text-sm"
+                  >
+                    ✓
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Best Match */}
               {card.recommended && (
                 <span className="inline-block text-xs font-semibold bg-gray-100 text-gray-700 px-3 py-1 rounded-full mb-4">
