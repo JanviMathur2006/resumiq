@@ -36,6 +36,30 @@ const RESUMES = [
   },
 ];
 
+/* =======================
+   ANIMATION VARIANTS
+======================= */
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.25,
+      ease: "easeOut",
+    },
+  },
+};
+
 export default function ChooseResumeType() {
   const [activeTab, setActiveTab] = useState("Recommended");
   const [selected, setSelected] = useState(null);
@@ -80,15 +104,22 @@ export default function ChooseResumeType() {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 max-w-6xl">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        key={activeTab}
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 max-w-6xl"
+      >
         {filteredResumes.map(card => {
           const isSelected = selected === card.id;
 
           return (
-            <div
+            <motion.div
               key={card.id}
+              variants={item}
               onClick={() => setSelected(card.id)}
-              className={`cursor-pointer rounded-2xl p-6 transition bg-white
+              className={`cursor-pointer rounded-2xl p-6 bg-white transition
                 ${
                   isSelected
                     ? "border-2 border-black shadow-lg"
@@ -113,10 +144,10 @@ export default function ChooseResumeType() {
               <p className="text-gray-400 text-sm mt-6">
                 Best for: {card.bestFor}
               </p>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Continue */}
       <div className="flex justify-end mt-16">
@@ -140,3 +171,4 @@ export default function ChooseResumeType() {
     </motion.div>
   );
 }
+
