@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const TABS = ["Recommended", "Students", "Professionals", "Specialized"];
 
@@ -46,7 +47,12 @@ export default function ChooseResumeType() {
       : RESUMES.filter(r => r.tab === activeTab);
 
   return (
-    <div className="min-h-screen bg-[#f6f8fb] px-12 py-10">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="min-h-screen bg-[#f6f8fb] px-12 py-10"
+    >
       {/* Header */}
       <h1 className="text-3xl font-semibold text-gray-900">
         Choose Resume Type
@@ -131,6 +137,6 @@ export default function ChooseResumeType() {
           Continue →
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
