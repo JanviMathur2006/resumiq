@@ -118,8 +118,10 @@ export default function ChooseResumeType() {
             <motion.div
               key={card.id}
               variants={item}
+              whileHover={!isSelected ? { y: -3 } : {}}
+              transition={{ duration: 0.15, ease: "easeOut" }}
               onClick={() => setSelected(card.id)}
-              className={`cursor-pointer rounded-2xl p-6 bg-white transition
+              className={`cursor-pointer rounded-2xl p-6 bg-white
                 ${
                   isSelected
                     ? "border-2 border-black shadow-lg"
