@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -69,6 +69,22 @@ export default function ChooseResumeType() {
     activeTab === "Recommended"
       ? RESUMES
       : RESUMES.filter(r => r.tab === activeTab);
+
+  /* =======================
+     ENTER → CONTINUE
+  ======================= */
+  useEffect(() => {
+    const handleKey = e => {
+      if (e.key === "Enter" && selected) {
+        navigate("/app/builder", {
+          state: { resumeType: selected },
+        });
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selected, navigate]);
 
   return (
     <motion.div
@@ -172,24 +188,26 @@ export default function ChooseResumeType() {
         })}
       </motion.div>
 
-      {/* Continue */}
-      <div className="flex justify-end mt-16">
-        <button
-          disabled={!selected}
-          onClick={() =>
-            navigate("/app/builder", {
-              state: { resumeType: selected },
-            })
-          }
-          className={`px-8 py-3 rounded-xl font-medium transition
-            ${
-              selected
-                ? "bg-black text-white hover:opacity-90"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-        >
-          Continue →
-        </button>
+      {/* Continue (slides in only when enabled) */}
+      <div className="flex justify-end mt-16 h-[56px]">
+        <AnimatePresence>
+          {selected && (
+            <motion.button
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              onClick={() =>
+                navigate("/app/builder", {
+                  state: { resumeType: selected },
+                })
+              }
+              className="px-8 py-3 rounded-xl font-medium bg-black text-white hover:opacity-90"
+            >
+              Continue →
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
