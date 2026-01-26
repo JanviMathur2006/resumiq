@@ -42,17 +42,14 @@ export default function CreateResumes() {
   ======================= */
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Ignore when typing in inputs/textareas
       const tag = document.activeElement?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 
-      // Mac: Cmd + ArrowLeft
       if (e.metaKey && e.key === "ArrowLeft") {
         e.preventDefault();
         navigate(-1);
       }
 
-      // Windows/Linux: Alt + ArrowLeft
       if (e.altKey && e.key === "ArrowLeft") {
         e.preventDefault();
         navigate(-1);
@@ -80,7 +77,7 @@ export default function CreateResumes() {
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
 
-      {/* BACK ARROW – EXTREME LEFT */}
+      {/* BACK ARROW */}
       <button
         onClick={() => navigate(-1)}
         aria-label="Go back (⌘ + ←)"
@@ -89,7 +86,7 @@ export default function CreateResumes() {
           fixed top-28 left-6 z-20
           text-gray-400 text-xl
           hover:text-gray-900
-          transition-transform transition-colors
+          transition-all
           hover:-translate-x-1
         "
       >
@@ -112,7 +109,8 @@ export default function CreateResumes() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition
+              className={`
+                px-4 py-2 rounded-full text-sm font-medium transition
                 ${
                   activeTab === tab.id
                     ? "bg-black text-white"
@@ -152,7 +150,9 @@ export default function CreateResumes() {
                       `
                       : `
                         border-gray-200 bg-white
-                        hover:shadow-md hover:-translate-y-1
+                        hover:-translate-y-1
+                        hover:scale-[1.01]
+                        hover:shadow-md
                       `
                   }
                 `}
@@ -165,7 +165,7 @@ export default function CreateResumes() {
                   {type.description}
                 </p>
 
-                {/* SUBTLE DIVIDER */}
+                {/* DIVIDER */}
                 <div className="relative h-px w-full overflow-hidden mb-4">
                   <span
                     className={`
@@ -184,7 +184,7 @@ export default function CreateResumes() {
                   Best for: {type.bestFor}
                 </p>
 
-                {/* HOVER ARROW HINT */}
+                {/* HOVER ARROW */}
                 <span
                   className="
                     pointer-events-none absolute bottom-4 right-4
