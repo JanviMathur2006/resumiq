@@ -157,11 +157,13 @@ export default function CreateResumes() {
                   }
                 `}
               >
+                {/* TITLE */}
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {type.name}
                 </h3>
 
-                <p className="text-sm text-gray-600 mb-4">
+                {/* DESCRIPTION */}
+                <p className="text-sm text-gray-600 leading-relaxed mb-4">
                   {type.description}
                 </p>
 
@@ -180,9 +182,21 @@ export default function CreateResumes() {
                   />
                 </div>
 
-                <p className="text-xs text-gray-400">
-                  Best for: {type.bestFor}
-                </p>
+                {/* BEST FOR BADGES */}
+                <div className="flex flex-wrap gap-2">
+                  {type.bestFor.split(",").map((item) => (
+                    <span
+                      key={item}
+                      className="
+                        text-xs font-medium
+                        px-3 py-1 rounded-full
+                        bg-gray-100 text-gray-600
+                      "
+                    >
+                      {item.trim()}
+                    </span>
+                  ))}
+                </div>
 
                 {/* HOVER ARROW */}
                 <span
