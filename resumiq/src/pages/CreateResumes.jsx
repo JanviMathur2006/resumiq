@@ -37,20 +37,13 @@ export default function CreateResumes() {
 
   /* =======================
      KEYBOARD SHORTCUT
-     ⌘ + ← (Mac)
-     Alt + ← (Win/Linux)
   ======================= */
   useEffect(() => {
     const handleKeyDown = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 
-      if (e.metaKey && e.key === "ArrowLeft") {
-        e.preventDefault();
-        navigate(-1);
-      }
-
-      if (e.altKey && e.key === "ArrowLeft") {
+      if ((e.metaKey || e.altKey) && e.key === "ArrowLeft") {
         e.preventDefault();
         navigate(-1);
       }
@@ -84,6 +77,7 @@ export default function CreateResumes() {
         className="
           fixed top-28 left-6 z-20
           text-gray-400 text-xl
+          bg-transparent rounded-none
           hover:text-gray-900
           transition-all
           hover:-translate-x-1
@@ -102,7 +96,9 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* TABS – FIXED */}
+        {/* =======================
+            TABS – HARD RESET
+        ======================= */}
         <div className="relative mt-8 border-b border-gray-200">
           <div className="flex gap-8">
             {TABS.map((tab) => {
@@ -113,7 +109,10 @@ export default function CreateResumes() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    relative pb-3 text-sm font-medium transition-colors
+                    relative pb-3
+                    text-sm font-medium
+                    bg-transparent rounded-none
+                    transition-colors
                     focus:outline-none
                     ${
                       isActive
@@ -129,7 +128,7 @@ export default function CreateResumes() {
                       layoutId="activeTab"
                       className="
                         absolute left-0 right-0 -bottom-[1px]
-                        h-[2px] bg-gray-900 rounded-full
+                        h-[2px] bg-gray-900
                       "
                     />
                   )}
