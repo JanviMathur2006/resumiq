@@ -80,8 +80,7 @@ export default function CreateResumes() {
       {/* BACK ARROW */}
       <button
         onClick={() => navigate(-1)}
-        aria-label="Go back (⌘ + ←)"
-        title="Go back (⌘ + ←)"
+        aria-label="Go back"
         className="
           fixed top-28 left-6 z-20
           text-gray-400 text-xl
@@ -103,38 +102,41 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* TABS – POINT 3 */}
-        <div className="relative mt-8 flex gap-6 border-b border-gray-200">
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
+        {/* TABS – FIXED */}
+        <div className="relative mt-8 border-b border-gray-200">
+          <div className="flex gap-8">
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
 
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  relative pb-3 text-sm font-medium transition-colors
-                  ${
-                    isActive
-                      ? "text-gray-900"
-                      : "text-gray-500 hover:text-gray-700"
-                  }
-                `}
-              >
-                {tab.label}
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    relative pb-3 text-sm font-medium transition-colors
+                    focus:outline-none
+                    ${
+                      isActive
+                        ? "text-gray-900"
+                        : "text-gray-500 hover:text-gray-700"
+                    }
+                  `}
+                >
+                  {tab.label}
 
-                {isActive && (
-                  <motion.span
-                    layoutId="activeTab"
-                    className="
-                      absolute left-0 right-0 -bottom-[1px]
-                      h-[2px] bg-gray-900 rounded-full
-                    "
-                  />
-                )}
-              </button>
-            );
-          })}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeTab"
+                      className="
+                        absolute left-0 right-0 -bottom-[1px]
+                        h-[2px] bg-gray-900 rounded-full
+                      "
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* RESUME CARDS */}
@@ -171,17 +173,14 @@ export default function CreateResumes() {
                   }
                 `}
               >
-                {/* TITLE */}
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {type.name}
                 </h3>
 
-                {/* DESCRIPTION */}
                 <p className="text-sm text-gray-600 leading-relaxed mb-4">
                   {type.description}
                 </p>
 
-                {/* DIVIDER */}
                 <div className="relative h-px w-full overflow-hidden mb-4">
                   <span
                     className={`
@@ -196,7 +195,6 @@ export default function CreateResumes() {
                   />
                 </div>
 
-                {/* BEST FOR BADGES */}
                 <div className="flex flex-wrap gap-2">
                   {type.bestFor.split(",").map((item) => (
                     <span
@@ -212,7 +210,6 @@ export default function CreateResumes() {
                   ))}
                 </div>
 
-                {/* HOVER ARROW */}
                 <span
                   className="
                     pointer-events-none absolute bottom-4 right-4
