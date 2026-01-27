@@ -36,6 +36,11 @@ export default function CreateResumes() {
   const navigate = useNavigate();
 
   /* =======================
+     SMART RECOMMENDATION
+  ======================= */
+  const recommendedId = "fresher"; // must match resumeTypes id
+
+  /* =======================
      KEYBOARD SHORTCUT
   ======================= */
   useEffect(() => {
@@ -96,9 +101,7 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* =======================
-            TABS – HARD RESET
-        ======================= */}
+        {/* TABS */}
         <div className="relative mt-8 border-b border-gray-200">
           <div className="flex gap-8">
             {TABS.map((tab) => {
@@ -138,6 +141,14 @@ export default function CreateResumes() {
           </div>
         </div>
 
+        {/* RECOMMENDED MICRO COPY */}
+        {activeTab === "recommended" && (
+          <div className="mt-3 text-sm text-gray-500 flex items-center gap-1">
+            <span>⭐</span>
+            <span>Recommended for you based on common student profiles</span>
+          </div>
+        )}
+
         {/* RESUME CARDS */}
         <motion.div
           key={activeTab}
@@ -148,6 +159,8 @@ export default function CreateResumes() {
         >
           {filteredTypes.map((type) => {
             const isActive = selectedType?.id === type.id;
+            const isRecommended =
+              activeTab === "recommended" && type.id === recommendedId;
 
             return (
               <motion.div
@@ -163,6 +176,11 @@ export default function CreateResumes() {
                         border-black bg-[#fafafa]
                         shadow-[0_0_0_3px_rgba(0,0,0,0.08)]
                       `
+                      : isRecommended
+                      ? `
+                        border-gray-300 bg-white
+                        shadow-[0_0_0_3px_rgba(0,0,0,0.04)]
+                      `
                       : `
                         border-gray-200 bg-white
                         hover:-translate-y-1
@@ -172,21 +190,31 @@ export default function CreateResumes() {
                   }
                 `}
               >
+                {/* RECOMMENDED TAG */}
+                {isRecommended && (
+                  <span className="inline-block mb-2 text-xs font-medium text-gray-500">
+                    ⭐ Recommended
+                  </span>
+                )}
+
+                {/* TITLE */}
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {type.name}
                 </h3>
 
+                {/* DESCRIPTION */}
                 <p className="text-sm text-gray-600 leading-relaxed mb-4">
                   {type.description}
                 </p>
 
+                {/* DIVIDER */}
                 <div className="relative h-px w-full overflow-hidden mb-4">
                   <span
                     className={`
                       absolute left-0 top-0 h-px bg-gray-300
                       transition-all duration-300
                       ${
-                        isActive
+                        isActive || isRecommended
                           ? "w-full opacity-30"
                           : "w-0 opacity-20 group-hover:w-full"
                       }
@@ -194,6 +222,7 @@ export default function CreateResumes() {
                   />
                 </div>
 
+                {/* BADGES */}
                 <div className="flex flex-wrap gap-2">
                   {type.bestFor.split(",").map((item) => (
                     <span
@@ -209,6 +238,7 @@ export default function CreateResumes() {
                   ))}
                 </div>
 
+                {/* HOVER ARROW */}
                 <span
                   className="
                     pointer-events-none absolute bottom-4 right-4
