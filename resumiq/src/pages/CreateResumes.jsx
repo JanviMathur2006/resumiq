@@ -103,24 +103,38 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* TABS */}
-        <div className="mt-8 flex gap-3 flex-wrap">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                px-4 py-2 rounded-full text-sm font-medium transition
-                ${
-                  activeTab === tab.id
-                    ? "bg-black text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-100"
-                }
-              `}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* TABS – POINT 3 */}
+        <div className="relative mt-8 flex gap-6 border-b border-gray-200">
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  relative pb-3 text-sm font-medium transition-colors
+                  ${
+                    isActive
+                      ? "text-gray-900"
+                      : "text-gray-500 hover:text-gray-700"
+                  }
+                `}
+              >
+                {tab.label}
+
+                {isActive && (
+                  <motion.span
+                    layoutId="activeTab"
+                    className="
+                      absolute left-0 right-0 -bottom-[1px]
+                      h-[2px] bg-gray-900 rounded-full
+                    "
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* RESUME CARDS */}
