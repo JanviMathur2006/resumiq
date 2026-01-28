@@ -34,15 +34,17 @@ export default function CreateResumes() {
   const [activeTab, setActiveTab] = useState("recommended");
   const [selectedType, setSelectedType] = useState(null);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigate = useNavigate();
 
   /* =======================
      SMART RECOMMENDATION
   ======================= */
-  const recommendedId = "fresher"; // must match resumeTypes id
+  const recommendedId = "fresher";
 
   /* =======================
-     FIRST-TIME VISIT CHECK
+     FIRST-TIME VISIT
   ======================= */
   useEffect(() => {
     const visited = sessionStorage.getItem("resumiq_create_seen");
@@ -51,6 +53,18 @@ export default function CreateResumes() {
       sessionStorage.setItem("resumiq_create_seen", "true");
     }
   }, []);
+
+  /* =======================
+     FAKE LOADING (SKELETON)
+  ======================= */
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   /* =======================
      BACK SHORTCUT
@@ -85,9 +99,11 @@ export default function CreateResumes() {
   };
 
   /* =======================
-     KEYBOARD NAVIGATION
+     KEYBOARD NAV
   ======================= */
   useEffect(() => {
+    if (isLoading) return;
+
     const handleKeys = (e) => {
       if (!filteredTypes.length) return;
 
@@ -114,12 +130,12 @@ export default function CreateResumes() {
 
     window.addEventListener("keydown", handleKeys);
     return () => window.removeEventListener("keydown", handleKeys);
-  }, [filteredTypes, selectedType]);
+  }, [filteredTypes, selectedType, isLoading]);
 
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
 
-      {/* BACK ARROW */}
+      {/* BACK */}
       <button
         onClick={() => navigate(-1)}
         className="
@@ -133,7 +149,7 @@ export default function CreateResumes() {
         ←
       </button>
 
-      {/* PAGE WRAPPER – ONE-TIME ENTRANCE */}
+      {/* PAGE WRAPPER */}
       <motion.div
         initial={isFirstVisit ? { opacity: 0, y: 12 } : false}
         animate={{ opacity: 1, y: 0 }}
@@ -154,7 +170,6 @@ export default function CreateResumes() {
           <div className="flex gap-8">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
-
               return (
                 <button
                   key={tab.id}
@@ -173,10 +188,7 @@ export default function CreateResumes() {
                   {isActive && (
                     <motion.span
                       layoutId="activeTab"
-                      className="
-                        absolute left-0 right-0 -bottom-[1px]
-                        h-[2px] bg-gray-900
-                      "
+                      className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-gray-900"
                     />
                   )}
                 </button>
@@ -185,16 +197,36 @@ export default function CreateResumes() {
           </div>
         </div>
 
-        {/* RECOMMENDED MICRO COPY */}
+        {/* RECOMMENDED TEXT */}
         {activeTab === "recommended" && (
           <div className="mt-3 text-sm text-gray-500 flex items-center gap-1">
-            <span>⭐</span>
-            <span>Recommended for you based on common student profiles</span>
+            ⭐ Recommended for you based on common student profiles
           </div>
         )}
 
-        {/* CONTENT */}
-        {filteredTypes.length === 0 ? (
+        {/* =======================
+            CONTENT
+        ======================= */}
+
+        {/* SKELETON STATE */}
+        {isLoading ? (
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="rounded-2xl border bg-white p-6 animate-pulse"
+              >
+                <div className="h-4 w-3/4 bg-gray-200 rounded mb-4" />
+                <div className="h-3 w-full bg-gray-200 rounded mb-2" />
+                <div className="h-3 w-5/6 bg-gray-200 rounded mb-6" />
+                <div className="flex gap-2">
+                  <div className="h-6 w-16 bg-gray-200 rounded-full" />
+                  <div className="h-6 w-20 bg-gray-200 rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredTypes.length === 0 ? (
           <div className="mt-20 text-center text-gray-500">
             <p className="text-lg font-medium">No resume types found</p>
             <p className="mt-1 text-sm">
@@ -252,22 +284,9 @@ export default function CreateResumes() {
                     {type.name}
                   </h3>
 
-                  <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                  <p className="text-sm text-gray-600 mb-4">
                     {type.description}
                   </p>
-
-                  <div className="relative h-px w-full overflow-hidden mb-4">
-                    <span
-                      className={`
-                        absolute left-0 top-0 h-px bg-gray-300 transition-all duration-300
-                        ${
-                          isActive || isRecommended
-                            ? "w-full opacity-30"
-                            : "w-0 opacity-20 group-hover:w-full"
-                        }
-                      `}
-                    />
-                  </div>
 
                   <div className="flex flex-wrap gap-2">
                     {type.bestFor.split(",").map((item) => (
@@ -279,18 +298,6 @@ export default function CreateResumes() {
                       </span>
                     ))}
                   </div>
-
-                  <span
-                    className="
-                      pointer-events-none absolute bottom-4 right-4
-                      text-gray-400 text-lg
-                      opacity-0 translate-x-1
-                      transition-all duration-200
-                      group-hover:opacity-100 group-hover:translate-x-0
-                    "
-                  >
-                    →
-                  </span>
                 </motion.div>
               );
             })}
@@ -299,29 +306,24 @@ export default function CreateResumes() {
 
         {/* CONTINUE */}
         <div className="mt-12 flex justify-end">
-          <div className="text-right">
-            <button
-              onClick={handleContinue}
-              disabled={!selectedType}
-              className={`
-                rounded-xl px-6 py-3 text-sm font-medium transition
-                ${
-                  selectedType
-                    ? "bg-black text-white hover:bg-gray-900"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }
-              `}
-            >
-              Continue →
-            </button>
-
-            <p className="mt-2 text-xs text-gray-400">
-              Tip: Use ← → to navigate, Enter to continue
-            </p>
-          </div>
+          <button
+            onClick={handleContinue}
+            disabled={!selectedType}
+            className={`
+              rounded-xl px-6 py-3 text-sm font-medium transition
+              ${
+                selectedType
+                  ? "bg-black text-white hover:bg-gray-900"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }
+            `}
+          >
+            Continue →
+          </button>
         </div>
 
       </motion.div>
     </div>
   );
 }
+
