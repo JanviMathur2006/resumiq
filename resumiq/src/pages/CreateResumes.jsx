@@ -33,12 +33,24 @@ const item = {
 export default function CreateResumes() {
   const [activeTab, setActiveTab] = useState("recommended");
   const [selectedType, setSelectedType] = useState(null);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
   const navigate = useNavigate();
 
   /* =======================
      SMART RECOMMENDATION
   ======================= */
   const recommendedId = "fresher"; // must match resumeTypes id
+
+  /* =======================
+     FIRST-TIME VISIT CHECK
+  ======================= */
+  useEffect(() => {
+    const visited = sessionStorage.getItem("resumiq_create_seen");
+    if (!visited) {
+      setIsFirstVisit(true);
+      sessionStorage.setItem("resumiq_create_seen", "true");
+    }
+  }, []);
 
   /* =======================
      BACK SHORTCUT
@@ -121,7 +133,13 @@ export default function CreateResumes() {
         ←
       </button>
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      {/* PAGE WRAPPER – ONE-TIME ENTRANCE */}
+      <motion.div
+        initial={isFirstVisit ? { opacity: 0, y: 12 } : false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="max-w-6xl mx-auto px-6 py-12"
+      >
 
         {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
@@ -143,8 +161,7 @@ export default function CreateResumes() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     relative pb-3 text-sm font-medium
-                    bg-transparent rounded-none
-                    transition-colors
+                    bg-transparent rounded-none transition-colors
                     ${
                       isActive
                         ? "text-gray-900"
@@ -202,6 +219,17 @@ export default function CreateResumes() {
                   key={type.id}
                   variants={item}
                   onClick={() => setSelectedType(type)}
+                  initial={
+                    isFirstVisit && isRecommended
+                      ? { scale: 0.96 }
+                      : false
+                  }
+                  animate={
+                    isFirstVisit && isRecommended
+                      ? { scale: [0.96, 1.02, 1] }
+                      : false
+                  }
+                  transition={{ duration: 0.6, ease: "easeOut" }}
                   className={`
                     group relative cursor-pointer rounded-2xl border p-6
                     transition-all duration-200
@@ -293,7 +321,7 @@ export default function CreateResumes() {
           </div>
         </div>
 
-      </div>
+      </motion.div>
     </div>
   );
 }
