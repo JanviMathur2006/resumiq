@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { resumeTypes } from "../data/resumeTypes";
 
 /* =======================
@@ -31,12 +31,19 @@ const item = {
 };
 
 export default function CreateResumes() {
+  const navigate = useNavigate();
+
+  /* =======================
+     STATE
+  ======================= */
   const [activeTab, setActiveTab] = useState("recommended");
   const [selectedType, setSelectedType] = useState(null);
+  const [prevSelectedType, setPrevSelectedType] = useState(null);
+  const [showUndo, setShowUndo] = useState(false);
   const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const navigate = useNavigate();
+  const undoTimer = useRef(null);
 
   /* =======================
      SMART RECOMMENDATION
@@ -44,7 +51,7 @@ export default function CreateResumes() {
   const recommendedId = "fresher";
 
   /* =======================
-     FIRST-TIME VISIT
+     FIRST-TIME VISIT (POINT 7)
   ======================= */
   useEffect(() => {
     const visited = sessionStorage.getItem("resumiq_create_seen");
@@ -55,14 +62,11 @@ export default function CreateResumes() {
   }, []);
 
   /* =======================
-     FAKE LOADING (SKELETON)
+     SKELETON LOADING (POINT 9)
   ======================= */
   useEffect(() => {
     setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-
+    const timer = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(timer);
   }, [activeTab]);
 
@@ -84,10 +88,37 @@ export default function CreateResumes() {
     return () => window.removeEventListener("keydown", handleBack);
   }, [navigate]);
 
+  /* =======================
+     FILTER
+  ======================= */
   const filteredTypes = resumeTypes.filter((type) =>
     type.category.includes(activeTab)
   );
 
+  /* =======================
+     SELECT WITH UNDO (POINT 10)
+  ======================= */
+  const handleSelect = (type) => {
+    if (selectedType?.id === type.id) return;
+
+    setPrevSelectedType(selectedType);
+    setSelectedType(type);
+    setShowUndo(true);
+
+    clearTimeout(undoTimer.current);
+    undoTimer.current = setTimeout(() => {
+      setShowUndo(false);
+    }, 4000);
+  };
+
+  const handleUndo = () => {
+    setSelectedType(prevSelectedType);
+    setShowUndo(false);
+  };
+
+  /* =======================
+     CONTINUE
+  ======================= */
   const handleContinue = () => {
     if (!selectedType) return;
     navigate("/app/builder", {
@@ -99,7 +130,7 @@ export default function CreateResumes() {
   };
 
   /* =======================
-     KEYBOARD NAV
+     KEYBOARD NAV (POINT 5)
   ======================= */
   useEffect(() => {
     if (isLoading) return;
@@ -135,15 +166,14 @@ export default function CreateResumes() {
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
 
-      {/* BACK */}
+      {/* BACK ARROW */}
       <button
         onClick={() => navigate(-1)}
         className="
           fixed top-28 left-6 z-20
-          text-gray-400 text-xl
-          bg-transparent rounded-none
-          hover:text-gray-900
-          transition-all hover:-translate-x-1
+          text-gray-400 text-xl bg-transparent
+          hover:text-gray-900 transition
+          hover:-translate-x-1
         "
       >
         ←
@@ -156,7 +186,6 @@ export default function CreateResumes() {
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="max-w-6xl mx-auto px-6 py-12"
       >
-
         {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
           Choose Resume Type
@@ -175,8 +204,7 @@ export default function CreateResumes() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    relative pb-3 text-sm font-medium
-                    bg-transparent rounded-none transition-colors
+                    relative pb-3 text-sm font-medium bg-transparent
                     ${
                       isActive
                         ? "text-gray-900"
@@ -197,19 +225,16 @@ export default function CreateResumes() {
           </div>
         </div>
 
-        {/* RECOMMENDED TEXT */}
+        {/* RECOMMENDED COPY */}
         {activeTab === "recommended" && (
           <div className="mt-3 text-sm text-gray-500 flex items-center gap-1">
             ⭐ Recommended for you based on common student profiles
           </div>
         )}
 
-        {/* =======================
-            CONTENT
-        ======================= */}
-
-        {/* SKELETON STATE */}
+        {/* CONTENT */}
         {isLoading ? (
+          /* SKELETONS */
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div
@@ -227,6 +252,7 @@ export default function CreateResumes() {
             ))}
           </div>
         ) : filteredTypes.length === 0 ? (
+          /* EMPTY STATE */
           <div className="mt-20 text-center text-gray-500">
             <p className="text-lg font-medium">No resume types found</p>
             <p className="mt-1 text-sm">
@@ -234,8 +260,8 @@ export default function CreateResumes() {
             </p>
           </div>
         ) : (
+          /* CARDS */
           <motion.div
-            key={activeTab}
             variants={container}
             initial="hidden"
             animate="show"
@@ -250,7 +276,7 @@ export default function CreateResumes() {
                 <motion.div
                   key={type.id}
                   variants={item}
-                  onClick={() => setSelectedType(type)}
+                  onClick={() => handleSelect(type)}
                   initial={
                     isFirstVisit && isRecommended
                       ? { scale: 0.96 }
@@ -263,19 +289,18 @@ export default function CreateResumes() {
                   }
                   transition={{ duration: 0.6, ease: "easeOut" }}
                   className={`
-                    group relative cursor-pointer rounded-2xl border p-6
-                    transition-all duration-200
+                    cursor-pointer rounded-2xl border p-6 transition-all
                     ${
                       isActive
                         ? "border-black bg-[#fafafa] shadow-[0_0_0_3px_rgba(0,0,0,0.08)]"
                         : isRecommended
                         ? "border-gray-300 bg-white shadow-[0_0_0_3px_rgba(0,0,0,0.04)]"
-                        : "border-gray-200 bg-white hover:-translate-y-1 hover:scale-[1.01] hover:shadow-md"
+                        : "border-gray-200 bg-white hover:-translate-y-1 hover:shadow-md"
                     }
                   `}
                 >
                   {isRecommended && (
-                    <span className="inline-block mb-2 text-xs font-medium text-gray-500">
+                    <span className="inline-block mb-2 text-xs text-gray-500">
                       ⭐ Recommended
                     </span>
                   )}
@@ -292,7 +317,7 @@ export default function CreateResumes() {
                     {type.bestFor.split(",").map((item) => (
                       <span
                         key={item}
-                        className="text-xs font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-600"
+                        className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600"
                       >
                         {item.trim()}
                       </span>
@@ -321,9 +346,32 @@ export default function CreateResumes() {
             Continue →
           </button>
         </div>
-
       </motion.div>
+
+      {/* UNDO TOAST */}
+      <AnimatePresence>
+        {showUndo && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            className="
+              fixed bottom-6 left-1/2 -translate-x-1/2
+              bg-gray-900 text-white text-sm
+              px-4 py-2 rounded-lg shadow-lg
+              flex items-center gap-3
+            "
+          >
+            <span>Resume type changed</span>
+            <button
+              onClick={handleUndo}
+              className="underline font-medium"
+            >
+              Undo
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
