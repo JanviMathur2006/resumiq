@@ -43,6 +43,13 @@ export default function CreateResumes() {
   const [isFirstVisit, setIsFirstVisit] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  /* Progressive disclosure (Point 11) */
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [options, setOptions] = useState({
+    projects: true,
+    skills: true,
+  });
+
   const undoTimer = useRef(null);
 
   /* =======================
@@ -104,11 +111,10 @@ export default function CreateResumes() {
     setPrevSelectedType(selectedType);
     setSelectedType(type);
     setShowUndo(true);
+    setShowAdvanced(false);
 
     clearTimeout(undoTimer.current);
-    undoTimer.current = setTimeout(() => {
-      setShowUndo(false);
-    }, 4000);
+    undoTimer.current = setTimeout(() => setShowUndo(false), 4000);
   };
 
   const handleUndo = () => {
@@ -121,10 +127,12 @@ export default function CreateResumes() {
   ======================= */
   const handleContinue = () => {
     if (!selectedType) return;
+
     navigate("/app/builder", {
       state: {
         resumeType: selectedType.id,
         sections: selectedType.sections,
+        options,
       },
     });
   };
@@ -203,14 +211,11 @@ export default function CreateResumes() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    relative pb-3 text-sm font-medium bg-transparent
-                    ${
-                      isActive
-                        ? "text-gray-900"
-                        : "text-gray-500 hover:text-gray-700"
-                    }
-                  `}
+                  className={`relative pb-3 text-sm font-medium ${
+                    isActive
+                      ? "text-gray-900"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
                 >
                   {tab.label}
                   {isActive && (
@@ -234,7 +239,6 @@ export default function CreateResumes() {
 
         {/* CONTENT */}
         {isLoading ? (
-          /* SKELETONS */
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div
@@ -252,7 +256,6 @@ export default function CreateResumes() {
             ))}
           </div>
         ) : filteredTypes.length === 0 ? (
-          /* EMPTY STATE */
           <div className="mt-20 text-center text-gray-500">
             <p className="text-lg font-medium">No resume types found</p>
             <p className="mt-1 text-sm">
@@ -260,7 +263,6 @@ export default function CreateResumes() {
             </p>
           </div>
         ) : (
-          /* CARDS */
           <motion.div
             variants={container}
             initial="hidden"
@@ -329,6 +331,59 @@ export default function CreateResumes() {
           </motion.div>
         )}
 
+        {/* =======================
+            POINT 11: PROGRESSIVE DISCLOSURE
+        ======================= */}
+        {selectedType && (
+          <div className="mt-10 border-t pt-6">
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+            >
+              Customize before continuing {showAdvanced ? "▴" : "▾"}
+            </button>
+
+            <AnimatePresence>
+              {showAdvanced && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 space-y-3"
+                >
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={options.projects}
+                      onChange={() =>
+                        setOptions({
+                          ...options,
+                          projects: !options.projects,
+                        })
+                      }
+                    />
+                    Include Projects section
+                  </label>
+
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={options.skills}
+                      onChange={() =>
+                        setOptions({
+                          ...options,
+                          skills: !options.skills,
+                        })
+                      }
+                    />
+                    Include Skills section
+                  </label>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
         {/* CONTINUE */}
         <div className="mt-12 flex justify-end">
           <button
@@ -363,10 +418,7 @@ export default function CreateResumes() {
             "
           >
             <span>Resume type changed</span>
-            <button
-              onClick={handleUndo}
-              className="underline font-medium"
-            >
+            <button onClick={handleUndo} className="underline">
               Undo
             </button>
           </motion.div>
