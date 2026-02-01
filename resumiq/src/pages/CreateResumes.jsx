@@ -27,9 +27,7 @@ const TABS = [
 ===================================================== */
 const container = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const item = {
@@ -52,13 +50,11 @@ export default function CreateResumes() {
   const [selectedType, setSelectedType] = useState(null);
   const [previousType, setPreviousType] = useState(null);
   const [showUndo, setShowUndo] = useState(false);
-
   const [isLoading, setIsLoading] = useState(true);
   const [userMode, setUserMode] = useState(USER_MODE.EMPTY);
 
   /* =====================================================
      DETERMINE USER MODE (POINT 13)
-     Uses localStorage so it actually persists
   ===================================================== */
   useEffect(() => {
     const count = Number(
@@ -111,9 +107,7 @@ export default function CreateResumes() {
     setShowUndo(true);
 
     clearTimeout(undoTimer.current);
-    undoTimer.current = setTimeout(() => {
-      setShowUndo(false);
-    }, 4000);
+    undoTimer.current = setTimeout(() => setShowUndo(false), 4000);
   };
 
   const handleUndo = () => {
@@ -181,16 +175,22 @@ export default function CreateResumes() {
       {/* BACK */}
       <button
         onClick={() => navigate(-1)}
-        className="fixed top-28 left-6 text-gray-400 hover:text-gray-900 transition"
+        aria-label="Go back"
+        className="
+          fixed top-28 left-6
+          text-gray-400 hover:text-gray-900
+          transition
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-2
+        "
       >
         ←
       </button>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* =====================================================
-            POINT 13 — EMPTY
-        ===================================================== */}
+        {/* POINT 13 STATES */}
         {userMode === USER_MODE.EMPTY && (
           <div className="mb-10 rounded-2xl border bg-white p-6">
             <h2 className="text-xl font-semibold text-gray-900">
@@ -202,9 +202,6 @@ export default function CreateResumes() {
           </div>
         )}
 
-        {/* =====================================================
-            POINT 13 — GUIDED
-        ===================================================== */}
         {userMode === USER_MODE.GUIDED && (
           <div className="mb-10 rounded-2xl border bg-white p-6">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -216,9 +213,6 @@ export default function CreateResumes() {
           </div>
         )}
 
-        {/* =====================================================
-            POINT 13 — POWER
-        ===================================================== */}
         {userMode === USER_MODE.POWER && (
           <div className="mb-10 text-sm text-gray-500">
             Tip: Use ← → arrows and Enter to move faster
@@ -235,18 +229,26 @@ export default function CreateResumes() {
 
         {/* TABS */}
         <div className="relative mt-8 border-b border-gray-200">
-          <div className="flex gap-8">
+          <div className="flex gap-8" role="tablist">
             {TABS.map((tab) => {
               const active = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative pb-3 text-sm font-medium ${
-                    active
-                      ? "text-gray-900"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`
+                    relative pb-3 text-sm font-medium
+                    focus-visible:outline
+                    focus-visible:outline-2
+                    focus-visible:outline-offset-2
+                    ${
+                      active
+                        ? "text-gray-900"
+                        : "text-gray-500 hover:text-gray-700"
+                    }
+                  `}
                 >
                   {tab.label}
                   {active && (
@@ -272,10 +274,6 @@ export default function CreateResumes() {
                 <div className="h-4 w-3/4 bg-gray-200 rounded mb-4" />
                 <div className="h-3 w-full bg-gray-200 rounded mb-2" />
                 <div className="h-3 w-5/6 bg-gray-200 rounded mb-6" />
-                <div className="flex gap-2">
-                  <div className="h-6 w-16 bg-gray-200 rounded-full" />
-                  <div className="h-6 w-20 bg-gray-200 rounded-full" />
-                </div>
               </div>
             ))}
           </div>
@@ -293,12 +291,25 @@ export default function CreateResumes() {
                 <motion.div
                   key={type.id}
                   variants={item}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={active}
+                  aria-label={`Select ${type.name}`}
                   onClick={() => handleSelect(type)}
-                  className={`cursor-pointer rounded-2xl border p-6 transition-all ${
-                    active
-                      ? "border-black bg-white shadow-[0_0_0_3px_rgba(0,0,0,0.08)]"
-                      : "border-gray-200 bg-white hover:-translate-y-1 hover:shadow-md"
-                  }`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSelect(type);
+                  }}
+                  className={`
+                    cursor-pointer rounded-2xl border p-6 transition-all
+                    focus-visible:outline
+                    focus-visible:outline-2
+                    focus-visible:outline-offset-2
+                    ${
+                      active
+                        ? "border-black bg-white shadow-[0_0_0_3px_rgba(0,0,0,0.08)]"
+                        : "border-gray-200 bg-white hover:-translate-y-1 hover:shadow-md"
+                    }
+                  `}
                 >
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {type.name}
@@ -327,11 +338,18 @@ export default function CreateResumes() {
           <button
             onClick={handleContinue}
             disabled={!selectedType}
-            className={`rounded-xl px-6 py-3 text-sm font-medium ${
-              selectedType
-                ? "bg-black text-white hover:bg-gray-900"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
+            aria-disabled={!selectedType}
+            className={`
+              rounded-xl px-6 py-3 text-sm font-medium
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-2
+              ${
+                selectedType
+                  ? "bg-black text-white hover:bg-gray-900"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }
+            `}
           >
             Continue →
           </button>
@@ -342,13 +360,22 @@ export default function CreateResumes() {
       <AnimatePresence>
         {showUndo && (
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm flex gap-3"
+            className="
+              fixed bottom-6 left-1/2 -translate-x-1/2
+              bg-gray-900 text-white px-4 py-2 rounded-lg text-sm
+              flex gap-3
+            "
           >
             Resume type changed
-            <button onClick={handleUndo} className="underline">
+            <button
+              onClick={handleUndo}
+              className="underline focus-visible:outline"
+            >
               Undo
             </button>
           </motion.div>
