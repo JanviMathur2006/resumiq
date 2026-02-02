@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { resumeTypes } from "../data/resumeTypes";
 
 /* =====================================================
-   USER MODES — POINT 13
+   USER MODES
 ===================================================== */
 const USER_MODE = {
   EMPTY: "EMPTY",
@@ -54,7 +54,7 @@ export default function CreateResumes() {
   const [userMode, setUserMode] = useState(USER_MODE.EMPTY);
 
   /* =====================================================
-     DETERMINE USER MODE (POINT 13)
+     USER MODE
   ===================================================== */
   useEffect(() => {
     const count = Number(
@@ -67,7 +67,7 @@ export default function CreateResumes() {
   }, []);
 
   /* =====================================================
-     LOADING STATE (POINT 9)
+     LOADING
   ===================================================== */
   useEffect(() => {
     setIsLoading(true);
@@ -90,14 +90,14 @@ export default function CreateResumes() {
   }, [navigate]);
 
   /* =====================================================
-     FILTER TYPES
+     FILTER
   ===================================================== */
   const filteredTypes = resumeTypes.filter((t) =>
     t.category.includes(activeTab)
   );
 
   /* =====================================================
-     SELECT WITH UNDO (POINT 10)
+     SELECT WITH UNDO
   ===================================================== */
   const handleSelect = (type) => {
     if (selectedType?.id === type.id) return;
@@ -134,41 +134,6 @@ export default function CreateResumes() {
     });
   };
 
-  /* =====================================================
-     KEYBOARD NAV (POWER USERS)
-  ===================================================== */
-  useEffect(() => {
-    if (userMode !== USER_MODE.POWER) return;
-
-    const handler = (e) => {
-      if (!filteredTypes.length) return;
-
-      const index = filteredTypes.findIndex(
-        (t) => t.id === selectedType?.id
-      );
-
-      if (e.key === "ArrowRight") {
-        setSelectedType(
-          filteredTypes[index + 1] || filteredTypes[0]
-        );
-      }
-
-      if (e.key === "ArrowLeft") {
-        setSelectedType(
-          filteredTypes[index - 1] ||
-            filteredTypes[filteredTypes.length - 1]
-        );
-      }
-
-      if (e.key === "Enter" && selectedType) {
-        handleContinue();
-      }
-    };
-
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [filteredTypes, selectedType, userMode]);
-
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
 
@@ -176,21 +141,14 @@ export default function CreateResumes() {
       <button
         onClick={() => navigate(-1)}
         aria-label="Go back"
-        className="
-          fixed top-28 left-6
-          text-gray-400 hover:text-gray-900
-          transition
-          focus-visible:outline
-          focus-visible:outline-2
-          focus-visible:outline-offset-2
-        "
+        className="fixed top-28 left-6 text-gray-400 hover:text-gray-900 transition"
       >
         ←
       </button>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* POINT 13 STATES */}
+        {/* INFO BOX */}
         {userMode === USER_MODE.EMPTY && (
           <div className="mb-10 rounded-2xl border bg-white p-6">
             <h2 className="text-xl font-semibold text-gray-900">
@@ -202,23 +160,6 @@ export default function CreateResumes() {
           </div>
         )}
 
-        {userMode === USER_MODE.GUIDED && (
-          <div className="mb-10 rounded-2xl border bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Recommended for you
-            </h2>
-            <p className="mt-1 text-sm text-gray-600">
-              Based on your previous resumes, these options work best.
-            </p>
-          </div>
-        )}
-
-        {userMode === USER_MODE.POWER && (
-          <div className="mb-10 text-sm text-gray-500">
-            Tip: Use ← → arrows and Enter to move faster
-          </div>
-        )}
-
         {/* HEADER */}
         <h1 className="text-3xl font-semibold text-gray-900">
           Choose Resume Type
@@ -227,40 +168,28 @@ export default function CreateResumes() {
           Select the resume format that best fits your profile
         </p>
 
-        {/* TABS */}
-        <div className="relative mt-8 border-b border-gray-200">
-          <div className="flex gap-8" role="tablist">
-            {TABS.map((tab) => {
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    relative pb-3 text-sm font-medium
-                    focus-visible:outline
-                    focus-visible:outline-2
-                    focus-visible:outline-offset-2
-                    ${
-                      active
-                        ? "text-gray-900"
-                        : "text-gray-500 hover:text-gray-700"
-                    }
-                  `}
-                >
-                  {tab.label}
-                  {active && (
-                    <motion.span
-                      layoutId="activeTab"
-                      className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-gray-900"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+        {/* ✅ FIXED TABS (LIGHT PILLS) */}
+        <div className="mt-8 flex gap-3 flex-wrap">
+          {TABS.map((tab) => {
+            const active = activeTab === tab.id;
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  px-4 py-2 rounded-full text-sm font-medium transition
+                  ${
+                    active
+                      ? "bg-white text-gray-900 border border-gray-300 shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }
+                `}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* CONTENT */}
@@ -291,19 +220,9 @@ export default function CreateResumes() {
                 <motion.div
                   key={type.id}
                   variants={item}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={active}
-                  aria-label={`Select ${type.name}`}
                   onClick={() => handleSelect(type)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSelect(type);
-                  }}
                   className={`
                     cursor-pointer rounded-2xl border p-6 transition-all
-                    focus-visible:outline
-                    focus-visible:outline-2
-                    focus-visible:outline-offset-2
                     ${
                       active
                         ? "border-black bg-white shadow-[0_0_0_3px_rgba(0,0,0,0.08)]"
@@ -317,6 +236,7 @@ export default function CreateResumes() {
                   <p className="text-sm text-gray-600 mb-4">
                     {type.description}
                   </p>
+
                   <div className="flex flex-wrap gap-2">
                     {type.bestFor.split(",").map((tag) => (
                       <span
@@ -338,12 +258,8 @@ export default function CreateResumes() {
           <button
             onClick={handleContinue}
             disabled={!selectedType}
-            aria-disabled={!selectedType}
             className={`
-              rounded-xl px-6 py-3 text-sm font-medium
-              focus-visible:outline
-              focus-visible:outline-2
-              focus-visible:outline-offset-2
+              rounded-xl px-6 py-3 text-sm font-medium transition
               ${
                 selectedType
                   ? "bg-black text-white hover:bg-gray-900"
@@ -356,26 +272,17 @@ export default function CreateResumes() {
         </div>
       </div>
 
-      {/* UNDO TOAST */}
+      {/* UNDO */}
       <AnimatePresence>
         {showUndo && (
           <motion.div
-            role="status"
-            aria-live="polite"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
-            className="
-              fixed bottom-6 left-1/2 -translate-x-1/2
-              bg-gray-900 text-white px-4 py-2 rounded-lg text-sm
-              flex gap-3
-            "
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm flex gap-3"
           >
             Resume type changed
-            <button
-              onClick={handleUndo}
-              className="underline focus-visible:outline"
-            >
+            <button onClick={handleUndo} className="underline">
               Undo
             </button>
           </motion.div>
