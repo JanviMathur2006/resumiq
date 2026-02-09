@@ -133,6 +133,7 @@ export default function Settings() {
     { key: "Resume", label: "Resume Preferences", icon: FileText },
     { key: "Notifications", label: "Notifications", icon: Bell },
     { key: "Security", label: "Security", icon: Lock },
+    { key: "Terms", label: "Terms & Conditions", icon: FileText },
     { key: "Delete", label: "Delete Account", icon: AlertTriangle, danger: true },
   ];
 
@@ -195,68 +196,53 @@ export default function Settings() {
           </Section>
         );
 
-      case "Appearance":
+      case "Terms":
         return (
-          <Section title="Appearance">
-            <Select
-              label="Theme"
-              value={themeMode}
-              onChange={setThemeMode}
-              options={[
-                { label: "System", value: "system" },
-                { label: "Light", value: "light" },
-                { label: "Dark", value: "dark" },
-              ]}
-            />
+          <Section title="Terms & Conditions">
+            <div className="max-h-[420px] overflow-y-auto pr-2 text-sm text-gray-600 space-y-4 leading-relaxed">
+              <p>
+                By using Resumiq, you agree to the following terms and conditions.
+              </p>
 
-            <Select
-              label="UI Density"
-              value={density}
-              onChange={setDensity}
-              options={[
-                { label: "Comfortable", value: "comfortable" },
-                { label: "Compact", value: "compact" },
-              ]}
-            />
+              <h3 className="font-semibold text-gray-800">1. Use of Service</h3>
+              <p>
+                Resumiq allows users to create, manage, and download resumes.
+                The service must be used only for lawful purposes.
+              </p>
 
-            <Toggle label="Accent: Blue" value={accent === "blue"} onChange={() => setAccent("blue")} />
-            <Toggle label="Accent: Purple" value={accent === "purple"} onChange={() => setAccent("purple")} />
-            <Toggle label="Accent: Green" value={accent === "green"} onChange={() => setAccent("green")} />
-          </Section>
-        );
+              <h3 className="font-semibold text-gray-800">2. Account Responsibility</h3>
+              <p>
+                You are responsible for maintaining the confidentiality of your
+                account and all activities performed under it.
+              </p>
 
-      case "Resume":
-        return (
-          <Section title="Resume Preferences">
-            <Select
-              label="Paper Size"
-              value={paperSize}
-              onChange={setPaperSize}
-              options={[
-                { label: "A4 (Recommended)", value: "A4" },
-                { label: "US Letter", value: "US" },
-              ]}
-            />
-            <Toggle label="Auto-save resumes" value={autoSave} onChange={setAutoSave} />
-            <Toggle label="Drag & drop sections" value={dragDrop} onChange={setDragDrop} />
-            <Toggle label="Resume strength indicator" value={resumeStrength} onChange={setResumeStrength} />
-          </Section>
-        );
+              <h3 className="font-semibold text-gray-800">3. Data & Privacy</h3>
+              <p>
+                We store your resume data securely. We do not sell personal data
+                to third parties.
+              </p>
 
-      case "Notifications":
-        return (
-          <Section title="Notifications">
-            <Toggle label="Email notifications" value={emailNotifications} onChange={setEmailNotifications} />
-            <Toggle label="Product updates" value={productUpdates} onChange={setProductUpdates} />
-          </Section>
-        );
+              <h3 className="font-semibold text-gray-800">4. Content Ownership</h3>
+              <p>
+                You retain ownership of all resume content you create on Resumiq.
+              </p>
 
-      case "Security":
-        return (
-          <Section title="Security">
-            <p className="text-sm text-gray-600">
-              Password and security settings can be added here.
-            </p>
+              <h3 className="font-semibold text-gray-800">5. Termination</h3>
+              <p>
+                We reserve the right to suspend or terminate accounts violating
+                these terms.
+              </p>
+
+              <h3 className="font-semibold text-gray-800">6. Changes</h3>
+              <p>
+                Terms may be updated periodically. Continued use means acceptance
+                of updated terms.
+              </p>
+
+              <p className="text-xs text-gray-400 pt-4">
+                Last updated: February 2026
+              </p>
+            </div>
           </Section>
         );
 
@@ -276,7 +262,11 @@ export default function Settings() {
         );
 
       default:
-        return null;
+        return (
+          <Section title={activeTab}>
+            <p className="text-sm text-gray-600">Settings coming soon.</p>
+          </Section>
+        );
     }
   };
 
@@ -312,7 +302,7 @@ export default function Settings() {
   );
 }
 
-/* ================= REUSABLE COMPONENTS ================= */
+/* ================= REUSABLE ================= */
 function Section({ title, children }) {
   return (
     <section>
@@ -333,34 +323,6 @@ function Input({ label, value, onChange, type = "text", disabled }) {
         onChange={(e) => onChange?.(e.target.value)}
         className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
       />
-    </div>
-  );
-}
-
-function Toggle({ label, value, onChange }) {
-  return (
-    <div className="flex justify-between items-center">
-      <span className="text-sm">{label}</span>
-      <input type="checkbox" checked={value} onChange={() => onChange(!value)} />
-    </div>
-  );
-}
-
-function Select({ label, value, onChange, options }) {
-  return (
-    <div>
-      <label className="block text-sm mb-1">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border p-2 rounded bg-gray-100 dark:bg-gray-800"
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }
