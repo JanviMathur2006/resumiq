@@ -15,6 +15,7 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   deleteUser,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
@@ -41,21 +42,17 @@ export default function Settings() {
   const [emailMessage, setEmailMessage] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
 
+  /* ================= EMAIL VERIFY ================= */
+  const [sendingVerify, setSendingVerify] = useState(false);
+  const [verifyMsg, setVerifyMsg] = useState("");
+
   /* ================= UI ================= */
   const [activeTab, setActiveTab] = useState("Account");
 
   /* ================= APPEARANCE ================= */
-  const [themeMode, setThemeMode] = useState(
-    localStorage.getItem("themeMode") || "system"
-  );
-
-  const [density, setDensity] = useState(
-    localStorage.getItem("density") || "comfortable"
-  );
-
-  const [accent, setAccent] = useState(
-    localStorage.getItem("accent") || "blue"
-  );
+  const [themeMode, setThemeMode] = useState("system");
+  const [density, setDensity] = useState("comfortable");
+  const [accent, setAccent] = useState("blue");
 
   /* ================= RESUME PREFS ================= */
   const [paperSize, setPaperSize] = useState("A4");
@@ -76,36 +73,6 @@ export default function Settings() {
     });
     return () => unsub();
   }, []);
-
-  /* ================= THEME EFFECT ================= */
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (themeMode === "dark") {
-      root.classList.add("dark");
-    } else if (themeMode === "light") {
-      root.classList.remove("dark");
-    } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      root.classList.toggle("dark", prefersDark);
-    }
-
-    localStorage.setItem("themeMode", themeMode);
-  }, [themeMode]);
-
-  /* ================= DENSITY EFFECT ================= */
-  useEffect(() => {
-    document.documentElement.dataset.density = density;
-    localStorage.setItem("density", density);
-  }, [density]);
-
-  /* ================= ACCENT EFFECT ================= */
-  useEffect(() => {
-    document.documentElement.dataset.accent = accent;
-    localStorage.setItem("accent", accent);
-  }, [accent]);
 
   /* ================= SAVE NAME ================= */
   const handleSaveName = async () => {
@@ -129,15 +96,27 @@ export default function Settings() {
       );
       await reauthenticateWithCredential(user, credential);
       await updateEmail(user, newEmail);
-
+      setEmailMessage("Email updated successfully");
       setEditingEmail(false);
       setNewEmail("");
       setCurrentPassword("");
-      setEmailMessage("Email updated successfully");
     } catch {
       setEmailMessage("Failed to update email");
     } finally {
       setEmailLoading(false);
+    }
+  };
+
+  /* ================= SEND VERIFICATION ================= */
+  const handleSendVerification = async () => {
+    try {
+      setSendingVerify(true);
+      await sendEmailVerification(user);
+      setVerifyMsg("Verification email sent. Check your inbox.");
+    } catch {
+      setVerifyMsg("Failed to send verification email.");
+    } finally {
+      setSendingVerify(false);
     }
   };
 
@@ -165,12 +144,26 @@ export default function Settings() {
       case "Account":
         return (
           <Section title="Account">
-            <Input
-              label="Name"
-              value={name}
-              disabled={!editingName}
-              onChange={setName}
-            />
+            {!user.emailVerified && (
+              <div className="border border-gray-200 bg-gray-50 rounded-lg p-4 flex justify-between items-center">
+                <p className="text-sm text-gray-700">
+                  Your email is not verified.
+                </p>
+                <button
+                  onClick={handleSendVerification}
+                  disabled={sendingVerify}
+                  className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 text-sm"
+                >
+                  {sendingVerify ? "Sending..." : "Send verification"}
+                </button>
+              </div>
+            )}
+
+            {verifyMsg && (
+              <p className="text-sm text-gray-600">{verifyMsg}</p>
+            )}
+
+            <Input label="Name" value={name} disabled={!editingName} onChange={setName} />
 
             {!editingName ? (
               <Action onClick={() => setEditingName(true)}>Edit Name</Action>
@@ -181,9 +174,7 @@ export default function Settings() {
             <Input label="Email" value={user.email} disabled />
 
             {!editingEmail ? (
-              <Action onClick={() => setEditingEmail(true)}>
-                Edit Email
-              </Action>
+              <Action onClick={() => setEditingEmail(true)}>Edit Email</Action>
             ) : (
               <>
                 <Input label="New Email" value={newEmail} onChange={setNewEmail} />
@@ -228,28 +219,9 @@ export default function Settings() {
               ]}
             />
 
-            <div>
-              <label className="block text-sm mb-2">Accent Color</label>
-              <div className="flex gap-3">
-                {["blue", "purple", "green"].map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setAccent(c)}
-                    className={`w-8 h-8 rounded-full border-2 ${
-                      accent === c ? "border-black dark:border-white" : "border-transparent"
-                    }`}
-                    style={{
-                      background:
-                        c === "blue"
-                          ? "#3b82f6"
-                          : c === "purple"
-                          ? "#8b5cf6"
-                          : "#22c55e",
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+            <Toggle label="Accent: Blue" value={accent === "blue"} onChange={() => setAccent("blue")} />
+            <Toggle label="Accent: Purple" value={accent === "purple"} onChange={() => setAccent("purple")} />
+            <Toggle label="Accent: Green" value={accent === "green"} onChange={() => setAccent("green")} />
           </Section>
         );
 
@@ -274,16 +246,8 @@ export default function Settings() {
       case "Notifications":
         return (
           <Section title="Notifications">
-            <Toggle
-              label="Email notifications"
-              value={emailNotifications}
-              onChange={setEmailNotifications}
-            />
-            <Toggle
-              label="Product updates"
-              value={productUpdates}
-              onChange={setProductUpdates}
-            />
+            <Toggle label="Email notifications" value={emailNotifications} onChange={setEmailNotifications} />
+            <Toggle label="Product updates" value={productUpdates} onChange={setProductUpdates} />
           </Section>
         );
 
@@ -291,7 +255,7 @@ export default function Settings() {
         return (
           <Section title="Security">
             <p className="text-sm text-gray-600">
-              Password change and advanced security options can be added here.
+              Password and security settings can be added here.
             </p>
           </Section>
         );
@@ -320,7 +284,6 @@ export default function Settings() {
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
-          {/* SIDEBAR */}
           <aside className="w-64 bg-[#0F172A] rounded-xl p-3 text-white">
             {tabs.map((t) => (
               <button
@@ -336,7 +299,6 @@ export default function Settings() {
             ))}
           </aside>
 
-          {/* CONTENT */}
           <main className="flex-1 bg-white dark:bg-[#0F172A] rounded-xl p-8">
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} {...tabVariants}>
@@ -350,7 +312,7 @@ export default function Settings() {
   );
 }
 
-/* ================= REUSABLE ================= */
+/* ================= REUSABLE COMPONENTS ================= */
 function Section({ title, children }) {
   return (
     <section>
@@ -377,8 +339,8 @@ function Input({ label, value, onChange, type = "text", disabled }) {
 
 function Toggle({ label, value, onChange }) {
   return (
-    <div className="flex justify-between">
-      <span>{label}</span>
+    <div className="flex justify-between items-center">
+      <span className="text-sm">{label}</span>
       <input type="checkbox" checked={value} onChange={() => onChange(!value)} />
     </div>
   );
