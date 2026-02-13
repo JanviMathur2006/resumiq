@@ -20,9 +20,7 @@ const TABS = [
 const container = {
   hidden: {},
   show: {
-    transition: {
-      staggerChildren: 0.12,
-    },
+    transition: { staggerChildren: 0.12 },
   },
 };
 
@@ -31,10 +29,7 @@ const fadeUp = {
   show: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.45,
-      ease: "easeOut",
-    },
+    transition: { duration: 0.45, ease: "easeOut" },
   },
 };
 
@@ -68,30 +63,30 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS (CLEAN STYLE) */}
-        <div className="flex justify-center gap-10 mb-14 relative">
+        {/* FILTER TABS WITH UNDERLINE */}
+        <div className="flex justify-center gap-6 mb-14 flex-wrap">
           {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`relative pb-2 text-sm font-medium transition-colors duration-200
-                ${
-                  activeTab === tab.id
-                    ? "text-gray-900"
-                    : "text-gray-400 hover:text-gray-700"
-                }
-              `}
-            >
-              {tab.label}
+            <div key={tab.id} className="flex flex-col items-center">
+              
+              <button
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 py-2 rounded-full text-sm font-medium transition
+                  ${
+                    activeTab === tab.id
+                      ? "bg-black text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                  }
+                `}
+              >
+                {tab.label}
+              </button>
 
+              {/* UNDERLINE */}
               {activeTab === tab.id && (
-                <motion.div
-                  layoutId="activeTabUnderline"
-                  className="absolute left-0 right-0 -bottom-1 h-[2px] bg-gray-900 rounded-full"
-                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                />
+                <div className="h-[3px] w-10 bg-black mt-2 rounded-full" />
               )}
-            </button>
+
+            </div>
           ))}
         </div>
 
@@ -122,7 +117,6 @@ export default function ResumeSamples() {
 
                 <div className="flex gap-3">
 
-                  {/* PREVIEW BUTTON */}
                   <button
                     className="
                       px-6 py-2.5 rounded-xl
@@ -139,7 +133,6 @@ export default function ResumeSamples() {
                     Preview
                   </button>
 
-                  {/* USE TEMPLATE BUTTON */}
                   <button
                     onClick={() => navigate("/app/create")}
                     className="
@@ -158,7 +151,6 @@ export default function ResumeSamples() {
                 </div>
               </div>
 
-              {/* SAMPLE CONTENT */}
               <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
                 <SampleBlock title="Professional Summary" items={sample.summary} />
                 <SampleBlock title="Work Experience" items={sample.experience} />
