@@ -44,11 +44,11 @@ export default function ResumeSamples() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200
                 ${
                   activeTab === tab.id
-                    ? "bg-black text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-100"
+                    ? "bg-black text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-100"
                 }
               `}
             >
@@ -62,7 +62,8 @@ export default function ResumeSamples() {
           {samplesToShow.map((sample, index) => (
             <div
               key={index}
-              className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10"
+              className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10
+                         hover:shadow-xl transition-all duration-300"
             >
               {/* CARD HEADER */}
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-6">
@@ -76,32 +77,51 @@ export default function ResumeSamples() {
                 </div>
 
                 <div className="flex gap-3">
+
+                  {/* PREVIEW BUTTON (Improved) */}
                   <button
-                    className="px-5 py-2 rounded-xl border border-gray-300
-                      text-gray-700 hover:bg-gray-100 transition"
+                    className="
+                      px-6 py-2.5 rounded-xl
+                      border border-gray-300
+                      text-gray-800 font-medium
+                      bg-white
+                      hover:bg-black hover:text-white
+                      hover:border-black
+                      hover:scale-[1.02]
+                      active:scale-95
+                      transition-all duration-200
+                    "
                   >
                     Preview
                   </button>
 
+                  {/* PRIMARY BUTTON */}
                   <button
                     onClick={() => navigate("/app/create")}
-                    className="px-6 py-2 rounded-xl bg-black text-white
-                      hover:bg-gray-800 transition"
+                    className="
+                      px-6 py-2.5 rounded-xl
+                      bg-black text-white font-medium
+                      hover:bg-gray-800
+                      hover:scale-[1.02]
+                      active:scale-95
+                      transition-all duration-200
+                      shadow-md
+                    "
                   >
                     Use Template →
                   </button>
+
                 </div>
               </div>
 
               {/* SAMPLE CONTENT */}
               <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
-
                 <SampleBlock title="Professional Summary" items={sample.summary} />
                 <SampleBlock title="Work Experience" items={sample.experience} />
                 <SampleBlock title="Projects" items={sample.projects} />
                 <SampleBlock title="Skills" items={sample.skills} />
-
               </div>
+
             </div>
           ))}
         </div>
