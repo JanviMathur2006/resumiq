@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { resumeTypeSamples } from "../data/resumeTypeSamples";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 /* =======================
    FILTER TABS
@@ -12,6 +13,31 @@ const TABS = [
   { id: "internship", label: "Internship" },
   { id: "careerSwitch", label: "Career Switch" },
 ];
+
+/* =======================
+   ANIMATIONS
+======================= */
+
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 25 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.45,
+      ease: "easeOut",
+    },
+  },
+};
 
 export default function ResumeSamples() {
   const [activeTab, setActiveTab] = useState("all");
@@ -29,17 +55,27 @@ export default function ResumeSamples() {
       <div className="max-w-6xl mx-auto px-6 py-12">
 
         {/* HEADER */}
-        <div className="text-center mb-12">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="text-center mb-12"
+        >
           <h1 className="text-4xl font-semibold text-gray-900 mb-3">
             Resume Samples
           </h1>
           <p className="text-gray-600 text-lg">
             Recruiter-approved resume examples for every career stage.
           </p>
-        </div>
+        </motion.div>
 
         {/* FILTER TABS */}
-        <div className="flex justify-center gap-3 mb-14 flex-wrap">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+          className="flex justify-center gap-3 mb-14 flex-wrap"
+        >
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -55,13 +91,19 @@ export default function ResumeSamples() {
               {tab.label}
             </button>
           ))}
-        </div>
+        </motion.div>
 
         {/* SAMPLE CARDS */}
-        <div className="grid grid-cols-1 gap-12">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 gap-12"
+        >
           {samplesToShow.map((sample, index) => (
-            <div
+            <motion.div
               key={index}
+              variants={fadeUp}
               className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10
                          hover:shadow-xl transition-all duration-300"
             >
@@ -78,7 +120,6 @@ export default function ResumeSamples() {
 
                 <div className="flex gap-3">
 
-                  {/* PREVIEW BUTTON (Improved) */}
                   <button
                     className="
                       px-6 py-2.5 rounded-xl
@@ -95,7 +136,6 @@ export default function ResumeSamples() {
                     Preview
                   </button>
 
-                  {/* PRIMARY BUTTON */}
                   <button
                     onClick={() => navigate("/app/create")}
                     className="
@@ -122,9 +162,9 @@ export default function ResumeSamples() {
                 <SampleBlock title="Skills" items={sample.skills} />
               </div>
 
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </div>
