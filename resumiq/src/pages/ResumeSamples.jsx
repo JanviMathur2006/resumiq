@@ -17,7 +17,6 @@ const TABS = [
 /* =======================
    ANIMATIONS
 ======================= */
-
 const container = {
   hidden: {},
   show: {
@@ -28,7 +27,7 @@ const container = {
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 25 },
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
@@ -69,17 +68,17 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS WITH ANIMATED UNDERLINE */}
-        <div className="flex justify-center gap-8 mb-14 relative">
+        {/* FILTER TABS (CLEAN STYLE) */}
+        <div className="flex justify-center gap-10 mb-14 relative">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative pb-2 text-sm font-medium transition
+              className={`relative pb-2 text-sm font-medium transition-colors duration-200
                 ${
                   activeTab === tab.id
-                    ? "text-black"
-                    : "text-gray-500 hover:text-black"
+                    ? "text-gray-900"
+                    : "text-gray-400 hover:text-gray-700"
                 }
               `}
             >
@@ -88,12 +87,8 @@ export default function ResumeSamples() {
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="activeTabUnderline"
-                  className="absolute left-0 right-0 -bottom-1 h-[2px] bg-black rounded-full"
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 30,
-                  }}
+                  className="absolute left-0 right-0 -bottom-1 h-[2px] bg-gray-900 rounded-full"
+                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
                 />
               )}
             </button>
@@ -134,8 +129,8 @@ export default function ResumeSamples() {
                       border border-gray-300
                       text-gray-800 font-medium
                       bg-white
-                      hover:bg-black hover:text-white
-                      hover:border-black
+                      hover:bg-gray-900 hover:text-white
+                      hover:border-gray-900
                       hover:scale-[1.02]
                       active:scale-95
                       transition-all duration-200
@@ -149,7 +144,7 @@ export default function ResumeSamples() {
                     onClick={() => navigate("/app/create")}
                     className="
                       px-6 py-2.5 rounded-xl
-                      bg-black text-white font-medium
+                      bg-gray-900 text-white font-medium
                       hover:bg-gray-800
                       hover:scale-[1.02]
                       active:scale-95
