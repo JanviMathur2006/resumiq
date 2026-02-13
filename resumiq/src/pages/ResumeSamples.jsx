@@ -69,29 +69,36 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS */}
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={fadeUp}
-          className="flex justify-center gap-3 mb-14 flex-wrap"
-        >
+        {/* FILTER TABS WITH ANIMATED UNDERLINE */}
+        <div className="flex justify-center gap-8 mb-14 relative">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200
+              className={`relative pb-2 text-sm font-medium transition
                 ${
                   activeTab === tab.id
-                    ? "bg-black text-white shadow-md"
-                    : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-100"
+                    ? "text-black"
+                    : "text-gray-500 hover:text-black"
                 }
               `}
             >
               {tab.label}
+
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTabUnderline"
+                  className="absolute left-0 right-0 -bottom-1 h-[2px] bg-black rounded-full"
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                />
+              )}
             </button>
           ))}
-        </motion.div>
+        </div>
 
         {/* SAMPLE CARDS */}
         <motion.div
@@ -120,6 +127,7 @@ export default function ResumeSamples() {
 
                 <div className="flex gap-3">
 
+                  {/* PREVIEW BUTTON */}
                   <button
                     className="
                       px-6 py-2.5 rounded-xl
@@ -136,6 +144,7 @@ export default function ResumeSamples() {
                     Preview
                   </button>
 
+                  {/* USE TEMPLATE BUTTON */}
                   <button
                     onClick={() => navigate("/app/create")}
                     className="
