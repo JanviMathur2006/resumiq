@@ -63,7 +63,7 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS WITH SMOOTH ANIMATION */}
+        {/* FILTER TABS WITH HOVER GLOW + SMOOTH UNDERLINE */}
         <div className="flex justify-center gap-6 mb-14 flex-wrap">
 
           {TABS.map((tab) => (
@@ -71,11 +71,11 @@ export default function ResumeSamples() {
 
               <button
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-2 rounded-full text-sm font-medium transition
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300
                   ${
                     activeTab === tab.id
-                      ? "bg-black text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-100"
+                      ? "bg-black text-white shadow-lg shadow-black/30 scale-105"
+                      : "bg-white text-gray-700 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-300/60 hover:scale-105"
                   }
                 `}
               >
