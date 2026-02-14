@@ -63,11 +63,12 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS WITH UNDERLINE */}
+        {/* FILTER TABS WITH SMOOTH ANIMATION */}
         <div className="flex justify-center gap-6 mb-14 flex-wrap">
+
           {TABS.map((tab) => (
-            <div key={tab.id} className="flex flex-col items-center">
-              
+            <div key={tab.id} className="flex flex-col items-center relative">
+
               <button
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-2 rounded-full text-sm font-medium transition
@@ -81,13 +82,21 @@ export default function ResumeSamples() {
                 {tab.label}
               </button>
 
-              {/* UNDERLINE */}
               {activeTab === tab.id && (
-                <div className="h-[3px] w-10 bg-black mt-2 rounded-full" />
+                <motion.div
+                  layoutId="tabUnderline"
+                  className="h-[3px] w-10 bg-black mt-2 rounded-full"
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                />
               )}
 
             </div>
           ))}
+
         </div>
 
         {/* SAMPLE CARDS */}
