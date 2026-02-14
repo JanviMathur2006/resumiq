@@ -3,9 +3,9 @@ import { resumeTypeSamples } from "../data/resumeTypeSamples";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-/* =======================
+/* =====================================================
    FILTER TABS
-======================= */
+===================================================== */
 const TABS = [
   { id: "all", label: "All" },
   { id: "fresher", label: "Fresher / Student" },
@@ -14,18 +14,9 @@ const TABS = [
   { id: "careerSwitch", label: "Career Switch" },
 ];
 
-/* =======================
-   ANIMATIONS
-======================= */
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: "easeOut" },
-  },
-};
-
+/* =====================================================
+   MAIN COMPONENT
+===================================================== */
 export default function ResumeSamples() {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
@@ -41,11 +32,11 @@ export default function ResumeSamples() {
     <div className="min-h-screen bg-[#f6f7fb]">
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* HEADER */}
+        {/* ================= HEADER ================= */}
         <motion.div
-          initial="hidden"
-          animate="show"
-          variants={fadeUp}
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
           <h1 className="text-4xl font-semibold text-gray-900 mb-3">
@@ -56,11 +47,12 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS */}
+        {/* ================= FILTER TABS ================= */}
         <div className="flex justify-center gap-6 mb-14 flex-wrap">
           {TABS.map((tab) => (
             <div key={tab.id} className="flex flex-col items-center relative">
 
+              {/* TAB BUTTON */}
               <button
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300
@@ -74,6 +66,7 @@ export default function ResumeSamples() {
                 {tab.label}
               </button>
 
+              {/* SLIDING UNDERLINE */}
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="tabUnderline"
@@ -90,22 +83,25 @@ export default function ResumeSamples() {
           ))}
         </div>
 
-        {/* SAMPLE CARDS WITH TAB SWITCH ANIMATION */}
+        {/* ================= SAMPLE CARDS ================= */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -20, filter: "blur(6px)" }}
             transition={{ duration: 0.35 }}
             className="grid grid-cols-1 gap-12"
           >
             {samplesToShow.map((sample, index) => (
               <motion.div
                 key={index}
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.06,
+                }}
                 className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10
                            hover:shadow-xl transition-all duration-300"
               >
@@ -120,6 +116,7 @@ export default function ResumeSamples() {
                     </p>
                   </div>
 
+                  {/* BUTTONS */}
                   <div className="flex gap-3">
 
                     <button
@@ -156,6 +153,7 @@ export default function ResumeSamples() {
                   </div>
                 </div>
 
+                {/* SAMPLE CONTENT */}
                 <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
                   <SampleBlock title="Professional Summary" items={sample.summary} />
                   <SampleBlock title="Work Experience" items={sample.experience} />
@@ -173,9 +171,9 @@ export default function ResumeSamples() {
   );
 }
 
-/* =======================
+/* =====================================================
    SAMPLE SECTION BLOCK
-======================= */
+===================================================== */
 function SampleBlock({ title, items }) {
   if (!items || items.length === 0) return null;
 
