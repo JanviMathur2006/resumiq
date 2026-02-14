@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { resumeTypeSamples } from "../data/resumeTypeSamples";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 /* =======================
    FILTER TABS
@@ -17,13 +17,6 @@ const TABS = [
 /* =======================
    ANIMATIONS
 ======================= */
-const container = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.12 },
-  },
-};
-
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   show: {
@@ -63,9 +56,8 @@ export default function ResumeSamples() {
           </p>
         </motion.div>
 
-        {/* FILTER TABS WITH HOVER GLOW + SMOOTH UNDERLINE */}
+        {/* FILTER TABS */}
         <div className="flex justify-center gap-6 mb-14 flex-wrap">
-
           {TABS.map((tab) => (
             <div key={tab.id} className="flex flex-col items-center relative">
 
@@ -96,80 +88,85 @@ export default function ResumeSamples() {
 
             </div>
           ))}
-
         </div>
 
-        {/* SAMPLE CARDS */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 gap-12"
-        >
-          {samplesToShow.map((sample, index) => (
-            <motion.div
-              key={index}
-              variants={fadeUp}
-              className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10
-                         hover:shadow-xl transition-all duration-300"
-            >
-              {/* CARD HEADER */}
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-6">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">
-                    {sample.title}
-                  </h2>
-                  <p className="text-gray-600">
-                    Ideal for {sample.bestFor}
-                  </p>
+        {/* SAMPLE CARDS WITH TAB SWITCH ANIMATION */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.35 }}
+            className="grid grid-cols-1 gap-12"
+          >
+            {samplesToShow.map((sample, index) => (
+              <motion.div
+                key={index}
+                variants={fadeUp}
+                initial="hidden"
+                animate="show"
+                className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10
+                           hover:shadow-xl transition-all duration-300"
+              >
+                {/* CARD HEADER */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-6">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                      {sample.title}
+                    </h2>
+                    <p className="text-gray-600">
+                      Ideal for {sample.bestFor}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+
+                    <button
+                      className="
+                        px-6 py-2.5 rounded-xl
+                        border border-gray-300
+                        text-gray-800 font-medium
+                        bg-white
+                        hover:bg-gray-900 hover:text-white
+                        hover:border-gray-900
+                        hover:scale-[1.02]
+                        active:scale-95
+                        transition-all duration-200
+                      "
+                    >
+                      Preview
+                    </button>
+
+                    <button
+                      onClick={() => navigate("/app/create")}
+                      className="
+                        px-6 py-2.5 rounded-xl
+                        bg-gray-900 text-white font-medium
+                        hover:bg-gray-800
+                        hover:scale-[1.02]
+                        active:scale-95
+                        transition-all duration-200
+                        shadow-md
+                      "
+                    >
+                      Use Template →
+                    </button>
+
+                  </div>
                 </div>
 
-                <div className="flex gap-3">
-
-                  <button
-                    className="
-                      px-6 py-2.5 rounded-xl
-                      border border-gray-300
-                      text-gray-800 font-medium
-                      bg-white
-                      hover:bg-gray-900 hover:text-white
-                      hover:border-gray-900
-                      hover:scale-[1.02]
-                      active:scale-95
-                      transition-all duration-200
-                    "
-                  >
-                    Preview
-                  </button>
-
-                  <button
-                    onClick={() => navigate("/app/create")}
-                    className="
-                      px-6 py-2.5 rounded-xl
-                      bg-gray-900 text-white font-medium
-                      hover:bg-gray-800
-                      hover:scale-[1.02]
-                      active:scale-95
-                      transition-all duration-200
-                      shadow-md
-                    "
-                  >
-                    Use Template →
-                  </button>
-
+                <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
+                  <SampleBlock title="Professional Summary" items={sample.summary} />
+                  <SampleBlock title="Work Experience" items={sample.experience} />
+                  <SampleBlock title="Projects" items={sample.projects} />
+                  <SampleBlock title="Skills" items={sample.skills} />
                 </div>
-              </div>
 
-              <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
-                <SampleBlock title="Professional Summary" items={sample.summary} />
-                <SampleBlock title="Work Experience" items={sample.experience} />
-                <SampleBlock title="Projects" items={sample.projects} />
-                <SampleBlock title="Skills" items={sample.skills} />
-              </div>
-
-            </motion.div>
-          ))}
-        </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
       </div>
     </div>
