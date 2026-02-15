@@ -14,9 +14,6 @@ const TABS = [
   { id: "careerSwitch", label: "Career Switch" },
 ];
 
-/* =====================================================
-   MAIN COMPONENT
-===================================================== */
 export default function ResumeSamples() {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
@@ -29,22 +26,34 @@ export default function ResumeSamples() {
       : [];
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb]">
+    <div className="min-h-screen bg-[#f6f7fb] overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* ================= HEADER WITH SOFT GRADIENT ================= */}
+        {/* ================= HEADER WITH FLOATING GRADIENT ================= */}
         <div className="relative mb-16">
 
-          {/* Gradient Glow Background */}
-          <div className="absolute inset-0 flex justify-center pointer-events-none">
+          {/* Floating Gradient Blob */}
+          <motion.div
+            animate={{
+              x: [0, 40, -40, 0],
+              scale: [1, 1.05, 1, 0.97, 1],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute inset-0 flex justify-center pointer-events-none"
+          >
             <div
-              className="w-[650px] h-[260px]
+              className="w-[700px] h-[280px]
                          bg-gradient-to-r
                          from-gray-300/40 via-gray-400/30 to-gray-300/40
                          blur-3xl rounded-full opacity-70"
             />
-          </div>
+          </motion.div>
 
+          {/* Header Content */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -66,7 +75,6 @@ export default function ResumeSamples() {
           {TABS.map((tab) => (
             <div key={tab.id} className="flex flex-col items-center relative">
 
-              {/* TAB BUTTON */}
               <button
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300
@@ -80,7 +88,6 @@ export default function ResumeSamples() {
                 {tab.label}
               </button>
 
-              {/* SLIDING UNDERLINE */}
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="tabUnderline"
@@ -119,7 +126,6 @@ export default function ResumeSamples() {
                 className="bg-white rounded-3xl shadow-lg border border-gray-200 p-10
                            hover:shadow-xl transition-all duration-300"
               >
-                {/* CARD HEADER */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-6">
                   <div>
                     <h2 className="text-2xl font-semibold text-gray-900 mb-1">
@@ -130,44 +136,29 @@ export default function ResumeSamples() {
                     </p>
                   </div>
 
-                  {/* BUTTONS */}
                   <div className="flex gap-3">
-
                     <button
-                      className="
-                        px-6 py-2.5 rounded-xl
-                        border border-gray-300
-                        text-gray-800 font-medium
-                        bg-white
-                        hover:bg-gray-900 hover:text-white
-                        hover:border-gray-900
-                        hover:scale-[1.02]
-                        active:scale-95
-                        transition-all duration-200
-                      "
+                      className="px-6 py-2.5 rounded-xl border border-gray-300
+                                 text-gray-800 font-medium bg-white
+                                 hover:bg-gray-900 hover:text-white
+                                 hover:border-gray-900 hover:scale-[1.02]
+                                 active:scale-95 transition-all duration-200"
                     >
                       Preview
                     </button>
 
                     <button
                       onClick={() => navigate("/app/create")}
-                      className="
-                        px-6 py-2.5 rounded-xl
-                        bg-gray-900 text-white font-medium
-                        hover:bg-gray-800
-                        hover:scale-[1.02]
-                        active:scale-95
-                        transition-all duration-200
-                        shadow-md
-                      "
+                      className="px-6 py-2.5 rounded-xl bg-gray-900 text-white
+                                 font-medium hover:bg-gray-800
+                                 hover:scale-[1.02] active:scale-95
+                                 transition-all duration-200 shadow-md"
                     >
                       Use Template →
                     </button>
-
                   </div>
                 </div>
 
-                {/* SAMPLE CONTENT */}
                 <div className="grid md:grid-cols-2 gap-x-16 gap-y-10">
                   <SampleBlock title="Professional Summary" items={sample.summary} />
                   <SampleBlock title="Work Experience" items={sample.experience} />
