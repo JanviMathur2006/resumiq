@@ -32,20 +32,34 @@ export default function ResumeSamples() {
     <div className="min-h-screen bg-[#f6f7fb]">
       <div className="max-w-6xl mx-auto px-6 py-12">
 
-        {/* ================= HEADER ================= */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl font-semibold text-gray-900 mb-3">
-            Resume Samples
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Recruiter-approved resume examples for every career stage.
-          </p>
-        </motion.div>
+        {/* ================= HEADER WITH SOFT GRADIENT ================= */}
+        <div className="relative mb-16">
+
+          {/* Gradient Glow Background */}
+          <div className="absolute inset-0 flex justify-center pointer-events-none">
+            <div
+              className="w-[650px] h-[260px]
+                         bg-gradient-to-r
+                         from-gray-300/40 via-gray-400/30 to-gray-300/40
+                         blur-3xl rounded-full opacity-70"
+            />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative text-center"
+          >
+            <h1 className="text-4xl font-semibold text-gray-900 mb-3">
+              Resume Samples
+            </h1>
+            <p className="text-gray-600 text-lg">
+              Recruiter-approved resume examples for every career stage.
+            </p>
+          </motion.div>
+
+        </div>
 
         {/* ================= FILTER TABS ================= */}
         <div className="flex justify-center gap-6 mb-14 flex-wrap">
