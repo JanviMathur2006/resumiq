@@ -116,16 +116,25 @@ export default function Home() {
             Build Your Resume
           </h1>
 
-          {/* 🔵 CLEAR NAVY BLUE */}
-          <h2 className="text-2xl font-medium text-[#1E3A8A] mb-3">
-            <Typewriter
-              words={resumeNames}
-              loop={0}
-              cursor
-              cursorStyle="|"
-              cursorColor="#1E3A8A"
-            />
-          </h2>
+          {/* 🔵 SUBTLE GRADIENT GLOW HEADER */}
+          <div className="relative inline-block mb-3">
+
+            {/* Glow Layer */}
+            <div className="absolute inset-0 blur-xl opacity-20
+                            bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
+                            rounded-full" />
+
+            <h2 className="relative text-2xl font-medium text-[#1E3A8A]">
+              <Typewriter
+                words={resumeNames}
+                loop={0}
+                cursor
+                cursorStyle="|"
+                cursorColor="#1E3A8A"
+              />
+            </h2>
+
+          </div>
 
           <p className="text-gray-600 text-lg">
             ATS-friendly • Professional • Recruiter-approved
@@ -209,9 +218,7 @@ export default function Home() {
                   {loadingUserResumes ? (
                     <p className="text-gray-500">Loading…</p>
                   ) : userResumes.length === 0 ? (
-                    <p className="text-gray-500">
-                      Nothing created yet
-                    </p>
+                    <p className="text-gray-500">Nothing created yet</p>
                   ) : (
                     <div className="w-full max-w-md flex flex-col gap-3">
                       {userResumes.map((resume) => (
@@ -223,8 +230,7 @@ export default function Home() {
                           className="border rounded-xl px-4 py-2 cursor-pointer
                             hover:bg-gray-50 transition text-left"
                         >
-                          {resume.title ||
-                            "Untitled Resume"}
+                          {resume.title || "Untitled Resume"}
                         </div>
                       ))}
                     </div>
@@ -235,22 +241,20 @@ export default function Home() {
               {/* CARD 3 */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
-                  onClick={() =>
-                    navigate("/app/samples")
-                  }
+                  onClick={() => navigate("/app/samples")}
                   whileHover={{ y: -6 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center
                     text-center px-10 cursor-pointer"
-                  >
-                    <h2 className="text-3xl font-semibold mb-3">
-                      Resume Samples
-                    </h2>
-                    <p className="text-gray-600">
-                      Explore fulfilled, recruiter-approved samples.
-                    </p>
-                  </motion.div>
+                >
+                  <h2 className="text-3xl font-semibold mb-3">
+                    Resume Samples
+                  </h2>
+                  <p className="text-gray-600">
+                    Explore fulfilled, recruiter-approved samples.
+                  </p>
+                </motion.div>
               </div>
 
             </div>
