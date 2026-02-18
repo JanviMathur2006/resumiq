@@ -17,7 +17,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeSlide, setActiveSlide] = useState(0);
 
-  /* CARD 2 — USER RESUMES */
   const [userResumes, setUserResumes] = useState([]);
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
 
@@ -38,22 +37,21 @@ export default function Home() {
   };
 
   const scrollLeft = () => {
-    if (activeSlide > 0) {
-      scrollToSlide(activeSlide - 1);
-    }
+    if (activeSlide > 0) scrollToSlide(activeSlide - 1);
   };
 
   const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1) {
+    if (activeSlide < TOTAL_SLIDES - 1)
       scrollToSlide(activeSlide + 1);
-    }
   };
 
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+    const index = Math.round(
+      slider.scrollLeft / slider.offsetWidth
+    );
     setActiveSlide(index);
   };
 
@@ -66,35 +64,39 @@ export default function Home() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () =>
+      window.removeEventListener("keydown", handleKeyDown);
   }, [activeSlide]);
 
   /* ================= FETCH USER RESUMES ================= */
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        setUserResumes([]);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (user) => {
+        if (!user) {
+          setUserResumes([]);
+          setLoadingUserResumes(false);
+          return;
+        }
+
+        const q = query(
+          collection(db, "resumes"),
+          where("userId", "==", user.uid)
+        );
+
+        const snap = await getDocs(q);
+
+        setUserResumes(
+          snap.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
+
         setLoadingUserResumes(false);
-        return;
       }
-
-      const q = query(
-        collection(db, "resumes"),
-        where("userId", "==", user.uid)
-      );
-
-      const snap = await getDocs(q);
-
-      setUserResumes(
-        snap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-      );
-
-      setLoadingUserResumes(false);
-    });
+    );
 
     return () => unsubscribe();
   }, []);
@@ -114,13 +116,14 @@ export default function Home() {
             Build Your Resume
           </h1>
 
-          {/* 🔵 COLOR CHANGED HERE */}
-          <h2 className="text-2xl font-medium text-[#0A1A33] mb-3">
+          {/* 🔵 CLEAR NAVY BLUE */}
+          <h2 className="text-2xl font-medium text-[#1E3A8A] mb-3">
             <Typewriter
               words={resumeNames}
               loop={0}
               cursor
               cursorStyle="|"
+              cursorColor="#1E3A8A"
             />
           </h2>
 
@@ -170,7 +173,7 @@ export default function Home() {
           >
             <div className="flex gap-12">
 
-              {/* CARD 1 — CATEGORIES */}
+              {/* CARD 1 */}
               <div className="snap-center min-w-full flex justify-center">
                 <Link to="/app/create" className="w-full max-w-4xl">
                   <motion.div
@@ -190,7 +193,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* CARD 2 — MY RESUMES */}
+              {/* CARD 2 */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
                   whileHover={{ y: -6 }}
@@ -206,7 +209,9 @@ export default function Home() {
                   {loadingUserResumes ? (
                     <p className="text-gray-500">Loading…</p>
                   ) : userResumes.length === 0 ? (
-                    <p className="text-gray-500">Nothing created yet</p>
+                    <p className="text-gray-500">
+                      Nothing created yet
+                    </p>
                   ) : (
                     <div className="w-full max-w-md flex flex-col gap-3">
                       {userResumes.map((resume) => (
@@ -218,7 +223,8 @@ export default function Home() {
                           className="border rounded-xl px-4 py-2 cursor-pointer
                             hover:bg-gray-50 transition text-left"
                         >
-                          {resume.title || "Untitled Resume"}
+                          {resume.title ||
+                            "Untitled Resume"}
                         </div>
                       ))}
                     </div>
@@ -226,43 +232,29 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* CARD 3 — SAMPLES */}
+              {/* CARD 3 */}
               <div className="snap-center min-w-full flex justify-center">
                 <motion.div
-                  onClick={() => navigate("/app/samples")}
+                  onClick={() =>
+                    navigate("/app/samples")
+                  }
                   whileHover={{ y: -6 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center
                     text-center px-10 cursor-pointer"
-                >
-                  <h2 className="text-3xl font-semibold mb-3">
-                    Resume Samples
-                  </h2>
-                  <p className="text-gray-600">
-                    Explore fulfilled, recruiter-approved samples.
-                  </p>
-                </motion.div>
+                  >
+                    <h2 className="text-3xl font-semibold mb-3">
+                      Resume Samples
+                    </h2>
+                    <p className="text-gray-600">
+                      Explore fulfilled, recruiter-approved samples.
+                    </p>
+                  </motion.div>
               </div>
 
             </div>
           </div>
-        </div>
-
-        {/* DOTS */}
-        <div className="flex justify-center gap-3 mt-6">
-          {[0, 1, 2].map((i) => (
-            <button
-              key={i}
-              onClick={() => scrollToSlide(i)}
-              className={`h-3 w-3 rounded-full transition
-                ${
-                  activeSlide === i
-                    ? "bg-black scale-110"
-                    : "bg-gray-300 hover:bg-gray-400"
-                }`}
-            />
-          ))}
         </div>
 
       </div>
