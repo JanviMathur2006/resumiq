@@ -114,7 +114,8 @@ export default function Home() {
             Build Your Resume
           </h1>
 
-          <h2 className="text-2xl font-medium text-green-600 mb-3">
+          {/* 🔵 COLOR CHANGED HERE */}
+          <h2 className="text-2xl font-medium text-[#0A1A33] mb-3">
             <Typewriter
               words={resumeNames}
               loop={0}
