@@ -116,11 +116,10 @@ export default function Home() {
             Build Your Resume
           </h1>
 
-          {/* 🔵 SUBTLE GRADIENT GLOW HEADER */}
+          {/* 🔵 Softer Gradient Glow */}
           <div className="relative inline-block mb-3">
 
-            {/* Glow Layer */}
-            <div className="absolute inset-0 blur-xl opacity-20
+            <div className="absolute inset-0 blur-xl opacity-15
                             bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
                             rounded-full" />
 
