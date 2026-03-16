@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
@@ -41,17 +41,14 @@ export default function Home() {
   };
 
   const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1)
-      scrollToSlide(activeSlide + 1);
+    if (activeSlide < TOTAL_SLIDES - 1) scrollToSlide(activeSlide + 1);
   };
 
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const index = Math.round(
-      slider.scrollLeft / slider.offsetWidth
-    );
+    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
     setActiveSlide(index);
   };
 
@@ -106,21 +103,71 @@ export default function Home() {
       <div className="flex min-h-screen bg-gray-50">
 
         {/* ================= SIDEBAR ================= */}
-        <div className="w-64 bg-slate-900 text-white flex flex-col p-6">
+        <div className="w-64 bg-slate-900 text-white flex flex-col p-6 shadow-xl">
           <h2 className="text-2xl font-bold mb-8">Resumiq</h2>
 
           <nav className="flex flex-col gap-4 text-sm">
-            <Link to="/app" className="hover:text-blue-400">Dashboard</Link>
-            <Link to="/app/my-resumes" className="hover:text-blue-400">My Resumes</Link>
-            <Link to="/app/samples" className="hover:text-blue-400">Templates</Link>
-            <Link to="/app/profile" className="hover:text-blue-400">Profile</Link>
-            <Link to="/app/settings" className="hover:text-blue-400">Settings</Link>
+
+            <NavLink
+              to="/app"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-blue-400 font-medium"
+                  : "hover:text-blue-400"
+              }
+            >
+              Dashboard
+            </NavLink>
+
+            <NavLink
+              to="/app/resumes"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-blue-400 font-medium"
+                  : "hover:text-blue-400"
+              }
+            >
+              My Resumes
+            </NavLink>
+
+            <NavLink
+              to="/app/samples"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-blue-400 font-medium"
+                  : "hover:text-blue-400"
+              }
+            >
+              Templates
+            </NavLink>
+
+            <NavLink
+              to="/app/profile"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-blue-400 font-medium"
+                  : "hover:text-blue-400"
+              }
+            >
+              Profile
+            </NavLink>
+
+            <NavLink
+              to="/app/settings"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-blue-400 font-medium"
+                  : "hover:text-blue-400"
+              }
+            >
+              Settings
+            </NavLink>
+
           </nav>
         </div>
 
         {/* ================= MAIN CONTENT ================= */}
         <div className="flex-1">
-
           <div className="max-w-7xl mx-auto px-8 py-10">
 
             {/* ================= HEADER ================= */}
@@ -135,10 +182,11 @@ export default function Home() {
               </h1>
 
               <div className="relative inline-block mb-3">
-
-                <div className="absolute inset-0 blur-xl opacity-15
-                                bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
-                                rounded-full" />
+                <div
+                  className="absolute inset-0 blur-xl opacity-15
+                  bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
+                  rounded-full"
+                />
 
                 <h2 className="relative text-2xl font-medium text-[#1E3A8A]">
                   <Typewriter
@@ -149,7 +197,6 @@ export default function Home() {
                     cursorColor="#1E3A8A"
                   />
                 </h2>
-
               </div>
 
               <p className="text-gray-600 text-lg">
@@ -164,12 +211,12 @@ export default function Home() {
                 onClick={scrollLeft}
                 disabled={activeSlide === 0}
                 className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
-                  h-12 w-12 items-center justify-center rounded-full shadow-lg transition
-                  ${
-                    activeSlide === 0
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-black text-white hover:bg-gray-800"
-                  }`}
+                h-12 w-12 items-center justify-center rounded-full shadow-lg transition
+                ${
+                  activeSlide === 0
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-black text-white hover:bg-gray-800"
+                }`}
               >
                 ←
               </button>
@@ -178,12 +225,12 @@ export default function Home() {
                 onClick={scrollRight}
                 disabled={activeSlide === TOTAL_SLIDES - 1}
                 className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
-                  h-12 w-12 items-center justify-center rounded-full shadow-lg transition
-                  ${
-                    activeSlide === TOTAL_SLIDES - 1
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-black text-white hover:bg-gray-800"
-                  }`}
+                h-12 w-12 items-center justify-center rounded-full shadow-lg transition
+                ${
+                  activeSlide === TOTAL_SLIDES - 1
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-black text-white hover:bg-gray-800"
+                }`}
               >
                 →
               </button>
@@ -202,8 +249,8 @@ export default function Home() {
                         whileHover={{ y: -6 }}
                         whileTap={{ scale: 0.98 }}
                         className="h-[420px] bg-white rounded-3xl shadow-xl
-                          flex flex-col items-center justify-center
-                          text-center px-10 cursor-pointer"
+                        flex flex-col items-center justify-center
+                        text-center px-10 cursor-pointer"
                       >
                         <h2 className="text-3xl font-semibold mb-3">
                           Create New Resume
@@ -221,8 +268,8 @@ export default function Home() {
                       whileHover={{ y: -6 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                        flex flex-col items-center justify-center
-                        text-center px-10"
+                      flex flex-col items-center justify-center
+                      text-center px-10"
                     >
                       <h2 className="text-3xl font-semibold mb-4">
                         My Resumes
@@ -241,7 +288,7 @@ export default function Home() {
                                 navigate(`/app/builder?id=${resume.id}`)
                               }
                               className="border rounded-xl px-4 py-2 cursor-pointer
-                                hover:bg-gray-50 transition text-left"
+                              hover:bg-gray-50 transition text-left"
                             >
                               {resume.title || "Untitled Resume"}
                             </div>
@@ -258,8 +305,8 @@ export default function Home() {
                       whileHover={{ y: -6 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                        flex flex-col items-center justify-center
-                        text-center px-10 cursor-pointer"
+                      flex flex-col items-center justify-center
+                      text-center px-10 cursor-pointer"
                     >
                       <h2 className="text-3xl font-semibold mb-3">
                         Resume Samples
@@ -276,8 +323,8 @@ export default function Home() {
             </div>
 
           </div>
-
         </div>
+
       </div>
     </PageTransition>
   );
