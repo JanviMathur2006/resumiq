@@ -41,14 +41,17 @@ export default function Home() {
   };
 
   const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1) scrollToSlide(activeSlide + 1);
+    if (activeSlide < TOTAL_SLIDES - 1)
+      scrollToSlide(activeSlide + 1);
   };
 
   const handleScroll = () => {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+    const index = Math.round(
+      slider.scrollLeft / slider.offsetWidth
+    );
     setActiveSlide(index);
   };
 
@@ -100,10 +103,11 @@ export default function Home() {
 
   return (
     <PageTransition>
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-gray-100">
 
         {/* ================= SIDEBAR ================= */}
-        <div className="w-64 bg-slate-900 text-white flex flex-col p-6 shadow-xl">
+        <div className="w-56 bg-slate-900 text-white flex flex-col p-6 shadow-xl">
+
           <h2 className="text-2xl font-bold mb-8">Resumiq</h2>
 
           <nav className="flex flex-col gap-4 text-sm">
@@ -168,20 +172,23 @@ export default function Home() {
 
         {/* ================= MAIN CONTENT ================= */}
         <div className="flex-1">
-          <div className="max-w-7xl mx-auto px-8 py-10">
+
+          <div className="max-w-5xl mx-auto px-10 py-12">
 
             {/* ================= HEADER ================= */}
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="mb-12"
+              className="mb-14"
             >
-              <h1 className="text-4xl font-bold text-gray-900 mb-3">
+
+              <h1 className="text-5xl font-bold text-gray-900 mb-4">
                 Build Your Resume
               </h1>
 
-              <div className="relative inline-block mb-3">
+              <div className="relative inline-block mb-4">
+
                 <div
                   className="absolute inset-0 blur-xl opacity-15
                   bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
@@ -197,11 +204,13 @@ export default function Home() {
                     cursorColor="#1E3A8A"
                   />
                 </h2>
+
               </div>
 
               <p className="text-gray-600 text-lg">
                 ATS-friendly • Professional • Recruiter-approved
               </p>
+
             </motion.div>
 
             {/* ================= SLIDER ================= */}
@@ -215,7 +224,7 @@ export default function Home() {
                 ${
                   activeSlide === 0
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-black text-white hover:bg-gray-800"
+                    : "bg-white text-gray-800 hover:bg-gray-100"
                 }`}
               >
                 ←
@@ -240,6 +249,7 @@ export default function Home() {
                 onScroll={handleScroll}
                 className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
               >
+
                 <div className="flex gap-12">
 
                   {/* CARD 1 */}
@@ -248,7 +258,7 @@ export default function Home() {
                       <motion.div
                         whileHover={{ y: -6 }}
                         whileTap={{ scale: 0.98 }}
-                        className="h-[420px] bg-white rounded-3xl shadow-xl
+                        className="h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
                         flex flex-col items-center justify-center
                         text-center px-10 cursor-pointer"
                       >
@@ -267,7 +277,7 @@ export default function Home() {
                     <motion.div
                       whileHover={{ y: -6 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                      className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
                       flex flex-col items-center justify-center
                       text-center px-10"
                     >
@@ -304,7 +314,7 @@ export default function Home() {
                       onClick={() => navigate("/app/samples")}
                       whileHover={{ y: -6 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                      className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
                       flex flex-col items-center justify-center
                       text-center px-10 cursor-pointer"
                     >
@@ -318,11 +328,13 @@ export default function Home() {
                   </div>
 
                 </div>
+
               </div>
 
             </div>
 
           </div>
+
         </div>
 
       </div>
