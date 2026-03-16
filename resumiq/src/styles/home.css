@@ -1,7 +1,7 @@
 /* ================= PAGE BACKGROUND ================= */
 .home-page {
   min-height: 100vh;
-  background: #f4f5f7;
+  background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,8 +37,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   text-align: center;
+  transition: all 0.25s ease;
+}
+
+.slide:hover {
+  transform: translateY(-6px);
 }
 
 /* ================= PLUS ICON ================= */
@@ -47,23 +52,25 @@
   height: 80px;
   margin: 0 auto 20px;
   border-radius: 50%;
-  background: #f0f0f0;
+  background: #f1f5f9;
   font-size: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #111;
+  color: #0f172a;
 }
 
 /* ================= TEXT ================= */
 .slide h2 {
   font-size: 34px;
   margin-bottom: 10px;
+  font-weight: 600;
+  color: #0f172a;
 }
 
 .slide p {
   font-size: 18px;
-  color: #666;
+  color: #64748b;
   margin-bottom: 30px;
 }
 
@@ -75,12 +82,17 @@
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  background: #111;
+  background: #2563eb;
   color: white;
+  transition: background 0.2s ease;
+}
+
+.slide button:hover {
+  background: #1d4ed8;
 }
 
 /* ====================================================
-   TYPING ANIMATION STYLES (NEW – SAFE ADDITION)
+   TYPING ANIMATION STYLES
    ==================================================== */
 
 .home-header {
@@ -91,7 +103,7 @@
 .home-title {
   font-size: 42px;
   font-weight: 700;
-  color: #111;
+  color: #0f172a;
   margin-bottom: 14px;
 }
 
@@ -99,11 +111,86 @@
 .home-typing {
   font-size: 26px;
   font-weight: 500;
-  color: #16a34a; /* professional green */
-  min-height: 32px; /* prevents layout jump */
+  color: #2563eb;
+  min-height: 32px;
 }
 
 /* Cursor blink smoothness */
 .home-typing span {
   white-space: nowrap;
+}
+
+/* ====================================================
+   DASHBOARD LAYOUT (NEW ADDITION)
+   ==================================================== */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+
+.sidebar {
+  width: 230px;
+  background: #0f172a;
+  color: white;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #cbd5f5;
+  margin-bottom: 16px;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+.sidebar a:hover {
+  color: #60a5fa;
+}
+
+/* Main content */
+
+.main-content {
+  flex: 1;
+  padding: 40px 60px;
+}
+
+/* Dashboard cards */
+
+.resume-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 18px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resume-card:hover {
+  background: #f8fafc;
+}
+
+.resume-card button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resume-card button:hover {
+  background: #1d4ed8;
 }

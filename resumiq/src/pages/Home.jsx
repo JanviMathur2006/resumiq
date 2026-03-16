@@ -103,163 +103,181 @@ export default function Home() {
 
   return (
     <PageTransition>
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="flex min-h-screen bg-gray-50">
 
-        {/* ================= HEADER ================= */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-12"
-        >
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Build Your Resume
-          </h1>
+        {/* ================= SIDEBAR ================= */}
+        <div className="w-64 bg-slate-900 text-white flex flex-col p-6">
+          <h2 className="text-2xl font-bold mb-8">Resumiq</h2>
 
-          {/* 🔵 Softer Gradient Glow */}
-          <div className="relative inline-block mb-3">
+          <nav className="flex flex-col gap-4 text-sm">
+            <Link to="/app" className="hover:text-blue-400">Dashboard</Link>
+            <Link to="/app/my-resumes" className="hover:text-blue-400">My Resumes</Link>
+            <Link to="/app/samples" className="hover:text-blue-400">Templates</Link>
+            <Link to="/app/profile" className="hover:text-blue-400">Profile</Link>
+            <Link to="/app/settings" className="hover:text-blue-400">Settings</Link>
+          </nav>
+        </div>
 
-            <div className="absolute inset-0 blur-xl opacity-15
-                            bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
-                            rounded-full" />
+        {/* ================= MAIN CONTENT ================= */}
+        <div className="flex-1">
 
-            <h2 className="relative text-2xl font-medium text-[#1E3A8A]">
-              <Typewriter
-                words={resumeNames}
-                loop={0}
-                cursor
-                cursorStyle="|"
-                cursorColor="#1E3A8A"
-              />
-            </h2>
+          <div className="max-w-7xl mx-auto px-8 py-10">
 
-          </div>
+            {/* ================= HEADER ================= */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-12"
+            >
+              <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                Build Your Resume
+              </h1>
 
-          <p className="text-gray-600 text-lg">
-            ATS-friendly • Professional • Recruiter-approved
-          </p>
-        </motion.div>
+              <div className="relative inline-block mb-3">
 
-        {/* ================= SLIDER ================= */}
-        <div className="relative">
+                <div className="absolute inset-0 blur-xl opacity-15
+                                bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
+                                rounded-full" />
 
-          {/* LEFT ARROW */}
-          <button
-            onClick={scrollLeft}
-            disabled={activeSlide === 0}
-            className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
-              h-12 w-12 items-center justify-center rounded-full shadow-lg transition
-              ${
-                activeSlide === 0
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-black text-white hover:bg-gray-800"
-              }`}
-          >
-            ←
-          </button>
+                <h2 className="relative text-2xl font-medium text-[#1E3A8A]">
+                  <Typewriter
+                    words={resumeNames}
+                    loop={0}
+                    cursor
+                    cursorStyle="|"
+                    cursorColor="#1E3A8A"
+                  />
+                </h2>
 
-          {/* RIGHT ARROW */}
-          <button
-            onClick={scrollRight}
-            disabled={activeSlide === TOTAL_SLIDES - 1}
-            className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
-              h-12 w-12 items-center justify-center rounded-full shadow-lg transition
-              ${
-                activeSlide === TOTAL_SLIDES - 1
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-black text-white hover:bg-gray-800"
-              }`}
-          >
-            →
-          </button>
-
-          {/* SLIDER TRACK */}
-          <div
-            ref={sliderRef}
-            onScroll={handleScroll}
-            className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
-          >
-            <div className="flex gap-12">
-
-              {/* CARD 1 */}
-              <div className="snap-center min-w-full flex justify-center">
-                <Link to="/app/create" className="w-full max-w-4xl">
-                  <motion.div
-                    whileHover={{ y: -6 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="h-[420px] bg-white rounded-3xl shadow-xl
-                      flex flex-col items-center justify-center
-                      text-center px-10 cursor-pointer"
-                  >
-                    <h2 className="text-3xl font-semibold mb-3">
-                      Create New Resume
-                    </h2>
-                    <p className="text-gray-600">
-                      Choose from multiple resume categories.
-                    </p>
-                  </motion.div>
-                </Link>
               </div>
 
-              {/* CARD 2 */}
-              <div className="snap-center min-w-full flex justify-center">
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                    flex flex-col items-center justify-center
-                    text-center px-10"
-                >
-                  <h2 className="text-3xl font-semibold mb-4">
-                    My Resumes
-                  </h2>
+              <p className="text-gray-600 text-lg">
+                ATS-friendly • Professional • Recruiter-approved
+              </p>
+            </motion.div>
 
-                  {loadingUserResumes ? (
-                    <p className="text-gray-500">Loading…</p>
-                  ) : userResumes.length === 0 ? (
-                    <p className="text-gray-500">Nothing created yet</p>
-                  ) : (
-                    <div className="w-full max-w-md flex flex-col gap-3">
-                      {userResumes.map((resume) => (
-                        <div
-                          key={resume.id}
-                          onClick={() =>
-                            navigate(`/app/builder?id=${resume.id}`)
-                          }
-                          className="border rounded-xl px-4 py-2 cursor-pointer
-                            hover:bg-gray-50 transition text-left"
-                        >
-                          {resume.title || "Untitled Resume"}
+            {/* ================= SLIDER ================= */}
+            <div className="relative">
+
+              <button
+                onClick={scrollLeft}
+                disabled={activeSlide === 0}
+                className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
+                  h-12 w-12 items-center justify-center rounded-full shadow-lg transition
+                  ${
+                    activeSlide === 0
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-black text-white hover:bg-gray-800"
+                  }`}
+              >
+                ←
+              </button>
+
+              <button
+                onClick={scrollRight}
+                disabled={activeSlide === TOTAL_SLIDES - 1}
+                className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
+                  h-12 w-12 items-center justify-center rounded-full shadow-lg transition
+                  ${
+                    activeSlide === TOTAL_SLIDES - 1
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-black text-white hover:bg-gray-800"
+                  }`}
+              >
+                →
+              </button>
+
+              <div
+                ref={sliderRef}
+                onScroll={handleScroll}
+                className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
+              >
+                <div className="flex gap-12">
+
+                  {/* CARD 1 */}
+                  <div className="snap-center min-w-full flex justify-center">
+                    <Link to="/app/create" className="w-full max-w-4xl">
+                      <motion.div
+                        whileHover={{ y: -6 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="h-[420px] bg-white rounded-3xl shadow-xl
+                          flex flex-col items-center justify-center
+                          text-center px-10 cursor-pointer"
+                      >
+                        <h2 className="text-3xl font-semibold mb-3">
+                          Create New Resume
+                        </h2>
+                        <p className="text-gray-600">
+                          Choose from multiple resume categories.
+                        </p>
+                      </motion.div>
+                    </Link>
+                  </div>
+
+                  {/* CARD 2 */}
+                  <div className="snap-center min-w-full flex justify-center">
+                    <motion.div
+                      whileHover={{ y: -6 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                        flex flex-col items-center justify-center
+                        text-center px-10"
+                    >
+                      <h2 className="text-3xl font-semibold mb-4">
+                        My Resumes
+                      </h2>
+
+                      {loadingUserResumes ? (
+                        <p className="text-gray-500">Loading…</p>
+                      ) : userResumes.length === 0 ? (
+                        <p className="text-gray-500">Nothing created yet</p>
+                      ) : (
+                        <div className="w-full max-w-md flex flex-col gap-3">
+                          {userResumes.map((resume) => (
+                            <div
+                              key={resume.id}
+                              onClick={() =>
+                                navigate(`/app/builder?id=${resume.id}`)
+                              }
+                              className="border rounded-xl px-4 py-2 cursor-pointer
+                                hover:bg-gray-50 transition text-left"
+                            >
+                              {resume.title || "Untitled Resume"}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              </div>
+                      )}
+                    </motion.div>
+                  </div>
 
-              {/* CARD 3 */}
-              <div className="snap-center min-w-full flex justify-center">
-                <motion.div
-                  onClick={() => navigate("/app/samples")}
-                  whileHover={{ y: -6 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                    flex flex-col items-center justify-center
-                    text-center px-10 cursor-pointer"
-                >
-                  <h2 className="text-3xl font-semibold mb-3">
-                    Resume Samples
-                  </h2>
-                  <p className="text-gray-600">
-                    Explore fulfilled, recruiter-approved samples.
-                  </p>
-                </motion.div>
+                  {/* CARD 3 */}
+                  <div className="snap-center min-w-full flex justify-center">
+                    <motion.div
+                      onClick={() => navigate("/app/samples")}
+                      whileHover={{ y: -6 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
+                        flex flex-col items-center justify-center
+                        text-center px-10 cursor-pointer"
+                    >
+                      <h2 className="text-3xl font-semibold mb-3">
+                        Resume Samples
+                      </h2>
+                      <p className="text-gray-600">
+                        Explore fulfilled, recruiter-approved samples.
+                      </p>
+                    </motion.div>
+                  </div>
+
+                </div>
               </div>
 
             </div>
-          </div>
-        </div>
 
+          </div>
+
+        </div>
       </div>
     </PageTransition>
   );
