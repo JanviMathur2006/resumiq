@@ -5,6 +5,15 @@ import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
 import { resumeTypes } from "../data/resumeTypes";
 
+/* ICONS */
+import {
+  FiHome,
+  FiFileText,
+  FiLayout,
+  FiUser,
+  FiSettings
+} from "react-icons/fi";
+
 /* FIREBASE */
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -106,66 +115,88 @@ export default function Home() {
       <div className="flex min-h-screen bg-gray-100">
 
         {/* ================= SIDEBAR ================= */}
-        <div className="w-80 bg-slate-900 text-white flex flex-col p-8 shadow-xl">
+        <div className="w-80 bg-slate-900 text-white flex flex-col p-8">
 
-          <h2 className="text-3xl font-bold mb-10 tracking-tight">
+          <h2 className="text-3xl font-bold mb-12">
             Resumiq
           </h2>
 
-          <nav className="flex flex-col gap-5 text-sm">
+          <nav className="flex flex-col gap-2 text-sm">
 
             <NavLink
               to="/app"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-400 font-medium"
-                  : "hover:text-blue-400"
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition
+                ${
+                  isActive
+                    ? "bg-slate-800 text-blue-400"
+                    : "hover:bg-slate-800"
+                }`
               }
             >
+              <FiHome size={18} />
               Dashboard
             </NavLink>
 
             <NavLink
               to="/app/resumes"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-400 font-medium"
-                  : "hover:text-blue-400"
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition
+                ${
+                  isActive
+                    ? "bg-slate-800 text-blue-400"
+                    : "hover:bg-slate-800"
+                }`
               }
             >
+              <FiFileText size={18} />
               My Resumes
             </NavLink>
 
             <NavLink
               to="/app/samples"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-400 font-medium"
-                  : "hover:text-blue-400"
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition
+                ${
+                  isActive
+                    ? "bg-slate-800 text-blue-400"
+                    : "hover:bg-slate-800"
+                }`
               }
             >
+              <FiLayout size={18} />
               Templates
             </NavLink>
+
+            <div className="border-t border-slate-700 my-6"></div>
 
             <NavLink
               to="/app/profile"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-400 font-medium"
-                  : "hover:text-blue-400"
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition
+                ${
+                  isActive
+                    ? "bg-slate-800 text-blue-400"
+                    : "hover:bg-slate-800"
+                }`
               }
             >
+              <FiUser size={18} />
               Profile
             </NavLink>
 
             <NavLink
               to="/app/settings"
               className={({ isActive }) =>
-                isActive
-                  ? "text-blue-400 font-medium"
-                  : "hover:text-blue-400"
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition
+                ${
+                  isActive
+                    ? "bg-slate-800 text-blue-400"
+                    : "hover:bg-slate-800"
+                }`
               }
             >
+              <FiSettings size={18} />
               Settings
             </NavLink>
 
@@ -182,11 +213,13 @@ export default function Home() {
             transition={{ duration: 0.4 }}
             className="mb-12"
           >
+
             <h1 className="text-5xl font-bold text-gray-900 mb-4">
               Build Your Resume
             </h1>
 
             <div className="relative inline-block mb-4">
+
               <div
                 className="absolute inset-0 blur-xl opacity-15
                 bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
@@ -202,11 +235,13 @@ export default function Home() {
                   cursorColor="#1E3A8A"
                 />
               </h2>
+
             </div>
 
             <p className="text-gray-600 text-lg">
               ATS-friendly • Professional • Recruiter-approved
             </p>
+
           </motion.div>
 
           {/* ================= SLIDER ================= */}
@@ -254,8 +289,8 @@ export default function Home() {
                       whileHover={{ y: -6 }}
                       whileTap={{ scale: 0.98 }}
                       className="h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
-                        flex flex-col items-center justify-center
-                        text-center px-10 cursor-pointer"
+                      flex flex-col items-center justify-center
+                      text-center px-10 cursor-pointer"
                     >
                       <h2 className="text-3xl font-semibold mb-3">
                         Create New Resume
@@ -273,8 +308,8 @@ export default function Home() {
                     whileHover={{ y: -6 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
-                      flex flex-col items-center justify-center
-                      text-center px-10"
+                    flex flex-col items-center justify-center
+                    text-center px-10"
                   >
                     <h2 className="text-3xl font-semibold mb-4">
                       My Resumes
@@ -293,7 +328,7 @@ export default function Home() {
                               navigate(`/app/builder?id=${resume.id}`)
                             }
                             className="border rounded-xl px-4 py-2 cursor-pointer
-                              hover:bg-gray-50 transition text-left"
+                            hover:bg-gray-50 transition text-left"
                           >
                             {resume.title || "Untitled Resume"}
                           </div>
@@ -310,8 +345,8 @@ export default function Home() {
                     whileHover={{ y: -6 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
-                      flex flex-col items-center justify-center
-                      text-center px-10 cursor-pointer"
+                    flex flex-col items-center justify-center
+                    text-center px-10 cursor-pointer"
                   >
                     <h2 className="text-3xl font-semibold mb-3">
                       Resume Samples
