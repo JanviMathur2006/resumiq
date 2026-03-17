@@ -22,12 +22,14 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 const TOTAL_SLIDES = 3;
 
 export default function Home() {
+
   const sliderRef = useRef(null);
   const navigate = useNavigate();
-  const [activeSlide, setActiveSlide] = useState(0);
 
+  const [activeSlide, setActiveSlide] = useState(0);
   const [userResumes, setUserResumes] = useState([]);
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
+  const [search, setSearch] = useState("");
 
   const resumeNames = resumeTypes.map((type) => type.name);
 
@@ -64,23 +66,11 @@ export default function Home() {
     setActiveSlide(index);
   };
 
-  /* ================= KEYBOARD NAVIGATION ================= */
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "ArrowLeft") scrollLeft();
-      if (e.key === "ArrowRight") scrollRight();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () =>
-      window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlide]);
-
   /* ================= FETCH USER RESUMES ================= */
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+
       if (!user) {
         setUserResumes([]);
         setLoadingUserResumes(false);
@@ -102,19 +92,28 @@ export default function Home() {
       );
 
       setLoadingUserResumes(false);
+
     });
 
     return () => unsubscribe();
   }, []);
 
+  const filteredResumes = userResumes.filter((resume) =>
+    (resume.title || "Untitled Resume")
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   return (
     <PageTransition>
-      <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
+
+      <div className="flex min-h-screen bg-gray-100">
 
         {/* ================= SIDEBAR ================= */}
+
         <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8 border-r border-slate-800">
 
-          <h2 className="text-3xl font-bold mb-12 tracking-tight">
+          <h2 className="text-3xl font-bold mb-12">
             Resumiq
           </h2>
 
@@ -123,7 +122,7 @@ export default function Home() {
             <NavLink
               to="/app"
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
                 ${
                   isActive
                     ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
@@ -138,7 +137,7 @@ export default function Home() {
             <NavLink
               to="/app/resumes"
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
                 ${
                   isActive
                     ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
@@ -153,7 +152,7 @@ export default function Home() {
             <NavLink
               to="/app/samples"
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
                 ${
                   isActive
                     ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
@@ -170,7 +169,7 @@ export default function Home() {
             <NavLink
               to="/app/profile"
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
                 ${
                   isActive
                     ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
@@ -185,7 +184,7 @@ export default function Home() {
             <NavLink
               to="/app/settings"
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 relative
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
                 ${
                   isActive
                     ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
@@ -198,12 +197,24 @@ export default function Home() {
             </NavLink>
 
           </nav>
+
         </div>
 
-        {/* ================= MAIN CONTENT ================= */}
-        <div className="flex-1 px-20 py-10">
+        {/* ================= MAIN ================= */}
+
+        <div className="flex-1 px-20 py-10 relative">
+
+          {/* NEW RESUME BUTTON */}
+
+          <button
+            onClick={() => navigate("/app/create")}
+            className="absolute top-10 right-10 bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700"
+          >
+            + New Resume
+          </button>
 
           {/* HEADER */}
+
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,49 +222,33 @@ export default function Home() {
             className="mb-12"
           >
 
-            <h1 className="text-5xl font-bold text-gray-900 mb-4">
-              Build Your Resume
+            <h1 className="text-5xl font-bold text-gray-900 mb-2">
+              Welcome back 👋
             </h1>
 
-            <div className="relative inline-block mb-4">
-
-              <div
-                className="absolute inset-0 blur-xl opacity-20
-                bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
-                rounded-full"
-              />
-
-              <h2 className="relative text-2xl font-medium text-[#1E3A8A]">
-                <Typewriter
-                  words={resumeNames}
-                  loop={0}
-                  cursor
-                  cursorStyle="|"
-                  cursorColor="#1E3A8A"
-                />
-              </h2>
-
-            </div>
-
-            <p className="text-gray-600 text-lg">
-              ATS-friendly • Professional • Recruiter-approved
+            <p className="text-gray-600 text-lg mb-4">
+              Continue building your professional resume.
             </p>
+
+            <h2 className="text-xl text-blue-900">
+              <Typewriter
+                words={resumeNames}
+                loop={0}
+                cursor
+              />
+            </h2>
 
           </motion.div>
 
           {/* ================= SLIDER ================= */}
+
           <div className="relative">
 
             <button
               onClick={scrollLeft}
               disabled={activeSlide === 0}
-              className={`hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2 z-20
-                h-12 w-12 items-center justify-center rounded-full shadow-lg transition
-                ${
-                  activeSlide === 0
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-white text-gray-800 hover:bg-gray-100"
-                }`}
+              className="hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2
+              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-white"
             >
               ←
             </button>
@@ -261,13 +256,8 @@ export default function Home() {
             <button
               onClick={scrollRight}
               disabled={activeSlide === TOTAL_SLIDES - 1}
-              className={`hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 z-20
-                h-12 w-12 items-center justify-center rounded-full shadow-lg transition
-                ${
-                  activeSlide === TOTAL_SLIDES - 1
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-black text-white hover:bg-gray-800"
-                }`}
+              className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2
+              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-black text-white"
             >
               →
             </button>
@@ -277,47 +267,69 @@ export default function Home() {
               onScroll={handleScroll}
               className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
             >
+
               <div className="flex gap-12">
 
                 {/* CREATE RESUME */}
+
                 <div className="snap-center min-w-full flex justify-center">
+
                   <Link to="/app/create" className="w-full max-w-4xl">
+
                     <motion.div
-                      whileHover={{ y: -6, scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="h-[420px] bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200
-                      flex flex-col items-center justify-center text-center px-10 cursor-pointer"
+                      whileHover={{ y: -6 }}
+                      className="h-[420px] bg-white rounded-3xl shadow-xl
+                      flex flex-col items-center justify-center text-center px-10"
                     >
+
                       <h2 className="text-3xl font-semibold mb-3">
                         Create New Resume
                       </h2>
+
                       <p className="text-gray-600">
                         Choose from multiple resume categories.
                       </p>
+
                     </motion.div>
+
                   </Link>
+
                 </div>
 
                 {/* MY RESUMES */}
+
                 <div className="snap-center min-w-full flex justify-center">
+
                   <motion.div
-                    whileHover={{ y: -6, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full max-w-4xl h-[420px] bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200
+                    whileHover={{ y: -6 }}
+                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center text-center px-10"
                   >
 
-                    <h2 className="text-3xl font-semibold mb-4">
+                    <h2 className="text-3xl font-semibold mb-2">
                       My Resumes
                     </h2>
 
+                    <p className="text-gray-500 mb-4">
+                      {userResumes.length} resumes created
+                    </p>
+
+                    <input
+                      placeholder="Search resumes..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="border rounded-lg px-3 py-2 w-full max-w-sm mb-4"
+                    />
+
                     {loadingUserResumes ? (
                       <p className="text-gray-500">Loading…</p>
-                    ) : userResumes.length === 0 ? (
-                      <p className="text-gray-500">Nothing created yet</p>
+                    ) : filteredResumes.length === 0 ? (
+                      <p className="text-gray-500">
+                        You haven't created a resume yet. Start by creating your first one.
+                      </p>
                     ) : (
                       <div className="w-full max-w-md flex flex-col gap-3">
-                        {userResumes.map((resume) => (
+                        {filteredResumes.map((resume) => (
                           <div
                             key={resume.id}
                             onClick={() =>
@@ -333,33 +345,42 @@ export default function Home() {
                     )}
 
                   </motion.div>
+
                 </div>
 
                 {/* SAMPLES */}
+
                 <div className="snap-center min-w-full flex justify-center">
+
                   <motion.div
                     onClick={() => navigate("/app/samples")}
-                    whileHover={{ y: -6, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full max-w-4xl h-[420px] bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200
+                    whileHover={{ y: -6 }}
+                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center text-center px-10 cursor-pointer"
                   >
+
                     <h2 className="text-3xl font-semibold mb-3">
                       Resume Samples
                     </h2>
+
                     <p className="text-gray-600">
-                      Explore fulfilled, recruiter-approved samples.
+                      Explore recruiter-approved resume examples.
                     </p>
+
                   </motion.div>
+
                 </div>
 
               </div>
+
             </div>
 
           </div>
 
         </div>
+
       </div>
+
     </PageTransition>
   );
 }
