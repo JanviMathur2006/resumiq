@@ -80,39 +80,36 @@ export default function Home() {
   /* ================= FETCH USER RESUMES ================= */
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (user) => {
-        if (!user) {
-          setUserResumes([]);
-          setLoadingUserResumes(false);
-          return;
-        }
-
-        const q = query(
-          collection(db, "resumes"),
-          where("userId", "==", user.uid)
-        );
-
-        const snap = await getDocs(q);
-
-        setUserResumes(
-          snap.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-        );
-
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setUserResumes([]);
         setLoadingUserResumes(false);
+        return;
       }
-    );
+
+      const q = query(
+        collection(db, "resumes"),
+        where("userId", "==", user.uid)
+      );
+
+      const snap = await getDocs(q);
+
+      setUserResumes(
+        snap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+
+      setLoadingUserResumes(false);
+    });
 
     return () => unsubscribe();
   }, []);
 
   return (
     <PageTransition>
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
 
         {/* ================= SIDEBAR ================= */}
         <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8 border-r border-slate-800">
@@ -221,7 +218,7 @@ export default function Home() {
             <div className="relative inline-block mb-4">
 
               <div
-                className="absolute inset-0 blur-xl opacity-15
+                className="absolute inset-0 blur-xl opacity-20
                 bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500
                 rounded-full"
               />
@@ -286,9 +283,9 @@ export default function Home() {
                 <div className="snap-center min-w-full flex justify-center">
                   <Link to="/app/create" className="w-full max-w-4xl">
                     <motion.div
-                      whileHover={{ y: -6 }}
+                      whileHover={{ y: -6, scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
+                      className="h-[420px] bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200
                       flex flex-col items-center justify-center text-center px-10 cursor-pointer"
                     >
                       <h2 className="text-3xl font-semibold mb-3">
@@ -304,9 +301,9 @@ export default function Home() {
                 {/* MY RESUMES */}
                 <div className="snap-center min-w-full flex justify-center">
                   <motion.div
-                    whileHover={{ y: -6 }}
+                    whileHover={{ y: -6, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
+                    className="w-full max-w-4xl h-[420px] bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200
                     flex flex-col items-center justify-center text-center px-10"
                   >
 
@@ -342,9 +339,9 @@ export default function Home() {
                 <div className="snap-center min-w-full flex justify-center">
                   <motion.div
                     onClick={() => navigate("/app/samples")}
-                    whileHover={{ y: -6 }}
+                    whileHover={{ y: -6, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-lg border border-gray-100
+                    className="w-full max-w-4xl h-[420px] bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-200
                     flex flex-col items-center justify-center text-center px-10 cursor-pointer"
                   >
                     <h2 className="text-3xl font-semibold mb-3">
