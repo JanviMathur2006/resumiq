@@ -14,6 +14,8 @@ import {
   FiSettings
 } from "react-icons/fi";
 
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+
 /* FIREBASE */
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -52,8 +54,9 @@ export default function Home() {
   };
 
   const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1)
+    if (activeSlide < TOTAL_SLIDES - 1) {
       scrollToSlide(activeSlide + 1);
+    }
   };
 
   const handleScroll = () => {
@@ -111,266 +114,101 @@ export default function Home() {
 
         {/* ================= SIDEBAR ================= */}
 
-        <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8 border-r border-slate-800">
+        <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8">
 
-          <h2 className="text-3xl font-bold mb-12">
-            Resumiq
-          </h2>
+          <h2 className="text-3xl font-bold mb-12">Resumiq</h2>
 
           <nav className="flex flex-col gap-2 text-sm">
 
-            <NavLink
-              to="/app"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiHome size={18} />
-              Dashboard
+            <NavLink to="/app" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
+              <FiHome size={18} /> Dashboard
             </NavLink>
 
-            <NavLink
-              to="/app/resumes"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiFileText size={18} />
-              My Resumes
+            <NavLink to="/app/resumes" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
+              <FiFileText size={18} /> My Resumes
             </NavLink>
 
-            <NavLink
-              to="/app/samples"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiLayout size={18} />
-              Templates
+            <NavLink to="/app/samples" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
+              <FiLayout size={18} /> Templates
             </NavLink>
 
             <div className="border-t border-slate-700 my-6"></div>
 
-            <NavLink
-              to="/app/profile"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiUser size={18} />
-              Profile
+            <NavLink to="/app/profile" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
+              <FiUser size={18} /> Profile
             </NavLink>
 
-            <NavLink
-              to="/app/settings"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiSettings size={18} />
-              Settings
+            <NavLink to="/app/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800">
+              <FiSettings size={18} /> Settings
             </NavLink>
 
           </nav>
-
         </div>
 
         {/* ================= MAIN ================= */}
 
         <div className="flex-1 px-20 py-10 relative">
 
-          {/* NEW RESUME BUTTON */}
-
           <button
             onClick={() => navigate("/app/create")}
-            className="absolute top-10 right-10 bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700"
+            className="absolute top-10 right-10 bg-blue-600 text-white px-5 py-2 rounded-lg"
           >
             + New Resume
           </button>
 
-          {/* HEADER */}
+          <h1 className="text-5xl font-bold mb-4">
+            Welcome back 👋
+          </h1>
 
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-12"
-          >
-
-            <h1 className="text-5xl font-bold text-gray-900 mb-2">
-              Welcome back 👋
-            </h1>
-
-            <p className="text-gray-600 text-lg mb-4">
-              Continue building your professional resume.
-            </p>
-
-            <h2 className="text-xl text-blue-900">
-              <Typewriter
-                words={resumeNames}
-                loop={0}
-                cursor
-              />
-            </h2>
-
-          </motion.div>
+          <h2 className="text-xl text-blue-900 mb-10">
+            <Typewriter words={resumeNames} loop={0} cursor />
+          </h2>
 
           {/* ================= SLIDER ================= */}
 
           <div className="relative">
 
+            {/* LEFT */}
             <button
               onClick={scrollLeft}
-              disabled={activeSlide === 0}
-              className="hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-white"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-3 rounded-full shadow"
             >
-              ←
+              <FaArrowLeft />
             </button>
 
+            {/* RIGHT */}
             <button
               onClick={scrollRight}
-              disabled={activeSlide === TOTAL_SLIDES - 1}
-              className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-black text-white"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white p-3 rounded-full shadow"
             >
-              →
+              <FaArrowRight />
             </button>
 
             <div
               ref={sliderRef}
               onScroll={handleScroll}
-              className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
+              className="overflow-x-auto flex snap-x snap-mandatory scroll-smooth"
             >
 
-              <div className="flex gap-12">
-
-                {/* CREATE RESUME */}
-
-                <div className="snap-center min-w-full flex justify-center">
-
-                  <Link to="/app/create" className="w-full max-w-4xl">
-
-                    <motion.div
-                      whileHover={{ y: -6 }}
-                      className="h-[420px] bg-white rounded-3xl shadow-xl
-                      flex flex-col items-center justify-center text-center px-10"
-                    >
-
-                      <h2 className="text-3xl font-semibold mb-3">
-                        Create New Resume
-                      </h2>
-
-                      <p className="text-gray-600">
-                        Choose from multiple resume categories.
-                      </p>
-
-                    </motion.div>
-
-                  </Link>
-
+              {/* SLIDE 1 */}
+              <div className="min-w-full flex justify-center snap-center">
+                <div className="h-[420px] w-full max-w-4xl bg-white rounded-3xl shadow-xl flex items-center justify-center">
+                  <h2 className="text-3xl font-semibold">Create Resume</h2>
                 </div>
+              </div>
 
-                {/* MY RESUMES */}
-
-                <div className="snap-center min-w-full flex justify-center">
-
-                  <motion.div
-                    whileHover={{ y: -6 }}
-                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                    flex flex-col items-center justify-center text-center px-10"
-                  >
-
-                    <h2 className="text-3xl font-semibold mb-2">
-                      My Resumes
-                    </h2>
-
-                    <p className="text-gray-500 mb-4">
-                      {userResumes.length} resumes created
-                    </p>
-
-                    <input
-                      placeholder="Search resumes..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="border rounded-lg px-3 py-2 w-full max-w-sm mb-4"
-                    />
-
-                    {loadingUserResumes ? (
-                      <p className="text-gray-500">Loading…</p>
-                    ) : filteredResumes.length === 0 ? (
-                      <p className="text-gray-500">
-                        You haven't created a resume yet. Start by creating your first one.
-                      </p>
-                    ) : (
-                      <div className="w-full max-w-md flex flex-col gap-3">
-                        {filteredResumes.map((resume) => (
-                          <div
-                            key={resume.id}
-                            onClick={() =>
-                              navigate(`/app/builder?id=${resume.id}`)
-                            }
-                            className="border rounded-xl px-4 py-2 cursor-pointer
-                            hover:bg-gray-50 transition text-left"
-                          >
-                            {resume.title || "Untitled Resume"}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                  </motion.div>
-
+              {/* SLIDE 2 */}
+              <div className="min-w-full flex justify-center snap-center">
+                <div className="h-[420px] w-full max-w-4xl bg-white rounded-3xl shadow-xl flex items-center justify-center">
+                  <h2 className="text-3xl font-semibold">My Resumes ({userResumes.length})</h2>
                 </div>
+              </div>
 
-                {/* SAMPLES */}
-
-                <div className="snap-center min-w-full flex justify-center">
-
-                  <motion.div
-                    onClick={() => navigate("/app/samples")}
-                    whileHover={{ y: -6 }}
-                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                    flex flex-col items-center justify-center text-center px-10 cursor-pointer"
-                  >
-
-                    <h2 className="text-3xl font-semibold mb-3">
-                      Resume Samples
-                    </h2>
-
-                    <p className="text-gray-600">
-                      Explore recruiter-approved resume examples.
-                    </p>
-
-                  </motion.div>
-
+              {/* SLIDE 3 */}
+              <div className="min-w-full flex justify-center snap-center">
+                <div className="h-[420px] w-full max-w-4xl bg-white rounded-3xl shadow-xl flex items-center justify-center">
+                  <h2 className="text-3xl font-semibold">Resume Samples</h2>
                 </div>
-
               </div>
 
             </div>
