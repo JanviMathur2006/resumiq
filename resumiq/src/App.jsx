@@ -7,17 +7,13 @@ import {
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
-/* =======================
-   PUBLIC PAGES
-======================= */
+/* PUBLIC */
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
 
-/* =======================
-   PROTECTED PAGES
-======================= */
+/* PROTECTED */
 import Home from "./pages/Home";
 import CreateResumes from "./pages/CreateResumes";
 import ChooseResumeType from "./pages/ChooseResumeType";
@@ -26,15 +22,11 @@ import ResumeSamples from "./pages/ResumeSamples";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
-/* =======================
-   LAYOUT & AUTH
-======================= */
+/* LAYOUT */
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
-/* =======================
-   ANIMATED ROUTES
-======================= */
+/* ================= ROUTES ================= */
 function AnimatedRoutes() {
   const location = useLocation();
 
@@ -42,36 +34,32 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-        {/* ================= PUBLIC ROUTES ================= */}
+        {/* PUBLIC */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/onboarding" element={<Onboarding />} />
 
-        {/* ================= PROTECTED ROUTES ================= */}
+        {/* PROTECTED */}
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
 
-            {/* DASHBOARD */}
             <Route path="/app" element={<Home />} />
 
-            {/* RESUME MANAGEMENT */}
+            {/* IMPORTANT PART */}
+            <Route path="/app/choose" element={<ChooseResumeType />} />
+
             <Route path="/app/resumes" element={<CreateResumes />} />
             <Route path="/app/create" element={<CreateResumes />} />
-            <Route path="/app/choose" element={<ChooseResumeType />} />
             <Route path="/app/builder" element={<ResumeBuilder />} />
-
-            {/* TEMPLATES & SAMPLES */}
             <Route path="/app/samples" element={<ResumeSamples />} />
-
-            {/* USER */}
             <Route path="/app/profile" element={<Profile />} />
             <Route path="/app/settings" element={<Settings />} />
 
           </Route>
         </Route>
 
-        {/* ================= FALLBACK ================= */}
+        {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
@@ -79,9 +67,7 @@ function AnimatedRoutes() {
   );
 }
 
-/* =======================
-   ROOT APP
-======================= */
+/* ROOT */
 export default function App() {
   return (
     <BrowserRouter>
