@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FlipCard from "../components/FlipCard";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -18,17 +19,14 @@ export default function Onboarding() {
       onboardingCompleted: true,
     };
 
-    localStorage.setItem(
-      "onboarding",
-      JSON.stringify(onboardingData)
-    );
+    localStorage.setItem("onboarding", JSON.stringify(onboardingData));
 
-    navigate("/app");
+    navigate("/app/choose"); // 🔥 go to resume selection after onboarding
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-6">
-      <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-10">
+      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl p-10">
 
         {/* STEP INDICATOR */}
         <div className="flex justify-between mb-10 text-sm text-slate-400">
@@ -53,20 +51,22 @@ export default function Onboarding() {
               This helps us personalize your resume
             </p>
 
-            <div className="grid gap-4">
+            {/* 🔥 FLIP CARDS */}
+            <div className="flex gap-4 flex-wrap">
               {["Student", "Fresher", "Professional"].map((item) => (
-                <button
+                <div
                   key={item}
                   onClick={() => setRole(item)}
-                  className={`p-4 rounded-xl border text-left transition
-                    ${
-                      role === item
-                        ? "border-blue-600 bg-blue-50"
-                        : "hover:border-slate-300"
-                    }`}
+                  className={`transition ${
+                    role === item ? "scale-105" : ""
+                  }`}
                 >
-                  <h3 className="font-medium">{item}</h3>
-                </button>
+                  <FlipCard
+                    title={item}
+                    tag="Select your role"
+                    preview=""
+                  />
+                </div>
               ))}
             </div>
 
@@ -90,20 +90,22 @@ export default function Onboarding() {
               Choose what you’re aiming for
             </p>
 
-            <div className="grid gap-4">
+            {/* 🔥 FLIP CARDS */}
+            <div className="flex gap-4 flex-wrap">
               {["Internship", "Job", "Career Switch"].map((item) => (
-                <button
+                <div
                   key={item}
                   onClick={() => setGoal(item)}
-                  className={`p-4 rounded-xl border text-left transition
-                    ${
-                      goal === item
-                        ? "border-blue-600 bg-blue-50"
-                        : "hover:border-slate-300"
-                    }`}
+                  className={`transition ${
+                    goal === item ? "scale-105" : ""
+                  }`}
                 >
-                  <h3 className="font-medium">{item}</h3>
-                </button>
+                  <FlipCard
+                    title={item}
+                    tag="Your goal"
+                    preview=""
+                  />
+                </div>
               ))}
             </div>
 
@@ -148,7 +150,7 @@ export default function Onboarding() {
               onClick={finishOnboarding}
               className="w-full bg-blue-600 text-white py-3 rounded-xl"
             >
-              Start building my resume
+              Continue →
             </button>
           </div>
         )}
