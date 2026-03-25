@@ -12,19 +12,31 @@
 
   body {
     font-family: Arial, sans-serif;
-    background-color: #f5f6fa;
+
+    /* ✅ NEW GRADIENT BACKGROUND */
+    background: linear-gradient(
+      135deg,
+      #FFFFFF 0%,
+      #F0F4F8 30%,
+      #C5D1DB 60%,
+      #7992A8 85%,
+      #2B3E4F 100%
+    );
+
+    min-height: 100vh;
     color: #111827;
   }
 
+  /* ✅ DARK MODE FIX */
   .dark body {
-    background-color: #030712;
+    background: #020617;
     color: #f9fafb;
   }
 
   /* ================= SYSTEM MODE SUPPORT ================= */
   @media (prefers-color-scheme: dark) {
     :root:not(.dark) body {
-      background-color: #030712;
+      background: #020617;
       color: #f9fafb;
     }
   }
@@ -53,7 +65,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #111;
+    background: #2B3E4F;
     padding: 12px 25px;
   }
 
@@ -88,15 +100,19 @@
   .page {
     max-width: 700px;
     margin: 80px auto;
-    background: white;
+
+    /* ✅ GLASS EFFECT */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+
     padding: calc(var(--ui-padding) * 1.5);
-    border-radius: 12px;
+    border-radius: 16px;
     text-align: center;
     animation: fadeIn 0.6s ease-out;
   }
 
   .dark .page {
-    background: #111827;
+    background: rgba(17, 24, 39, 0.8);
   }
 
   /* ---------------- Inputs ---------------- */
@@ -118,7 +134,7 @@
   input:focus,
   textarea:focus,
   select:focus {
-    border-color: #111827;
+    border-color: #2B3E4F;
   }
 
   .dark .input,
@@ -135,21 +151,25 @@
   button {
     padding: 10px 16px;
     margin-top: 10px;
-    background: black;
+
+    /* ✅ NEW BUTTON STYLE */
+    background: #7992A8;
     color: white;
+
     border: none;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 10px;
+    transition: 0.3s ease;
   }
 
   .btn:hover,
   button:hover {
-    opacity: 0.9;
+    background: #2B3E4F;
   }
 
   .btn:active,
   button:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
   }
 
   /* ---------------- Danger Button ---------------- */
@@ -165,7 +185,7 @@
   input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: black;
+    accent-color: #2B3E4F;
     cursor: pointer;
   }
 
@@ -175,14 +195,20 @@
 
   /* ---------------- Cards ---------------- */
   .card {
-    background: white;
-    border-radius: 12px;
+    /* ✅ GLASS CARD */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+
+    border-radius: 16px;
     padding: calc(var(--ui-padding) * 1.5);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    box-shadow:
+      0 10px 30px rgba(43, 62, 79, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.4);
   }
 
   .dark .card {
-    background: #111827;
+    background: rgba(17, 24, 39, 0.8);
   }
 
   /* ---------------- Modal ---------------- */
@@ -190,28 +216,28 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
     z-index: 40;
   }
 
   .modal {
-    background: white;
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+
+    border-radius: 16px;
     padding: calc(var(--ui-padding) * 1.5);
     max-width: 420px;
     width: 100%;
+
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     animation: scaleIn 0.15s ease-out;
   }
 
   .dark .modal {
-    background: #111827;
+    background: rgba(17, 24, 39, 0.85);
   }
 
-  /* ================================================= */
-  /* WELCOME SCREEN (NEW – RESUMIQ REDESIGN) */
-  /* ================================================= */
-
+  /* ---------------- Welcome Screen ---------------- */
   .welcome-root {
     min-height: 100vh;
     display: flex;
@@ -222,18 +248,20 @@
 
   .welcome-card {
     width: 420px;
-    background: white;
-    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+
+    border-radius: 20px;
     padding: 48px 44px;
     text-align: center;
 
     box-shadow:
-      0 20px 40px rgba(0, 0, 0, 0.06),
-      0 1px 0 rgba(0, 0, 0, 0.04);
+      0 20px 50px rgba(43, 62, 79, 0.15);
   }
 
   .dark .welcome-card {
-    background: #111827;
+    background: rgba(17, 24, 39, 0.85);
   }
 
   .welcome-title {
@@ -269,7 +297,7 @@
   }
 
   .welcome-btn.primary {
-    background: black;
+    background: #2B3E4F;
     color: white;
   }
 
@@ -296,7 +324,6 @@
 /* ============================= */
 @layer utilities {
 
-  /* Fade In */
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -312,7 +339,6 @@
     animation: fadeIn 0.6s ease-out;
   }
 
-  /* Modal Scale In */
   @keyframes scaleIn {
     from {
       opacity: 0;
@@ -329,9 +355,9 @@
   }
 }
 
-/* ================================================= */
-/* SMOOTH THEME TRANSITION + BLUR */
-/* ================================================= */
+/* ============================= */
+/* SMOOTH TRANSITIONS */
+/* ============================= */
 
 body,
 .page,
