@@ -8,43 +8,55 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  const linkClass = ({ isActive }) =>
-    isActive
-      ? "text-blue-400 font-semibold"
-      : "text-white hover:text-gray-300";
-
   return (
-    <nav className="bg-black text-white px-6 py-4 flex items-center justify-between shadow-md">
+    <nav className="navbar">
       
       {/* Logo */}
       <div
-        className="text-xl font-bold cursor-pointer"
+        className="logo"
         onClick={() => navigate("/app")}
       >
         Resumiq
       </div>
 
       {/* Navigation Links */}
-      <div className="flex items-center gap-6">
-        <NavLink to="/app" className={linkClass}>
+      <div className="nav-links">
+        
+        <NavLink
+          to="/app"
+          className={({ isActive }) =>
+            isActive ? "nav-item active" : "nav-item"
+          }
+        >
           Home
         </NavLink>
 
-        <NavLink to="/app/settings" className={linkClass}>
+        <NavLink
+          to="/app/settings"
+          className={({ isActive }) =>
+            isActive ? "nav-item active" : "nav-item"
+          }
+        >
           Settings
         </NavLink>
 
-        <NavLink to="/app/profile" className={linkClass}>
+        <NavLink
+          to="/app/profile"
+          className={({ isActive }) =>
+            isActive ? "nav-item active" : "nav-item"
+          }
+        >
           Profile
         </NavLink>
 
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="ml-4 bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded"
+          className="logout-btn"
         >
           Logout
         </button>
+
       </div>
     </nav>
   );

@@ -1,16 +1,103 @@
 /* ===============================
-   ROOT (FIXED - IMPORTANT)
+   ROOT (FIXED FULL WIDTH)
 ================================ */
 
 #root {
-  min-height: 100vh;   /* ✅ full screen */
-  width: 100%;         /* ✅ remove boxed layout */
+  min-height: 100vh;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
 
 /* ===============================
-   DASHBOARD LAYOUT (NEW)
+   NAVBAR
+================================ */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 16px 32px;
+  background: #2B3E4F;
+  color: white;
+
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-item {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 8px;
+
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 14px;
+
+  transition: all 0.25s ease;
+}
+
+.nav-item:hover {
+  color: white;
+  transform: translateY(-1px);
+}
+
+.nav-item.active {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* underline animation */
+.nav-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+
+  width: 0%;
+  height: 2px;
+  background: #7992A8;
+
+  transition: width 0.3s ease;
+}
+
+.nav-item:hover::after {
+  width: 100%;
+}
+
+.nav-item.active::after {
+  width: 100%;
+}
+
+.logout-btn {
+  margin-left: 16px;
+  background: #ef4444;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* ===============================
+   DASHBOARD LAYOUT
 ================================ */
 
 .dashboard-main {
@@ -35,7 +122,7 @@
 }
 
 /* ===============================
-   GRID LAYOUT (NEW)
+   GRID
 ================================ */
 
 .dashboard-content {
@@ -45,11 +132,10 @@
 }
 
 /* ===============================
-   BASE RESUME CARD (UPGRADED)
+   CARD BASE (GLASS + GLOW)
 ================================ */
 
 .resume-card {
-  /* ✅ glass effect instead of flat white */
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
 
@@ -65,25 +151,23 @@
     box-shadow 0.45s ease,
     border-color 0.45s ease;
 
-  /* glow vars */
+  box-shadow: 0 10px 30px rgba(43, 62, 79, 0.08);
+
+  /* Glow variables */
   --glow-border: rgba(0, 0, 0, 0);
   --glow-border-strong: rgba(0, 0, 0, 0);
   --glow-shadow: rgba(0, 0, 0, 0);
   --glow-shadow-strong: rgba(0, 0, 0, 0);
   --glow-outer: rgba(0, 0, 0, 0);
   --glow-outer-strong: rgba(0, 0, 0, 0);
-
-  /* subtle base shadow */
-  box-shadow: 0 10px 30px rgba(43, 62, 79, 0.08);
 }
 
-/* Hover lift */
 .resume-card:hover {
   transform: translateY(-6px);
 }
 
 /* ===============================
-   TEXT INSIDE CARD (NEW)
+   TEXT
 ================================ */
 
 .resume-card h2 {
@@ -98,7 +182,7 @@
 }
 
 /* ===============================
-   BUTTONS (NEW)
+   ACTION BUTTONS
 ================================ */
 
 .card-actions {
@@ -111,6 +195,7 @@
   color: white;
   padding: 8px 14px;
   border-radius: 8px;
+  border: none;
   transition: 0.3s ease;
 }
 
@@ -123,6 +208,17 @@
   color: #dc2626;
   padding: 8px 14px;
   border-radius: 8px;
+  border: none;
+}
+
+/* ===============================
+   EMPTY STATE
+================================ */
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
 }
 
 /* ===============================
@@ -152,13 +248,12 @@
   }
 }
 
-/* Active card */
 .resume-card.active {
   animation: glowPulse 2.6s ease-in-out infinite;
 }
 
 /* ===============================
-   🎨 COLOR TYPES (UNCHANGED)
+   COLOR VARIANTS
 ================================ */
 
 .resume-card.fresher {
