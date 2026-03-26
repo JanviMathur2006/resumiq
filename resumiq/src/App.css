@@ -1,20 +1,58 @@
 /* ===============================
-   ROOT
+   ROOT (FIXED - IMPORTANT)
 ================================ */
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  min-height: 100vh;   /* ✅ full screen */
+  width: 100%;         /* ✅ remove boxed layout */
+  margin: 0;
+  padding: 0;
 }
 
 /* ===============================
-   BASE RESUME CARD
+   DASHBOARD LAYOUT (NEW)
+================================ */
+
+.dashboard-main {
+  padding: 40px 48px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* ===============================
+   GRID LAYOUT (NEW)
+================================ */
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+}
+
+/* ===============================
+   BASE RESUME CARD (UPGRADED)
 ================================ */
 
 .resume-card {
-  background: #ffffff;
+  /* ✅ glass effect instead of flat white */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   padding: 28px;
@@ -22,24 +60,69 @@
   cursor: pointer;
   position: relative;
 
-  /* 🔑 transition EVERYTHING smoothly */
   transition:
     transform 0.35s ease,
     box-shadow 0.45s ease,
     border-color 0.45s ease;
 
-  /* Default glow vars (neutral) */
+  /* glow vars */
   --glow-border: rgba(0, 0, 0, 0);
   --glow-border-strong: rgba(0, 0, 0, 0);
   --glow-shadow: rgba(0, 0, 0, 0);
   --glow-shadow-strong: rgba(0, 0, 0, 0);
   --glow-outer: rgba(0, 0, 0, 0);
   --glow-outer-strong: rgba(0, 0, 0, 0);
+
+  /* subtle base shadow */
+  box-shadow: 0 10px 30px rgba(43, 62, 79, 0.08);
 }
 
-/* Lift on hover */
+/* Hover lift */
 .resume-card:hover {
   transform: translateY(-6px);
+}
+
+/* ===============================
+   TEXT INSIDE CARD (NEW)
+================================ */
+
+.resume-card h2 {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.resume-date {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   BUTTONS (NEW)
+================================ */
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.primary-btn {
+  background: #2B3E4F;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+.primary-btn:hover {
+  background: #1e2d3a;
+}
+
+.danger-btn {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 8px 14px;
+  border-radius: 8px;
 }
 
 /* ===============================
@@ -75,11 +158,9 @@
 }
 
 /* ===============================
-   🎨 COLOR TRANSITIONS PER TYPE
-   (Smooth morphing happens here)
+   🎨 COLOR TYPES (UNCHANGED)
 ================================ */
 
-/* Fresher / Student — Indigo */
 .resume-card.fresher {
   --glow-border: rgba(99, 102, 241, 0.25);
   --glow-border-strong: rgba(99, 102, 241, 0.4);
@@ -90,7 +171,6 @@
   border-color: rgba(99, 102, 241, 0.4);
 }
 
-/* Professional — Emerald */
 .resume-card.professional {
   --glow-border: rgba(16, 185, 129, 0.25);
   --glow-border-strong: rgba(16, 185, 129, 0.4);
@@ -101,7 +181,6 @@
   border-color: rgba(16, 185, 129, 0.4);
 }
 
-/* Internship — Sky */
 .resume-card.internship {
   --glow-border: rgba(56, 189, 248, 0.25);
   --glow-border-strong: rgba(56, 189, 248, 0.4);
@@ -112,7 +191,6 @@
   border-color: rgba(56, 189, 248, 0.4);
 }
 
-/* Career Switch — Amber */
 .resume-card.career-switch {
   --glow-border: rgba(245, 158, 11, 0.25);
   --glow-border-strong: rgba(245, 158, 11, 0.4);
@@ -124,7 +202,7 @@
 }
 
 /* ===============================
-   RECOMMENDED BADGE
+   BADGE
 ================================ */
 
 .resume-badge {

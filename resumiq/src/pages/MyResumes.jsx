@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +27,7 @@ export default function MyResumes() {
       );
 
       const snapshot = await getDocs(q);
-      const list = snapshot.docs.map(doc => ({
+      const list = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
@@ -33,37 +40,54 @@ export default function MyResumes() {
   }, []);
 
   if (loading) {
-    return <p className="text-center mt-20 text-gray-500">Loading resumes…</p>;
+    return (
+      <p className="text-center mt-20 text-gray-500">
+        Loading resumes…
+      </p>
+    );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-semibold mb-8">My Resumes</h1>
+    <div className="dashboard-main">
+      
+      {/* 🔥 HEADER */}
+      <div className="dashboard-header">
+        <div>
+          <h1>Welcome back 👋</h1>
+          <p>Continue building your professional resume.</p>
+        </div>
 
+        <button
+          onClick={() => navigate("/app/create")}
+          className="primary-btn"
+        >
+          + New Resume
+        </button>
+      </div>
+
+      {/* 🔥 CONTENT */}
       {resumes.length === 0 ? (
-        <p className="text-gray-500">
-          You haven’t created any resumes yet.
-        </p>
+        <div className="empty-state">
+          <p>You haven’t created any resumes yet.</p>
+        </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="dashboard-content">
           {resumes.map((resume) => (
-            <div
-              key={resume.id}
-              className="bg-white border rounded-xl p-6 shadow-sm"
-            >
-              <h2 className="text-lg font-semibold mb-1">
-                {resume.title}
-              </h2>
+            <div key={resume.id} className="resume-card">
+              
+              <h2>{resume.title}</h2>
 
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="resume-date">
                 Last updated:{" "}
                 {resume.updatedAt?.toDate().toLocaleDateString()}
               </p>
 
-              <div className="flex gap-3">
+              <div className="card-actions">
                 <button
-                  onClick={() => navigate(`/app/builder/${resume.id}`)}
-                  className="text-sm px-4 py-2 bg-black text-white rounded-lg"
+                  onClick={() =>
+                    navigate(`/app/builder/${resume.id}`)
+                  }
+                  className="primary-btn"
                 >
                   View / Edit
                 </button>
@@ -71,13 +95,16 @@ export default function MyResumes() {
                 <button
                   onClick={async () => {
                     await deleteDoc(doc(db, "resumes", resume.id));
-                    setResumes(resumes.filter(r => r.id !== resume.id));
+                    setResumes(
+                      resumes.filter((r) => r.id !== resume.id)
+                    );
                   }}
-                  className="text-sm px-4 py-2 bg-red-100 text-red-600 rounded-lg"
+                  className="danger-btn"
                 >
                   Delete
                 </button>
               </div>
+
             </div>
           ))}
         </div>
