@@ -5,7 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 /* PUBLIC */
 import Landing from "./pages/Landing";
@@ -26,6 +26,21 @@ import Settings from "./pages/Settings";
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
+/* ================= PAGE WRAPPER ================= */
+function PageWrapper({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      style={{ minHeight: "100%" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 /* ================= ROUTES ================= */
 function AnimatedRoutes() {
   const location = useLocation();
@@ -35,26 +50,27 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
 
         {/* PUBLIC */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
+        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+        <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
+        <Route path="/onboarding" element={<PageWrapper><Onboarding /></PageWrapper>} />
 
         {/* PROTECTED */}
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
 
-            <Route path="/app" element={<Home />} />
+            <Route path="/app" element={<PageWrapper><Home /></PageWrapper>} />
 
-            {/* IMPORTANT PART */}
-            <Route path="/app/choose" element={<ChooseResumeType />} />
+            <Route path="/app/choose" element={<PageWrapper><ChooseResumeType /></PageWrapper>} />
 
-            <Route path="/app/resumes" element={<CreateResumes />} />
-            <Route path="/app/create" element={<CreateResumes />} />
-            <Route path="/app/builder" element={<ResumeBuilder />} />
-            <Route path="/app/samples" element={<ResumeSamples />} />
-            <Route path="/app/profile" element={<Profile />} />
-            <Route path="/app/settings" element={<Settings />} />
+            <Route path="/app/resumes" element={<PageWrapper><CreateResumes /></PageWrapper>} />
+            <Route path="/app/create" element={<PageWrapper><CreateResumes /></PageWrapper>} />
+
+            <Route path="/app/builder/:id" element={<PageWrapper><ResumeBuilder /></PageWrapper>} />
+            
+            <Route path="/app/samples" element={<PageWrapper><ResumeSamples /></PageWrapper>} />
+            <Route path="/app/profile" element={<PageWrapper><Profile /></PageWrapper>} />
+            <Route path="/app/settings" element={<PageWrapper><Settings /></PageWrapper>} />
 
           </Route>
         </Route>
@@ -67,7 +83,7 @@ function AnimatedRoutes() {
   );
 }
 
-/* ROOT */
+/* ================= ROOT ================= */
 export default function App() {
   return (
     <BrowserRouter>
