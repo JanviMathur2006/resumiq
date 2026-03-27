@@ -10,6 +10,20 @@
 }
 
 /* ===============================
+   GLOBAL SMOOTHNESS (NEW)
+================================ */
+
+* {
+  box-sizing: border-box;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ===============================
    NAVBAR
 ================================ */
 
@@ -30,6 +44,10 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* ===============================
+   NAV LINKS
+================================ */
 
 .nav-links {
   display: flex;
@@ -73,13 +91,14 @@
   transition: width 0.3s ease;
 }
 
-.nav-item:hover::after {
-  width: 100%;
-}
-
+.nav-item:hover::after,
 .nav-item.active::after {
   width: 100%;
 }
+
+/* ===============================
+   LOGOUT BUTTON
+================================ */
 
 .logout-btn {
   margin-left: 16px;
