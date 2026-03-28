@@ -4,37 +4,35 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 
 export default function AuthWrapper() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(undefined); // 🔥 changed
   const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
+      setUser(currentUser || null);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // ⏳ Wait for Firebase to resolve auth state
-  if (loading) {
+  // ⏳ While checking auth (IMPORTANT FIX)
+  if (user === undefined) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-500 text-lg">
-          Checking authentication…
+          Checking authentication...
         </p>
       </div>
     );
   }
 
-  // ❌ Not logged in → redirect to login
+  // ❌ Not logged in → redirect
   if (!user) {
     return (
       <Navigate
         to="/login"
         replace
-        state={{ from: location }}
+        state={{ from: location.pathname }} // 🔥 safer
       />
     );
   }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; // ✅ added navigate
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import BuilderTransition from "../components/BuilderTransition";
@@ -42,8 +42,17 @@ const createVersion = (name = "New Resume", data = EMPTY_RESUME) => ({
 
 export default function ResumeBuilder() {
   const pdfRef = useRef(null);
-  const { state } = useLocation();
-  const resumeType = state?.resumeType || "student";
+  const location = useLocation();
+  const navigate = useNavigate(); // ✅ added
+
+  const resumeType = location.state?.resumeType;
+
+  /* 🔥 FIX: redirect if no state */
+  useEffect(() => {
+    if (!resumeType) {
+      navigate("/app/choose");
+    }
+  }, [resumeType, navigate]);
 
   /* ---------------- Versions ---------------- */
   const [versions, setVersions] = useState([]);
@@ -63,6 +72,8 @@ export default function ResumeBuilder() {
   /* ===================================================== */
 
   useEffect(() => {
+    if (!resumeType) return;
+
     const stored = JSON.parse(localStorage.getItem("resumiq_builder_full"));
     if (stored) {
       setVersions(stored.versions);

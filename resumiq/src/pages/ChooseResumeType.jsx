@@ -48,6 +48,15 @@ export default function ChooseResumeType() {
       ? RESUMES
       : RESUMES.filter((r) => r.tab === activeTab);
 
+  // 🔥 FIX: central handler (prevents inline bugs)
+  const handleSelect = (id) => {
+    console.log("Navigating with:", id);
+
+    navigate("/app/builder", {
+      state: { resumeType: id },
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F9FC] px-12 py-10">
 
@@ -64,6 +73,7 @@ export default function ChooseResumeType() {
         {TABS.map((tab) => (
           <button
             key={tab}
+            type="button"  // ✅ prevents accidental form submit
             onClick={() => setActiveTab(tab)}
             className={`px-5 py-2 rounded-full text-sm transition
               ${
@@ -77,7 +87,7 @@ export default function ChooseResumeType() {
         ))}
       </div>
 
-      {/* 🔥 FLIP CARDS (THIS WAS MISSING BEFORE) */}
+      {/* CARDS */}
       <div className="flex flex-wrap gap-6 mt-10">
         {filtered.map((card) => (
           <FlipCard
@@ -85,18 +95,17 @@ export default function ChooseResumeType() {
             title={card.title}
             tag={card.bestFor}
             preview={card.preview}
-            onSelect={() =>
-              navigate("/app/builder", {
-                state: { resumeType: card.id },
-              })
-            }
+            onSelect={() => handleSelect(card.id)} // ✅ FIXED
           />
         ))}
       </div>
 
       {/* CONTINUE BUTTON */}
       <div className="flex justify-end mt-16">
-        <button className="px-6 py-3 bg-gray-300 rounded-lg text-gray-600">
+        <button
+          type="button"
+          className="px-6 py-3 bg-gray-300 rounded-lg text-gray-600"
+        >
           Continue →
         </button>
       </div>
