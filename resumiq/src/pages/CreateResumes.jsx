@@ -105,15 +105,18 @@ export default function CreateResumes() {
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ opacity: 0, x: 200 }}
-                whileDrag={{ scale: 1.05 }}
-                className="absolute w-full h-full bg-white rounded-3xl shadow-xl p-6 flex flex-col justify-between cursor-grab active:cursor-grabbing"
+                whileDrag={{
+                  scale: 1.05,
+                  boxShadow: "0px 20px 40px rgba(0,0,0,0.3)",
+                }}
+                className="absolute w-full h-full bg-[#0f172a] text-white rounded-3xl shadow-xl p-6 flex flex-col justify-between cursor-grab active:cursor-grabbing"
               >
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold">
                     {current.name}
                   </h2>
 
-                  <p className="text-gray-600 mt-2">
+                  <p className="text-gray-300 mt-2">
                     {current.description}
                   </p>
 
@@ -121,7 +124,7 @@ export default function CreateResumes() {
                     {current.bestFor.split(",").map((tag) => (
                       <span
                         key={tag}
-                        className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600"
+                        className="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-200"
                       >
                         {tag.trim()}
                       </span>
@@ -129,17 +132,18 @@ export default function CreateResumes() {
                   </div>
                 </div>
 
+                {/* BUTTONS */}
                 <div className="flex justify-between mt-6">
                   <button
                     onClick={() => handleSwipe("left")}
-                    className="px-5 py-2 border rounded-full"
+                    className="px-5 py-2 rounded-full bg-white/10 text-white"
                   >
                     Skip
                   </button>
 
                   <button
                     onClick={() => handleSwipe("right")}
-                    className="px-5 py-2 bg-black text-white rounded-full"
+                    className="px-5 py-2 bg-white text-black rounded-full"
                   >
                     Select
                   </button>
