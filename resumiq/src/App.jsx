@@ -30,10 +30,10 @@ import AuthWrapper from "./components/AuthWrapper";
 function PageWrapper({ children }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, y: 30 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, y: -20 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
       style={{ minHeight: "100%" }}
     >
       {children}
@@ -48,19 +48,20 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        
-        {/* PUBLIC */}
+
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
         <Route path="/onboarding" element={<PageWrapper><Onboarding /></PageWrapper>} />
 
-        {/* PROTECTED */}
+        {/* PROTECTED ROUTES */}
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
 
             <Route path="/app" element={<PageWrapper><Home /></PageWrapper>} />
 
+            {/* ✅ THIS IS YOUR TARGET PAGE */}
             <Route
               path="/app/choose"
               element={<PageWrapper><ChooseResumeType /></PageWrapper>}
@@ -76,7 +77,6 @@ function AnimatedRoutes() {
               element={<PageWrapper><CreateResumes /></PageWrapper>}
             />
 
-            {/* 🔥 FIXED ROUTE (NO :id) */}
             <Route
               path="/app/builder"
               element={<PageWrapper><ResumeBuilder /></PageWrapper>}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const TABS = ["Recommended", "Students", "Professionals", "Specialized"];
 
@@ -38,31 +38,53 @@ const RESUME_TYPES = [
 export default function CreateResume() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Recommended");
+  const [index, setIndex] = useState(0);
 
   const filteredResumes =
     activeTab === "Recommended"
       ? RESUME_TYPES
       : RESUME_TYPES.filter((r) => r.tab === activeTab);
 
-  const handleSelect = (resumeType) => {
-    localStorage.setItem("resumeType", resumeType.id);
+  const handleSelect = (resume) => {
+    localStorage.setItem("resumeType", resume.id);
     navigate("/resume-builder");
   };
 
+  const handleSwipe = (dir) => {
+    if (filteredResumes.length === 0) return;
+
+    if (dir === "right") {
+      handleSelect(filteredResumes[index]);
+    }
+
+    setIndex((prev) => {
+      const next = prev + 1;
+      return next >= filteredResumes.length ? 0 : next;
+    });
+  };
+
+  const current = filteredResumes[index];
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col items-center">
 
       {/* HEADER */}
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 className="text-3xl font-bold mb-2">
         Create a Resume
       </h1>
+      <p className="text-gray-500 mb-8">
+        Swipe left to skip, right to select
+      </p>
 
       {/* TABS */}
-      <div className="flex gap-3 mb-10 flex-wrap">
+      <div className="flex gap-3 mb-10 flex-wrap justify-center">
         {TABS.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              setActiveTab(tab);
+              setIndex(0);
+            }}
             className={`px-5 py-2 rounded-full text-sm font-medium
               ${
                 activeTab === tab
@@ -75,40 +97,62 @@ export default function CreateResume() {
         ))}
       </div>
 
-      {/* RESUME TYPE CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredResumes.map((resume) => (
-          <motion.div
-            key={resume.id}
-            whileHover={{ y: -6 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 300, damping: 22 }}
-            onClick={() => handleSelect(resume)}
-            className="bg-white rounded-2xl p-6 cursor-pointer
-                       border hover:shadow-xl"
-          >
-            <h2 className="text-xl font-bold mb-2">
-              {resume.title}
-            </h2>
+      {/* SWIPE CARD */}
+      {filteredResumes.length > 0 && (
+        <div className="relative w-[320px] h-[420px]">
 
-            <p className="text-gray-600 mb-3">
-              {resume.description}
-            </p>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.id}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={(e, info) => {
+                if (info.offset.x > 120) handleSwipe("right");
+                else if (info.offset.x < -120) handleSwipe("left");
+              }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ opacity: 0, x: 200 }}
+              whileDrag={{ scale: 1.05 }}
+              className="absolute w-full h-full bg-white rounded-3xl shadow-xl p-6 flex flex-col justify-between cursor-grab active:cursor-grabbing"
+            >
+              <div>
+                <h2 className="text-xl font-bold">
+                  {current.title}
+                </h2>
 
-            <p className="text-sm text-gray-500 mb-6">
-              <span className="font-medium text-gray-700">
-                Best for:
-              </span>{" "}
-              {resume.bestFor}
-            </p>
+                <p className="text-gray-600 mt-2">
+                  {current.description}
+                </p>
 
-            <div className="inline-block px-4 py-2 rounded-lg
-                            bg-black text-white text-sm font-medium">
-              Use this resume →
-            </div>
-          </motion.div>
-        ))}
-      </div>
+                <p className="text-sm text-gray-500 mt-4">
+                  <span className="font-medium text-gray-700">
+                    Best for:
+                  </span>{" "}
+                  {current.bestFor}
+                </p>
+              </div>
+
+              <div className="flex justify-between mt-6">
+                <button
+                  onClick={() => handleSwipe("left")}
+                  className="px-5 py-2 border rounded-full"
+                >
+                  Skip
+                </button>
+
+                <button
+                  onClick={() => handleSwipe("right")}
+                  className="px-5 py-2 bg-black text-white rounded-full"
+                >
+                  Select
+                </button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+        </div>
+      )}
     </div>
   );
 }
