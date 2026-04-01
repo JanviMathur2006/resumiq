@@ -243,8 +243,10 @@ export default function Home() {
               onClick={scrollLeft}
               disabled={activeSlide === 0}
               className="flex absolute left-4 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-white
-              hover:scale-110 transition disabled:opacity-30 z-10"
+              h-12 w-12 items-center justify-center rounded-full
+              shadow-lg bg-blue-600 text-white
+              hover:scale-110 transition
+              disabled:opacity-30 disabled:cursor-not-allowed z-10"
             >
               ←
             </button>
@@ -254,8 +256,10 @@ export default function Home() {
               onClick={scrollRight}
               disabled={activeSlide === TOTAL_SLIDES - 1}
               className="flex absolute right-4 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white
-              hover:scale-110 transition disabled:opacity-30 z-10"
+              h-12 w-12 items-center justify-center rounded-full
+              shadow-lg bg-blue-600 text-white
+              hover:scale-110 transition
+              disabled:opacity-30 disabled:cursor-not-allowed z-10"
             >
               →
             </button>
@@ -269,41 +273,30 @@ export default function Home() {
               <div className="flex gap-12">
 
                 {/* CREATE RESUME */}
-
                 <div className="snap-center min-w-full flex justify-center">
-
                   <Link to="/app/create" className="w-full max-w-4xl">
-
                     <motion.div
                       whileHover={{ y: -6 }}
                       className="h-[420px] bg-white rounded-3xl shadow-xl
                       flex flex-col items-center justify-center text-center px-10"
                     >
-
                       <h2 className="text-3xl font-semibold mb-3">
                         Create New Resume
                       </h2>
-
                       <p className="text-gray-600">
                         Choose from multiple resume categories.
                       </p>
-
                     </motion.div>
-
                   </Link>
-
                 </div>
 
                 {/* MY RESUMES */}
-
                 <div className="snap-center min-w-full flex justify-center">
-
                   <motion.div
                     whileHover={{ y: -6 }}
                     className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center text-center px-10"
                   >
-
                     <h2 className="text-3xl font-semibold mb-2">
                       My Resumes
                     </h2>
@@ -323,7 +316,7 @@ export default function Home() {
                       <p className="text-gray-500">Loading…</p>
                     ) : filteredResumes.length === 0 ? (
                       <p className="text-gray-500">
-                        You haven't created a resume yet. Start by creating your first one.
+                        You haven't created a resume yet.
                       </p>
                     ) : (
                       <div className="w-full max-w-md flex flex-col gap-3">
@@ -333,30 +326,24 @@ export default function Home() {
                             onClick={() =>
                               navigate(`/app/builder?id=${resume.id}`)
                             }
-                            className="border rounded-xl px-4 py-2 cursor-pointer
-                            hover:bg-gray-50 transition text-left"
+                            className="border rounded-xl px-4 py-2 cursor-pointer hover:bg-gray-50 transition text-left"
                           >
                             {resume.title || "Untitled Resume"}
                           </div>
                         ))}
                       </div>
                     )}
-
                   </motion.div>
-
                 </div>
 
                 {/* SAMPLES */}
-
                 <div className="snap-center min-w-full flex justify-center">
-
                   <motion.div
                     onClick={() => navigate("/app/samples")}
                     whileHover={{ y: -6 }}
                     className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
                     flex flex-col items-center justify-center text-center px-10 cursor-pointer"
                   >
-
                     <h2 className="text-3xl font-semibold mb-3">
                       Resume Samples
                     </h2>
@@ -364,9 +351,7 @@ export default function Home() {
                     <p className="text-gray-600">
                       Explore recruiter-approved resume examples.
                     </p>
-
                   </motion.div>
-
                 </div>
 
               </div>
