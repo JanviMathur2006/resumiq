@@ -204,8 +204,6 @@ export default function Home() {
 
         <div className="flex-1 px-20 py-10 relative">
 
-          {/* NEW RESUME BUTTON */}
-
           <button
             onClick={() => navigate("/app/create")}
             className="absolute top-10 right-10 bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700"
@@ -231,11 +229,7 @@ export default function Home() {
             </p>
 
             <h2 className="text-xl text-blue-900">
-              <Typewriter
-                words={resumeNames}
-                loop={0}
-                cursor
-              />
+              <Typewriter words={resumeNames} loop={0} cursor />
             </h2>
 
           </motion.div>
@@ -244,20 +238,24 @@ export default function Home() {
 
           <div className="relative">
 
+            {/* LEFT ARROW */}
             <button
               onClick={scrollLeft}
               disabled={activeSlide === 0}
-              className="hidden lg:flex absolute -left-6 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-white"
+              className="flex absolute left-4 top-1/2 -translate-y-1/2
+              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-white
+              hover:scale-110 transition disabled:opacity-30 z-10"
             >
               ←
             </button>
 
+            {/* RIGHT ARROW */}
             <button
               onClick={scrollRight}
               disabled={activeSlide === TOTAL_SLIDES - 1}
-              className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-black text-white"
+              className="flex absolute right-4 top-1/2 -translate-y-1/2
+              h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white
+              hover:scale-110 transition disabled:opacity-30 z-10"
             >
               →
             </button>
