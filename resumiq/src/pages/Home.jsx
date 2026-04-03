@@ -221,7 +221,7 @@ export default function Home() {
           >
 
             <h1 className="text-5xl font-bold text-gray-900 mb-2">
-              Welcome back 
+              Welcome back 👋
             </h1>
 
             <p className="text-gray-600 text-lg mb-4">
@@ -238,7 +238,7 @@ export default function Home() {
 
           <div className="relative">
 
-            {/* LEFT ARROW */}
+            {/* LEFT */}
             <button
               onClick={scrollLeft}
               disabled={activeSlide === 0}
@@ -246,12 +246,12 @@ export default function Home() {
               h-12 w-12 items-center justify-center rounded-full
               shadow-lg bg-blue-600 text-white
               hover:scale-110 transition
-              disabled:opacity-30 disabled:cursor-not-allowed z-10"
+              disabled:opacity-30 z-10"
             >
               ←
             </button>
 
-            {/* RIGHT ARROW */}
+            {/* RIGHT */}
             <button
               onClick={scrollRight}
               disabled={activeSlide === TOTAL_SLIDES - 1}
@@ -259,7 +259,7 @@ export default function Home() {
               h-12 w-12 items-center justify-center rounded-full
               shadow-lg bg-blue-600 text-white
               hover:scale-110 transition
-              disabled:opacity-30 disabled:cursor-not-allowed z-10"
+              disabled:opacity-30 z-10"
             >
               →
             </button>
@@ -356,6 +356,21 @@ export default function Home() {
 
               </div>
 
+            </div>
+
+            {/* DOTS */}
+            <div className="flex justify-center mt-6 gap-3">
+              {[0,1,2].map((i) => (
+                <button
+                  key={i}
+                  onClick={() => scrollToSlide(i)}
+                  className={`h-3 w-3 rounded-full transition ${
+                    activeSlide === i
+                      ? "bg-blue-600 scale-125"
+                      : "bg-gray-400"
+                  }`}
+                />
+              ))}
             </div>
 
           </div>
