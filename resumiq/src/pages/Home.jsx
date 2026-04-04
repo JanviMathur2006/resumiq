@@ -31,6 +31,11 @@ export default function Home() {
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
   const [search, setSearch] = useState("");
 
+  // 🔥 DRAG STATES
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftPos, setScrollLeftPos] = useState(0);
+
   const resumeNames = resumeTypes.map((type) => type.name);
 
   /* ================= SLIDER ================= */
@@ -64,6 +69,46 @@ export default function Home() {
       slider.scrollLeft / slider.offsetWidth
     );
     setActiveSlide(index);
+  };
+
+  /* ================= DRAG ================= */
+
+  const handleMouseDown = (e) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    setIsDragging(true);
+    setStartX(e.pageX - slider.offsetLeft);
+    setScrollLeftPos(slider.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    slider.scrollLeft = scrollLeftPos - walk;
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleTouchStart = (e) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    setStartX(e.touches[0].pageX - slider.offsetLeft);
+    setScrollLeftPos(slider.scrollLeft);
+  };
+
+  const handleTouchMove = (e) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const x = e.touches[0].pageX - slider.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    slider.scrollLeft = scrollLeftPos - walk;
   };
 
   /* ================= FETCH USER RESUMES ================= */
@@ -109,7 +154,7 @@ export default function Home() {
 
       <div className="flex min-h-screen bg-gray-100">
 
-        {/* ================= SIDEBAR ================= */}
+        {/* SIDEBAR */}
 
         <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8 border-r border-slate-800">
 
@@ -119,88 +164,33 @@ export default function Home() {
 
           <nav className="flex flex-col gap-2 text-sm">
 
-            <NavLink
-              to="/app"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiHome size={18} />
-              Dashboard
+            <NavLink to="/app" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-blue-400">
+              <FiHome size={18} /> Dashboard
             </NavLink>
 
-            <NavLink
-              to="/app/resumes"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiFileText size={18} />
-              My Resumes
+            <NavLink to="/app/resumes" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+              <FiFileText size={18} /> My Resumes
             </NavLink>
 
-            <NavLink
-              to="/app/samples"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiLayout size={18} />
-              Templates
+            <NavLink to="/app/samples" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+              <FiLayout size={18} /> Templates
             </NavLink>
 
             <div className="border-t border-slate-700 my-6"></div>
 
-            <NavLink
-              to="/app/profile"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiUser size={18} />
-              Profile
+            <NavLink to="/app/profile" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+              <FiUser size={18} /> Profile
             </NavLink>
 
-            <NavLink
-              to="/app/settings"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition relative
-                ${
-                  isActive
-                    ? "bg-slate-800 text-blue-400 before:absolute before:left-0 before:top-2 before:h-6 before:w-1 before:bg-blue-400 before:rounded-r"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`
-              }
-            >
-              <FiSettings size={18} />
-              Settings
+            <NavLink to="/app/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+              <FiSettings size={18} /> Settings
             </NavLink>
 
           </nav>
 
         </div>
 
-        {/* ================= MAIN ================= */}
+        {/* MAIN */}
 
         <div className="flex-1 px-20 py-10 relative">
 
@@ -211,15 +201,7 @@ export default function Home() {
             + New Resume
           </button>
 
-          {/* HEADER */}
-
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-12"
-          >
-
+          <motion.div className="mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-2">
               Welcome back 👋
             </h1>
@@ -231,10 +213,9 @@ export default function Home() {
             <h2 className="text-xl text-blue-900">
               <Typewriter words={resumeNames} loop={0} cursor />
             </h2>
-
           </motion.div>
 
-          {/* ================= SLIDER ================= */}
+          {/* SLIDER */}
 
           <div className="relative">
 
@@ -242,11 +223,7 @@ export default function Home() {
             <button
               onClick={scrollLeft}
               disabled={activeSlide === 0}
-              className="flex absolute left-4 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full
-              shadow-lg bg-blue-600 text-white
-              hover:scale-110 transition
-              disabled:opacity-30 z-10"
+              className="flex absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition disabled:opacity-30 z-10"
             >
               ←
             </button>
@@ -255,11 +232,7 @@ export default function Home() {
             <button
               onClick={scrollRight}
               disabled={activeSlide === TOTAL_SLIDES - 1}
-              className="flex absolute right-4 top-1/2 -translate-y-1/2
-              h-12 w-12 items-center justify-center rounded-full
-              shadow-lg bg-blue-600 text-white
-              hover:scale-110 transition
-              disabled:opacity-30 z-10"
+              className="flex absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition disabled:opacity-30 z-10"
             >
               →
             </button>
@@ -267,7 +240,13 @@ export default function Home() {
             <div
               ref={sliderRef}
               onScroll={handleScroll}
-              className="overflow-x-auto snap-x snap-mandatory scroll-smooth"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              className={`overflow-x-auto snap-x snap-mandatory scroll-smooth ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
             >
 
               <div className="flex gap-12">
@@ -275,31 +254,18 @@ export default function Home() {
                 {/* CREATE RESUME */}
                 <div className="snap-center min-w-full flex justify-center">
                   <Link to="/app/create" className="w-full max-w-4xl">
-                    <motion.div
-                      whileHover={{ y: -6 }}
-                      className="h-[420px] bg-white rounded-3xl shadow-xl
-                      flex flex-col items-center justify-center text-center px-10"
-                    >
-                      <h2 className="text-3xl font-semibold mb-3">
-                        Create New Resume
-                      </h2>
-                      <p className="text-gray-600">
-                        Choose from multiple resume categories.
-                      </p>
+                    <motion.div whileHover={{ y: -6 }} className="h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+                      <h2 className="text-3xl font-semibold mb-3">Create New Resume</h2>
+                      <p className="text-gray-600">Choose from multiple resume categories.</p>
                     </motion.div>
                   </Link>
                 </div>
 
                 {/* MY RESUMES */}
                 <div className="snap-center min-w-full flex justify-center">
-                  <motion.div
-                    whileHover={{ y: -6 }}
-                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                    flex flex-col items-center justify-center text-center px-10"
-                  >
-                    <h2 className="text-3xl font-semibold mb-2">
-                      My Resumes
-                    </h2>
+                  <motion.div whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+
+                    <h2 className="text-3xl font-semibold mb-2">My Resumes</h2>
 
                     <p className="text-gray-500 mb-4">
                       {userResumes.length} resumes created
@@ -323,9 +289,7 @@ export default function Home() {
                         {filteredResumes.map((resume) => (
                           <div
                             key={resume.id}
-                            onClick={() =>
-                              navigate(`/app/builder?id=${resume.id}`)
-                            }
+                            onClick={() => navigate(`/app/builder?id=${resume.id}`)}
                             className="border rounded-xl px-4 py-2 cursor-pointer hover:bg-gray-50 transition text-left"
                           >
                             {resume.title || "Untitled Resume"}
@@ -333,24 +297,15 @@ export default function Home() {
                         ))}
                       </div>
                     )}
+
                   </motion.div>
                 </div>
 
                 {/* SAMPLES */}
                 <div className="snap-center min-w-full flex justify-center">
-                  <motion.div
-                    onClick={() => navigate("/app/samples")}
-                    whileHover={{ y: -6 }}
-                    className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl
-                    flex flex-col items-center justify-center text-center px-10 cursor-pointer"
-                  >
-                    <h2 className="text-3xl font-semibold mb-3">
-                      Resume Samples
-                    </h2>
-
-                    <p className="text-gray-600">
-                      Explore recruiter-approved resume examples.
-                    </p>
+                  <motion.div onClick={() => navigate("/app/samples")} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10 cursor-pointer">
+                    <h2 className="text-3xl font-semibold mb-3">Resume Samples</h2>
+                    <p className="text-gray-600">Explore recruiter-approved resume examples.</p>
                   </motion.div>
                 </div>
 
@@ -365,9 +320,7 @@ export default function Home() {
                   key={i}
                   onClick={() => scrollToSlide(i)}
                   className={`h-3 w-3 rounded-full transition ${
-                    activeSlide === i
-                      ? "bg-blue-600 scale-125"
-                      : "bg-gray-400"
+                    activeSlide === i ? "bg-blue-600 scale-125" : "bg-gray-400"
                   }`}
                 />
               ))}
