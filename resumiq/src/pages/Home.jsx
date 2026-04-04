@@ -31,7 +31,7 @@ export default function Home() {
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
   const [search, setSearch] = useState("");
 
-  // 🔥 DRAG STATES
+  // DRAG
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
@@ -44,22 +44,21 @@ export default function Home() {
     const slider = sliderRef.current;
     if (!slider) return;
 
+    let newIndex = index;
+
+    if (index < 0) newIndex = TOTAL_SLIDES - 1;
+    if (index >= TOTAL_SLIDES) newIndex = 0;
+
     slider.scrollTo({
-      left: index * slider.offsetWidth,
+      left: newIndex * slider.offsetWidth,
       behavior: "smooth",
     });
 
-    setActiveSlide(index);
+    setActiveSlide(newIndex);
   };
 
-  const scrollLeft = () => {
-    if (activeSlide > 0) scrollToSlide(activeSlide - 1);
-  };
-
-  const scrollRight = () => {
-    if (activeSlide < TOTAL_SLIDES - 1)
-      scrollToSlide(activeSlide + 1);
-  };
+  const scrollLeft = () => scrollToSlide(activeSlide - 1);
+  const scrollRight = () => scrollToSlide(activeSlide + 1);
 
   const handleScroll = () => {
     const slider = sliderRef.current;
@@ -154,7 +153,7 @@ export default function Home() {
 
       <div className="flex min-h-screen bg-gray-100">
 
-        {/* SIDEBAR */}
+        {/* ================= SIDEBAR ================= */}
 
         <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8 border-r border-slate-800">
 
@@ -190,7 +189,7 @@ export default function Home() {
 
         </div>
 
-        {/* MAIN */}
+        {/* ================= MAIN ================= */}
 
         <div className="flex-1 px-20 py-10 relative">
 
@@ -215,15 +214,14 @@ export default function Home() {
             </h2>
           </motion.div>
 
-          {/* SLIDER */}
+          {/* ================= SLIDER ================= */}
 
           <div className="relative">
 
             {/* LEFT */}
             <button
               onClick={scrollLeft}
-              disabled={activeSlide === 0}
-              className="flex absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition disabled:opacity-30 z-10"
+              className="flex absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition z-10"
             >
               ←
             </button>
@@ -231,8 +229,7 @@ export default function Home() {
             {/* RIGHT */}
             <button
               onClick={scrollRight}
-              disabled={activeSlide === TOTAL_SLIDES - 1}
-              className="flex absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition disabled:opacity-30 z-10"
+              className="flex absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition z-10"
             >
               →
             </button>
