@@ -31,10 +31,11 @@ export default function Home() {
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
   const [search, setSearch] = useState("");
 
-  // DRAG
+  // DRAG + MOMENTUM
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
+  const [velocity, setVelocity] = useState(0);
 
   const resumeNames = resumeTypes.map((type) => type.name);
 
@@ -88,10 +89,25 @@ export default function Home() {
 
     const x = e.pageX - slider.offsetLeft;
     const walk = (x - startX) * 1.5;
+
+    setVelocity(walk);
     slider.scrollLeft = scrollLeftPos - walk;
   };
 
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const momentum = velocity * 2;
+    const finalScroll = slider.scrollLeft - momentum;
+
+    const index = Math.round(finalScroll / slider.offsetWidth);
+
+    scrollToSlide(index);
+  };
 
   const handleTouchStart = (e) => {
     const slider = sliderRef.current;
@@ -107,7 +123,21 @@ export default function Home() {
 
     const x = e.touches[0].pageX - slider.offsetLeft;
     const walk = (x - startX) * 1.5;
+
+    setVelocity(walk);
     slider.scrollLeft = scrollLeftPos - walk;
+  };
+
+  const handleTouchEnd = () => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const momentum = velocity * 2;
+    const finalScroll = slider.scrollLeft - momentum;
+
+    const index = Math.round(finalScroll / slider.offsetWidth);
+
+    scrollToSlide(index);
   };
 
   /* ================= FETCH USER RESUMES ================= */
@@ -153,13 +183,10 @@ export default function Home() {
 
       <div className="flex min-h-screen bg-gray-100">
 
-        {/* ================= SIDEBAR ================= */}
-
+        {/* SIDEBAR */}
         <div className="w-80 bg-[#0f172a] text-white flex flex-col p-8 border-r border-slate-800">
 
-          <h2 className="text-3xl font-bold mb-12">
-            Resumiq
-          </h2>
+          <h2 className="text-3xl font-bold mb-12">Resumiq</h2>
 
           <nav className="flex flex-col gap-2 text-sm">
 
@@ -189,8 +216,7 @@ export default function Home() {
 
         </div>
 
-        {/* ================= MAIN ================= */}
-
+        {/* MAIN */}
         <div className="flex-1 px-20 py-10 relative">
 
           <button
@@ -214,25 +240,12 @@ export default function Home() {
             </h2>
           </motion.div>
 
-          {/* ================= SLIDER ================= */}
-
+          {/* SLIDER */}
           <div className="relative">
 
-            {/* LEFT */}
-            <button
-              onClick={scrollLeft}
-              className="flex absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition z-10"
-            >
-              ←
-            </button>
+            <button onClick={scrollLeft} className="flex absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white z-10">←</button>
 
-            {/* RIGHT */}
-            <button
-              onClick={scrollRight}
-              className="flex absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white hover:scale-110 transition z-10"
-            >
-              →
-            </button>
+            <button onClick={scrollRight} className="flex absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 items-center justify-center rounded-full shadow-lg bg-blue-600 text-white z-10">→</button>
 
             <div
               ref={sliderRef}
@@ -243,12 +256,13 @@ export default function Home() {
               onMouseLeave={handleMouseUp}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               className={`overflow-x-auto snap-x snap-mandatory scroll-smooth ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
             >
 
               <div className="flex gap-12">
 
-                {/* CREATE RESUME */}
+                {/* CREATE */}
                 <div className="snap-center min-w-full flex justify-center">
                   <Link to="/app/create" className="w-full max-w-4xl">
                     <motion.div whileHover={{ y: -6 }} className="h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
@@ -316,7 +330,7 @@ export default function Home() {
                 <button
                   key={i}
                   onClick={() => scrollToSlide(i)}
-                  className={`h-3 w-3 rounded-full transition ${
+                  className={`h-3 w-3 rounded-full ${
                     activeSlide === i ? "bg-blue-600 scale-125" : "bg-gray-400"
                   }`}
                 />
