@@ -228,7 +228,7 @@ export default function Home() {
 
           <motion.div className="mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-2">
-              Welcome back 👋
+              Welcome back 
             </h1>
 
             <p className="text-gray-600 text-lg mb-4">
