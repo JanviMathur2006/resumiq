@@ -3,24 +3,25 @@ import { motion } from "framer-motion";
 const variants = {
   initial: {
     opacity: 0,
-    filter: "blur(16px)",
-    scale: 0.96,
+    filter: "blur(12px)",
+    scale: 0.98,
   },
   animate: {
     opacity: 1,
     filter: "blur(0px)",
     scale: 1,
     transition: {
-      duration: 0.7,
+      duration: 0.5,
       ease: "easeOut",
+      delay: 0.2, // ⏱ lets blue layer finish first
     },
   },
   exit: {
     opacity: 0,
-    filter: "blur(16px)",
-    scale: 0.96,
+    filter: "blur(12px)",
+    scale: 0.98,
     transition: {
-      duration: 0.7,
+      duration: 0.4,
       ease: "easeIn",
     },
   },
@@ -33,8 +34,11 @@ export default function PageTransition({ children }) {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="min-h-screen w-full"
       style={{
+        position: "relative", // ✅ keep content normal (overlay handles full screen)
+        width: "100%",
+        minHeight: "100vh",
+
         willChange: "opacity, filter, transform",
         backgroundColor: "rgba(246,247,251,0.95)",
       }}

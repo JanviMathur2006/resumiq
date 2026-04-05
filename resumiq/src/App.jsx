@@ -26,6 +26,9 @@ import Settings from "./pages/Settings";
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
+/* 🔥 NEW OVERLAY */
+import TransitionOverlay from "./components/TransitionOverlay";
+
 /* ================= PAGE WRAPPER ================= */
 function PageWrapper({ children }) {
   return (
@@ -47,8 +50,10 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      {/* 🔥 BLUE LAYER */}
+      <TransitionOverlay key={location.pathname} />
 
+      <Routes location={location} key={location.pathname}>
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
@@ -61,7 +66,6 @@ function AnimatedRoutes() {
 
             <Route path="/app" element={<PageWrapper><Home /></PageWrapper>} />
 
-            {/* ✅ THIS IS YOUR TARGET PAGE */}
             <Route
               path="/app/choose"
               element={<PageWrapper><ChooseResumeType /></PageWrapper>}
@@ -102,7 +106,6 @@ function AnimatedRoutes() {
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </AnimatePresence>
   );
