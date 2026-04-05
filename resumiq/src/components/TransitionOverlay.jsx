@@ -16,7 +16,7 @@ export default function TransitionOverlay() {
         left: 0,
         width: "100vw",
         height: "100vh",
-        background: "linear-gradient(135deg, #6992aeff, #67aab9ff)",
+        background: "linear-gradient(135deg, #85aec9ff, #67aab9ff)",
         zIndex: 9999,
         pointerEvents: "none",
       }}
