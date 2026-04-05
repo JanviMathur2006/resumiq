@@ -228,11 +228,11 @@ export default function Home() {
 
           <motion.div className="mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-2">
-              Welcome back 
+            Create something remarkable
             </h1>
 
             <p className="text-gray-600 text-lg mb-4">
-              Continue building your professional resume.
+              Craft a resume that reflects your true potential.
             </p>
 
             <h2 className="text-xl text-blue-900">
