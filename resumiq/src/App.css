@@ -331,3 +331,50 @@ body {
   font-weight: 500;
   box-shadow: 0 0 22px rgba(0, 0, 0, 0.35);
 }
+/* ===============================
+   ✨ MICRO INTERACTIONS (NEW)
+================================ */
+
+/* Button lift + press feel */
+button,
+.primary-btn,
+.logout-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover,
+.primary-btn:hover,
+.logout-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+button:active,
+.primary-btn:active,
+.logout-btn:active {
+  transform: scale(0.96);
+}
+
+/* Card subtle hover enhancement */
+.resume-card {
+  will-change: transform;
+}
+
+.resume-card:hover {
+  transform: translateY(-8px) scale(1.01);
+}
+
+/* Smooth clickable feel */
+button,
+.nav-item {
+  cursor: pointer;
+}
+
+/* Icon micro interaction (if used inside buttons/cards) */
+.icon-hover {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.icon-hover:hover {
+  transform: rotate(8deg) scale(1.15);
+}
