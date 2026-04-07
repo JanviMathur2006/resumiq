@@ -26,17 +26,25 @@ import Settings from "./pages/Settings";
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
-/* 🔥 NEW OVERLAY */
+/* 🔥 OVERLAY */
 import TransitionOverlay from "./components/TransitionOverlay";
 
 /* ================= PAGE WRAPPER ================= */
 function PageWrapper({ children }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.08,
+            delayChildren: 0.1,
+          },
+        },
+      }}
       style={{ minHeight: "100%" }}
     >
       {children}
@@ -50,10 +58,12 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      {/* 🔥 BLUE LAYER */}
+
+      {/* ✅ Overlay stays separate (your original style) */}
       <TransitionOverlay key={location.pathname} />
 
       <Routes location={location} key={location.pathname}>
+
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
@@ -106,7 +116,9 @@ function AnimatedRoutes() {
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
+
     </AnimatePresence>
   );
 }

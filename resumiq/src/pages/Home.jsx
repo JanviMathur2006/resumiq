@@ -5,6 +5,9 @@ import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
 import { resumeTypes } from "../data/resumeTypes";
 
+/* ✅ NEW */
+import { fadeUp } from "../animations/stagger";
+
 /* ICONS */
 import {
   FiHome,
@@ -31,7 +34,7 @@ export default function Home() {
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
   const [search, setSearch] = useState("");
 
-  // DRAG + MOMENTUM
+  // ✅ DRAG + TOUCH (RESTORED)
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
@@ -65,9 +68,7 @@ export default function Home() {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const index = Math.round(
-      slider.scrollLeft / slider.offsetWidth
-    );
+    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
     setActiveSlide(index);
   };
 
@@ -105,7 +106,6 @@ export default function Home() {
     const finalScroll = slider.scrollLeft - momentum;
 
     const index = Math.round(finalScroll / slider.offsetWidth);
-
     scrollToSlide(index);
   };
 
@@ -136,7 +136,6 @@ export default function Home() {
     const finalScroll = slider.scrollLeft - momentum;
 
     const index = Math.round(finalScroll / slider.offsetWidth);
-
     scrollToSlide(index);
   };
 
@@ -217,7 +216,20 @@ export default function Home() {
         </div>
 
         {/* MAIN */}
-        <div className="flex-1 px-20 py-10 relative">
+        <motion.div
+          className="flex-1 px-20 py-10 relative"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.08,
+                delayChildren: 0.1,
+              },
+            },
+          }}
+        >
 
           <button
             onClick={() => navigate("/app/create")}
@@ -226,18 +238,18 @@ export default function Home() {
             + New Resume
           </button>
 
-          <motion.div className="mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 mb-2">
-            Create something remarkable
-            </h1>
+          <motion.div className="mb-12" variants={fadeUp}>
+            <motion.h1 variants={fadeUp} className="text-5xl font-bold text-gray-900 mb-2">
+              Create something remarkable
+            </motion.h1>
 
-            <p className="text-gray-600 text-lg mb-4">
+            <motion.p variants={fadeUp} className="text-gray-600 text-lg mb-4">
               Craft a resume that reflects your true potential.
-            </p>
+            </motion.p>
 
-            <h2 className="text-xl text-blue-900">
+            <motion.h2 variants={fadeUp} className="text-xl text-blue-900">
               <Typewriter words={resumeNames} loop={0} cursor />
-            </h2>
+            </motion.h2>
           </motion.div>
 
           {/* SLIDER */}
@@ -262,19 +274,17 @@ export default function Home() {
 
               <div className="flex gap-12">
 
-                {/* CREATE */}
                 <div className="snap-center min-w-full flex justify-center">
                   <Link to="/app/create" className="w-full max-w-4xl">
-                    <motion.div whileHover={{ y: -6 }} className="h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+                    <motion.div variants={fadeUp} whileHover={{ y: -6 }} className="h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
                       <h2 className="text-3xl font-semibold mb-3">Create New Resume</h2>
                       <p className="text-gray-600">Choose from multiple resume categories.</p>
                     </motion.div>
                   </Link>
                 </div>
 
-                {/* MY RESUMES */}
                 <div className="snap-center min-w-full flex justify-center">
-                  <motion.div whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+                  <motion.div variants={fadeUp} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
 
                     <h2 className="text-3xl font-semibold mb-2">My Resumes</h2>
 
@@ -312,9 +322,8 @@ export default function Home() {
                   </motion.div>
                 </div>
 
-                {/* SAMPLES */}
                 <div className="snap-center min-w-full flex justify-center">
-                  <motion.div onClick={() => navigate("/app/samples")} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10 cursor-pointer">
+                  <motion.div variants={fadeUp} onClick={() => navigate("/app/samples")} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10 cursor-pointer">
                     <h2 className="text-3xl font-semibold mb-3">Resume Samples</h2>
                     <p className="text-gray-600">Explore recruiter-approved resume examples.</p>
                   </motion.div>
@@ -324,22 +333,9 @@ export default function Home() {
 
             </div>
 
-            {/* DOTS */}
-            <div className="flex justify-center mt-6 gap-3">
-              {[0,1,2].map((i) => (
-                <button
-                  key={i}
-                  onClick={() => scrollToSlide(i)}
-                  className={`h-3 w-3 rounded-full ${
-                    activeSlide === i ? "bg-blue-600 scale-125" : "bg-gray-400"
-                  }`}
-                />
-              ))}
-            </div>
-
           </div>
 
-        </div>
+        </motion.div>
 
       </div>
 
