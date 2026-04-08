@@ -34,7 +34,6 @@ export default function Home() {
   const [loadingUserResumes, setLoadingUserResumes] = useState(true);
   const [search, setSearch] = useState("");
 
-  // ✅ DRAG + TOUCH (RESTORED)
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
@@ -68,7 +67,9 @@ export default function Home() {
     const slider = sliderRef.current;
     if (!slider) return;
 
-    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+    const index = Math.round(
+      slider.scrollLeft / slider.offsetWidth
+    );
     setActiveSlide(index);
   };
 
@@ -106,6 +107,7 @@ export default function Home() {
     const finalScroll = slider.scrollLeft - momentum;
 
     const index = Math.round(finalScroll / slider.offsetWidth);
+
     scrollToSlide(index);
   };
 
@@ -136,6 +138,7 @@ export default function Home() {
     const finalScroll = slider.scrollLeft - momentum;
 
     const index = Math.round(finalScroll / slider.offsetWidth);
+
     scrollToSlide(index);
   };
 
@@ -187,49 +190,61 @@ export default function Home() {
 
           <h2 className="text-3xl font-bold mb-12">Resumiq</h2>
 
-          <nav className="flex flex-col gap-2 text-sm">
+          {/* 🔥 ONLY CHANGE */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.06,
+                  delayChildren: 0.1,
+                },
+              },
+            }}
+          >
+            <nav className="flex flex-col gap-2 text-sm">
 
-            <NavLink to="/app" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-blue-400">
-              <FiHome size={18} /> Dashboard
-            </NavLink>
+              <motion.div variants={fadeUp}>
+                <NavLink to="/app" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-blue-400">
+                  <FiHome size={18} /> Dashboard
+                </NavLink>
+              </motion.div>
 
-            <NavLink to="/app/resumes" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-              <FiFileText size={18} /> My Resumes
-            </NavLink>
+              <motion.div variants={fadeUp}>
+                <NavLink to="/app/resumes" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                  <FiFileText size={18} /> My Resumes
+                </NavLink>
+              </motion.div>
 
-            <NavLink to="/app/samples" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-              <FiLayout size={18} /> Templates
-            </NavLink>
+              <motion.div variants={fadeUp}>
+                <NavLink to="/app/samples" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                  <FiLayout size={18} /> Templates
+                </NavLink>
+              </motion.div>
 
-            <div className="border-t border-slate-700 my-6"></div>
+              <div className="border-t border-slate-700 my-6"></div>
 
-            <NavLink to="/app/profile" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-              <FiUser size={18} /> Profile
-            </NavLink>
+              <motion.div variants={fadeUp}>
+                <NavLink to="/app/profile" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                  <FiUser size={18} /> Profile
+                </NavLink>
+              </motion.div>
 
-            <NavLink to="/app/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-              <FiSettings size={18} /> Settings
-            </NavLink>
+              <motion.div variants={fadeUp}>
+                <NavLink to="/app/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                  <FiSettings size={18} /> Settings
+                </NavLink>
+              </motion.div>
 
-          </nav>
+            </nav>
+          </motion.div>
 
         </div>
 
         {/* MAIN */}
-        <motion.div
-          className="flex-1 px-20 py-10 relative"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.08,
-                delayChildren: 0.1,
-              },
-            },
-          }}
-        >
+        <div className="flex-1 px-20 py-10 relative">
 
           <button
             onClick={() => navigate("/app/create")}
@@ -238,18 +253,18 @@ export default function Home() {
             + New Resume
           </button>
 
-          <motion.div className="mb-12" variants={fadeUp}>
-            <motion.h1 variants={fadeUp} className="text-5xl font-bold text-gray-900 mb-2">
+          <motion.div className="mb-12">
+            <h1 className="text-5xl font-bold text-gray-900 mb-2">
               Create something remarkable
-            </motion.h1>
+            </h1>
 
-            <motion.p variants={fadeUp} className="text-gray-600 text-lg mb-4">
+            <p className="text-gray-600 text-lg mb-4">
               Craft a resume that reflects your true potential.
-            </motion.p>
+            </p>
 
-            <motion.h2 variants={fadeUp} className="text-xl text-blue-900">
+            <h2 className="text-xl text-blue-900">
               <Typewriter words={resumeNames} loop={0} cursor />
-            </motion.h2>
+            </h2>
           </motion.div>
 
           {/* SLIDER */}
@@ -276,7 +291,7 @@ export default function Home() {
 
                 <div className="snap-center min-w-full flex justify-center">
                   <Link to="/app/create" className="w-full max-w-4xl">
-                    <motion.div variants={fadeUp} whileHover={{ y: -6 }} className="h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+                    <motion.div whileHover={{ y: -6 }} className="h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
                       <h2 className="text-3xl font-semibold mb-3">Create New Resume</h2>
                       <p className="text-gray-600">Choose from multiple resume categories.</p>
                     </motion.div>
@@ -284,7 +299,7 @@ export default function Home() {
                 </div>
 
                 <div className="snap-center min-w-full flex justify-center">
-                  <motion.div variants={fadeUp} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
+                  <motion.div whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10">
 
                     <h2 className="text-3xl font-semibold mb-2">My Resumes</h2>
 
@@ -323,7 +338,7 @@ export default function Home() {
                 </div>
 
                 <div className="snap-center min-w-full flex justify-center">
-                  <motion.div variants={fadeUp} onClick={() => navigate("/app/samples")} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10 cursor-pointer">
+                  <motion.div onClick={() => navigate("/app/samples")} whileHover={{ y: -6 }} className="w-full max-w-4xl h-[420px] bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center text-center px-10 cursor-pointer">
                     <h2 className="text-3xl font-semibold mb-3">Resume Samples</h2>
                     <p className="text-gray-600">Explore recruiter-approved resume examples.</p>
                   </motion.div>
@@ -335,7 +350,7 @@ export default function Home() {
 
           </div>
 
-        </motion.div>
+        </div>
 
       </div>
 
