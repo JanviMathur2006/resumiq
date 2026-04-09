@@ -107,7 +107,6 @@ export default function Home() {
     const finalScroll = slider.scrollLeft - momentum;
 
     const index = Math.round(finalScroll / slider.offsetWidth);
-
     scrollToSlide(index);
   };
 
@@ -138,7 +137,6 @@ export default function Home() {
     const finalScroll = slider.scrollLeft - momentum;
 
     const index = Math.round(finalScroll / slider.offsetWidth);
-
     scrollToSlide(index);
   };
 
@@ -190,7 +188,6 @@ export default function Home() {
 
           <h2 className="text-3xl font-bold mb-12">Resumiq</h2>
 
-          {/* 🔥 ONLY CHANGE */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -206,37 +203,48 @@ export default function Home() {
           >
             <nav className="flex flex-col gap-2 text-sm">
 
-              <motion.div variants={fadeUp}>
-                <NavLink to="/app" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-blue-400">
-                  <FiHome size={18} /> Dashboard
-                </NavLink>
-              </motion.div>
-
-              <motion.div variants={fadeUp}>
-                <NavLink to="/app/resumes" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                  <FiFileText size={18} /> My Resumes
-                </NavLink>
-              </motion.div>
-
-              <motion.div variants={fadeUp}>
-                <NavLink to="/app/samples" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                  <FiLayout size={18} /> Templates
-                </NavLink>
-              </motion.div>
+              {[
+                { to: "/app", icon: <FiHome size={18} />, label: "Dashboard" },
+                { to: "/app/resumes", icon: <FiFileText size={18} />, label: "My Resumes" },
+                { to: "/app/samples", icon: <FiLayout size={18} />, label: "Templates" },
+              ].map((item) => (
+                <motion.div key={item.to} variants={fadeUp}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `nav-item flex items-center gap-3 px-4 py-3 rounded-lg ${
+                        isActive
+                          ? "bg-slate-800 text-blue-400 active"
+                          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                      }`
+                    }
+                  >
+                    {item.icon} {item.label}
+                  </NavLink>
+                </motion.div>
+              ))}
 
               <div className="border-t border-slate-700 my-6"></div>
 
-              <motion.div variants={fadeUp}>
-                <NavLink to="/app/profile" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                  <FiUser size={18} /> Profile
-                </NavLink>
-              </motion.div>
-
-              <motion.div variants={fadeUp}>
-                <NavLink to="/app/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                  <FiSettings size={18} /> Settings
-                </NavLink>
-              </motion.div>
+              {[
+                { to: "/app/profile", icon: <FiUser size={18} />, label: "Profile" },
+                { to: "/app/settings", icon: <FiSettings size={18} />, label: "Settings" },
+              ].map((item) => (
+                <motion.div key={item.to} variants={fadeUp}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `nav-item flex items-center gap-3 px-4 py-3 rounded-lg ${
+                        isActive
+                          ? "bg-slate-800 text-blue-400 active"
+                          : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                      }`
+                    }
+                  >
+                    {item.icon} {item.label}
+                  </NavLink>
+                </motion.div>
+              ))}
 
             </nav>
           </motion.div>
