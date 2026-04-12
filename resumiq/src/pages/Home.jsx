@@ -264,7 +264,10 @@ export default function Home() {
           <motion.div className="mb-12">
             <h1
               className="text-5xl font-bold text-gray-900 mb-2"
-              style={{ fontFamily: "'Playfair Display', serif", letterSpacing: "1px" }}
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                letterSpacing: "1px"
+              }}
             >
               Create something remarkable
             </h1>
