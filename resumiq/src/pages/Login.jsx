@@ -39,12 +39,15 @@ const itemVariant = {
   },
 };
 
+/* ======================
+   INPUT STYLE (LIGHT BLUE)
+====================== */
 const inputClass = (hasError) =>
-  `w-full px-4 py-3 rounded-xl border transition
+  `w-full px-4 py-3 rounded-xl border transition bg-blue-50
    ${
      hasError
-       ? "border-red-500 focus:ring-2 focus:ring-red-500"
-       : "border-gray-300 focus:ring-2 focus:ring-black"
+       ? "border-red-500 focus:ring-2 focus:ring-red-400"
+       : "border-blue-200 focus:ring-2 focus:ring-blue-400"
    }
    focus:outline-none`;
 
@@ -72,10 +75,8 @@ export default function Login() {
       setError("");
       setLoading(true);
 
-      // ✅ REAL AUTH (this was missing)
       await signInWithEmailAndPassword(auth, email, password);
 
-      // ✅ Navigate ONCE after successful login
       navigate("/app", { replace: true });
     } catch (err) {
       setError("Invalid email or password");
@@ -85,23 +86,23 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f6f7fb] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-blue-100 px-4">
       <motion.div
         initial="hidden"
         animate="visible"
         variants={cardVariant}
-        className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8"
+        className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-blue-200"
       >
         <motion.h1
           variants={itemVariant}
-          className="text-2xl font-semibold mb-2"
+          className="text-2xl font-semibold mb-2 text-blue-900"
         >
           Welcome back
         </motion.h1>
 
         <motion.p
           variants={itemVariant}
-          className="text-gray-600 mb-6"
+          className="text-blue-600 mb-6"
         >
           Log in to continue building your resume
         </motion.p>
@@ -145,17 +146,20 @@ export default function Login() {
             disabled={!canSubmit || loading}
             className={`w-full py-3 rounded-xl text-lg font-medium transition ${
               canSubmit
-                ? "bg-black text-white hover:bg-gray-800"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-blue-200 text-blue-400 cursor-not-allowed"
             }`}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 mt-6 text-sm">
+        <p className="text-center text-blue-600 mt-6 text-sm">
           Don’t have an account?{" "}
-          <Link to="/signup" className="font-medium hover:underline">
+          <Link
+            to="/signup"
+            className="font-medium text-blue-700 hover:underline"
+          >
             Create one
           </Link>
         </p>
