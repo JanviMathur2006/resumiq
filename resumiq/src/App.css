@@ -21,7 +21,7 @@
 
 body {
   overflow-x: hidden;
-  background: #eff6ff; /* light blue */
+  background: linear-gradient(135deg, #e0ecff, #f5f9ff); /* updated light bluish */
 }
 
 /* ===============================
