@@ -5,6 +5,7 @@
 /* ============================= */
 
 @layer base {
+
   * {
     margin: 0;
     padding: 0;
@@ -19,6 +20,7 @@
     font-family: Arial, sans-serif;
 
     /* PREMIUM BLUE BACKGROUND */
+
     background:
       radial-gradient(
         circle at top left,
@@ -41,7 +43,9 @@
       );
 
     min-height: 100vh;
+
     color: #111827;
+
     overflow-x: hidden;
   }
 
@@ -75,17 +79,21 @@
 }
 
 /* ============================= */
-/* COMPONENT STYLES */
+/* COMPONENTS */
 /* ============================= */
 
 @layer components {
 
-  /* GLASS CARD */
+  /* =============================
+     GLASS CARD
+  ============================= */
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.68);
 
     backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
 
     border: 1px solid rgba(255, 255, 255, 0.35);
 
@@ -95,61 +103,90 @@
     border-radius: 30px;
   }
 
-  /* NAVBAR */
+  /* =============================
+     NAVBAR
+  ============================= */
 
   .navbar {
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
-
-    background: rgba(255, 255, 255, 0.5);
-
-    backdrop-filter: blur(16px);
 
     padding: 14px 28px;
 
-    border-bottom: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.45);
+
+    backdrop-filter: blur(16px);
+
+    -webkit-backdrop-filter: blur(16px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 50;
   }
 
   .logo-section {
     display: flex;
+
     align-items: center;
+
     gap: 10px;
   }
 
   .logo {
     width: 42px;
+
     height: 42px;
+
+    object-fit: contain;
   }
 
   .brand {
     font-size: 20px;
+
     font-weight: 700;
+
     color: #1e3a8a;
   }
 
+  .nav-links {
+    display: flex;
+
+    align-items: center;
+  }
+
   .nav-links a {
-    margin-left: 20px;
-    color: #1e3a8a;
+    margin-left: 22px;
+
     text-decoration: none;
+
+    color: #1e3a8a;
+
     font-weight: 500;
+
+    transition: 0.25s ease;
   }
 
   .nav-links a:hover {
     color: #2563eb;
   }
 
-  /* PAGE */
+  /* =============================
+     PAGE CONTAINER
+  ============================= */
 
   .page {
-    max-width: 700px;
+    max-width: 750px;
+
     margin: 80px auto;
 
-    background: rgba(255, 255, 255, 0.7);
-
-    backdrop-filter: blur(18px);
-
-    padding: calc(var(--ui-padding) * 1.5);
+    padding: calc(var(--ui-padding) * 1.7);
 
     border-radius: 24px;
 
@@ -157,15 +194,23 @@
 
     animation: fadeIn 0.6s ease-out;
 
+    background: rgba(255, 255, 255, 0.72);
+
+    backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
+
     box-shadow:
       0 10px 30px rgba(37, 99, 235, 0.12);
   }
 
   .dark .page {
-    background: rgba(17, 24, 39, 0.8);
+    background: rgba(17, 24, 39, 0.82);
   }
 
-  /* INPUTS */
+  /* =============================
+     INPUTS
+  ============================= */
 
   .input,
   input,
@@ -173,21 +218,24 @@
   select {
     width: 100%;
 
-    padding: 12px 14px;
+    padding: 13px 15px;
 
     margin: 8px 0;
 
-    border-radius: 12px;
+    border-radius: 14px;
 
     border: 1px solid #dbeafe;
 
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.8);
 
     color: #111827;
 
     outline: none;
 
-    transition: 0.25s ease;
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      background 0.25s ease;
   }
 
   .input:focus,
@@ -205,80 +253,91 @@
   .dark textarea,
   .dark select {
     background: #1f2937;
+
     border-color: #374151;
+
     color: #f9fafb;
   }
 
-  /* BUTTONS */
+  /* =============================
+     BUTTONS
+  ============================= */
 
-  .btn,
-  button {
+  .btn {
     padding: 12px 18px;
-
-    margin-top: 10px;
-
-    background: linear-gradient(
-      to right,
-      #2563eb,
-      #3b82f6
-    );
-
-    color: white;
 
     border: none;
 
-    cursor: pointer;
+    border-radius: 14px;
 
-    border-radius: 12px;
+    background:
+      linear-gradient(
+        to right,
+        #2563eb,
+        #3b82f6
+      );
+
+    color: white;
 
     font-weight: 600;
 
-    transition: 0.3s ease;
+    cursor: pointer;
+
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      opacity 0.25s ease;
   }
 
-  .btn:hover,
-  button:hover {
+  .btn:hover {
     transform: translateY(-2px);
 
     box-shadow:
       0 12px 24px rgba(37,99,235,0.25);
   }
 
-  .btn:active,
-  button:active {
+  .btn:active {
     transform: scale(0.98);
   }
 
-  /* DANGER BUTTON */
-
   .btn-danger {
-    background: linear-gradient(
-      to right,
-      #dc2626,
-      #ef4444
-    );
+    background:
+      linear-gradient(
+        to right,
+        #dc2626,
+        #ef4444
+      );
   }
 
   .btn-danger:hover {
     box-shadow:
-      0 10px 20px rgba(220,38,38,0.25);
+      0 10px 22px rgba(220,38,38,0.25);
   }
 
-  /* CHECKBOX */
+  /* =============================
+     CHECKBOX
+  ============================= */
 
   input[type="checkbox"] {
     width: 18px;
+
     height: 18px;
+
     accent-color: #2563eb;
+
     cursor: pointer;
   }
 
-  /* CARD */
+  /* =============================
+     CARDS
+  ============================= */
 
   .card {
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.72);
 
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
 
     border-radius: 24px;
 
@@ -289,13 +348,16 @@
   }
 
   .dark .card {
-    background: rgba(17, 24, 39, 0.8);
+    background: rgba(17,24,39,0.82);
   }
 
-  /* MODAL */
+  /* =============================
+     MODALS
+  ============================= */
 
   .modal-backdrop {
     position: fixed;
+
     inset: 0;
 
     background: rgba(0,0,0,0.35);
@@ -306,17 +368,19 @@
   }
 
   .modal {
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: calc(var(--ui-padding) * 1.5);
+
+    border-radius: 24px;
+
     background: rgba(255,255,255,0.8);
 
     backdrop-filter: blur(20px);
 
-    border-radius: 24px;
-
-    padding: calc(var(--ui-padding) * 1.5);
-
-    max-width: 420px;
-
-    width: 100%;
+    -webkit-backdrop-filter: blur(20px);
 
     box-shadow:
       0 20px 40px rgba(0,0,0,0.15);
@@ -328,7 +392,9 @@
     background: rgba(17,24,39,0.85);
   }
 
-  /* WELCOME */
+  /* =============================
+     WELCOME SCREEN
+  ============================= */
 
   .welcome-root {
     min-height: 100vh;
@@ -343,15 +409,17 @@
   .welcome-card {
     width: 420px;
 
-    background: rgba(255,255,255,0.75);
-
-    backdrop-filter: blur(18px);
-
-    border-radius: 28px;
-
     padding: 48px 44px;
 
     text-align: center;
+
+    border-radius: 30px;
+
+    background: rgba(255,255,255,0.76);
+
+    backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
 
     box-shadow:
       0 20px 50px rgba(37,99,235,0.15);
@@ -374,9 +442,9 @@
   .welcome-subtitle {
     font-size: 15px;
 
-    color: #4b5563;
-
     line-height: 1.7;
+
+    color: #4b5563;
 
     margin-bottom: 30px;
   }
@@ -387,7 +455,9 @@
 
   .welcome-actions {
     display: flex;
+
     flex-direction: column;
+
     gap: 12px;
   }
 
@@ -396,7 +466,7 @@
 
     padding: 13px;
 
-    border-radius: 12px;
+    border-radius: 14px;
 
     font-size: 15px;
 
@@ -406,17 +476,18 @@
   }
 
   .welcome-btn.primary {
-    background: linear-gradient(
-      to right,
-      #2563eb,
-      #3b82f6
-    );
+    background:
+      linear-gradient(
+        to right,
+        #2563eb,
+        #3b82f6
+      );
 
     color: white;
   }
 
   .welcome-btn.secondary {
-    background: rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.7);
 
     border: 1px solid #dbeafe;
 
@@ -424,7 +495,7 @@
   }
 
   .welcome-footer {
-    margin-top: 26px;
+    margin-top: 24px;
 
     font-size: 13px;
 
@@ -433,15 +504,16 @@
 }
 
 /* ============================= */
-/* ANIMATIONS */
+/* UTILITIES & ANIMATIONS */
 /* ============================= */
 
 @layer utilities {
 
   @keyframes fadeIn {
+
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px);
     }
 
     to {
@@ -455,6 +527,7 @@
   }
 
   @keyframes scaleIn {
+
     from {
       opacity: 0;
       transform: scale(0.96);
@@ -472,7 +545,7 @@
 }
 
 /* ============================= */
-/* SMOOTH TRANSITIONS */
+/* GLOBAL TRANSITIONS */
 /* ============================= */
 
 body,

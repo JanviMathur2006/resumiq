@@ -7,6 +7,7 @@ import { auth } from "../firebase";
 /* ======================
    ANIMATION VARIANTS
 ====================== */
+
 const cardVariant = {
   hidden: { opacity: 0, y: 60, scale: 0.96 },
   visible: {
@@ -42,8 +43,9 @@ const itemVariant = {
 /* ======================
    INPUT STYLE
 ====================== */
+
 const inputClass = (hasError) =>
-  `w-full px-4 py-3 rounded-xl border transition bg-blue-50 text-blue-900 placeholder:text-blue-400
+  `w-full px-4 py-3 rounded-xl border transition bg-white
    ${
      hasError
        ? "border-red-500 focus:ring-2 focus:ring-red-400"
@@ -86,17 +88,20 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 flex items-center justify-center px-6">
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-6">
 
-      {/* BACKGROUND BLUR CIRCLES */}
+      {/* BLUR CIRCLES */}
+
       <div className="absolute top-[-100px] left-[-100px] w-[320px] h-[320px] bg-blue-400 opacity-20 blur-3xl rounded-full"></div>
 
       <div className="absolute bottom-[-120px] right-[-120px] w-[380px] h-[380px] bg-blue-700 opacity-20 blur-3xl rounded-full"></div>
 
       {/* MAIN CONTAINER */}
+
       <div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-12 z-10">
 
         {/* LEFT SIDE */}
+
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -114,6 +119,7 @@ export default function Login() {
           </p>
 
           <div className="mt-10 space-y-4 text-blue-900">
+
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
               AI Powered Suggestions
@@ -128,19 +134,21 @@ export default function Login() {
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
               Fast & Secure Resume Builder
             </div>
+
           </div>
         </motion.div>
 
         {/* LOGIN CARD */}
+
         <motion.div
           initial="hidden"
           animate="visible"
           variants={cardVariant}
-          className="w-full max-w-md mx-auto bg-white/70 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/40 p-8"
+          className="glass-card w-full max-w-md mx-auto p-8"
         >
           <motion.h1
             variants={itemVariant}
-            className="text-4xl font-bold mb-2 text-blue-900"
+            className="text-5xl font-bold mb-2 text-blue-900"
           >
             Welcome back
           </motion.h1>
@@ -152,7 +160,6 @@ export default function Login() {
             Log in to continue building your resume
           </motion.p>
 
-          {/* ERROR */}
           {error && (
             <motion.p
               key={error}
@@ -165,9 +172,11 @@ export default function Login() {
           )}
 
           {/* FORM */}
+
           <form onSubmit={handleLogin} className="space-y-5">
 
             {/* EMAIL */}
+
             <motion.div variants={itemVariant}>
               <input
                 type="email"
@@ -182,6 +191,7 @@ export default function Login() {
             </motion.div>
 
             {/* PASSWORD */}
+
             <motion.div variants={itemVariant}>
               <input
                 type="password"
@@ -196,19 +206,21 @@ export default function Login() {
             </motion.div>
 
             {/* FORGOT PASSWORD */}
+
             <motion.div
               variants={itemVariant}
               className="flex justify-end"
             >
               <button
                 type="button"
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-blue-600 hover:underline bg-transparent shadow-none p-0 m-0"
               >
                 Forgot password?
               </button>
             </motion.div>
 
             {/* LOGIN BUTTON */}
+
             <motion.div variants={itemVariant}>
               <button
                 type="submit"
@@ -224,6 +236,7 @@ export default function Login() {
             </motion.div>
 
             {/* DIVIDER */}
+
             <motion.div
               variants={itemVariant}
               className="flex items-center gap-4 py-2"
@@ -237,26 +250,30 @@ export default function Login() {
               <div className="flex-1 h-[1px] bg-blue-200"></div>
             </motion.div>
 
-            {/* GOOGLE */}
+            {/* GOOGLE BUTTON */}
+
             <motion.button
               variants={itemVariant}
               type="button"
-              className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900"
+              className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900 shadow-none"
             >
               Continue with Google
             </motion.button>
 
-            {/* GITHUB */}
+            {/* GITHUB BUTTON */}
+
             <motion.button
               variants={itemVariant}
               type="button"
-              className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900"
+              className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900 shadow-none"
             >
               Continue with GitHub
             </motion.button>
+
           </form>
 
           {/* SIGNUP */}
+
           <motion.p
             variants={itemVariant}
             className="text-center text-blue-700 mt-7 text-sm"
