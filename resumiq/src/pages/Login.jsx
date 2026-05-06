@@ -40,10 +40,10 @@ const itemVariant = {
 };
 
 /* ======================
-   INPUT STYLE (LIGHT BLUE)
+   INPUT STYLE
 ====================== */
 const inputClass = (hasError) =>
-  `w-full px-4 py-3 rounded-xl border transition bg-blue-50
+  `w-full px-4 py-3 rounded-xl border transition bg-blue-50 text-blue-900 placeholder:text-blue-400
    ${
      hasError
        ? "border-red-500 focus:ring-2 focus:ring-red-400"
@@ -86,84 +86,191 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-100 px-4">
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={cardVariant}
-        className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-blue-200"
-      >
-        <motion.h1
-          variants={itemVariant}
-          className="text-2xl font-semibold mb-2 text-blue-900"
-        >
-          Welcome back
-        </motion.h1>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 flex items-center justify-center px-6">
 
-        <motion.p
-          variants={itemVariant}
-          className="text-blue-600 mb-6"
-        >
-          Log in to continue building your resume
-        </motion.p>
+      {/* BACKGROUND BLUR CIRCLES */}
+      <div className="absolute top-[-100px] left-[-100px] w-[320px] h-[320px] bg-blue-400 opacity-20 blur-3xl rounded-full"></div>
 
-        {error && (
+      <div className="absolute bottom-[-120px] right-[-120px] w-[380px] h-[380px] bg-blue-700 opacity-20 blur-3xl rounded-full"></div>
+
+      {/* MAIN CONTAINER */}
+      <div className="w-full max-w-6xl grid md:grid-cols-2 items-center gap-12 z-10">
+
+        {/* LEFT SIDE */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+          className="hidden md:block"
+        >
+          <h1 className="text-6xl font-bold leading-tight text-blue-950">
+            Build resumes <br />
+            that <span className="text-blue-600">get you hired.</span>
+          </h1>
+
+          <p className="mt-6 text-lg text-blue-800 max-w-lg">
+            Create professional resumes in minutes with modern templates,
+            AI assistance, and smooth editing experience.
+          </p>
+
+          <div className="mt-10 space-y-4 text-blue-900">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              AI Powered Suggestions
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              ATS Friendly Templates
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              Fast & Secure Resume Builder
+            </div>
+          </div>
+        </motion.div>
+
+        {/* LOGIN CARD */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={cardVariant}
+          className="w-full max-w-md mx-auto bg-white/70 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/40 p-8"
+        >
+          <motion.h1
+            variants={itemVariant}
+            className="text-4xl font-bold mb-2 text-blue-900"
+          >
+            Welcome back
+          </motion.h1>
+
           <motion.p
-            key={error}
-            variants={shakeVariant}
-            animate="shake"
-            className="text-red-500 text-sm mb-4"
+            variants={itemVariant}
+            className="text-blue-700 mb-8"
           >
-            {error}
+            Log in to continue building your resume
           </motion.p>
-        )}
 
-        {/* FORM */}
-        <form onSubmit={handleLogin} className="space-y-5">
-          {/* EMAIL */}
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClass(touched.email && !email)}
-          />
+          {/* ERROR */}
+          {error && (
+            <motion.p
+              key={error}
+              variants={shakeVariant}
+              animate="shake"
+              className="text-red-500 text-sm mb-4"
+            >
+              {error}
+            </motion.p>
+          )}
 
-          {/* PASSWORD */}
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClass(touched.password && !password)}
-          />
+          {/* FORM */}
+          <form onSubmit={handleLogin} className="space-y-5">
 
-          {/* SUBMIT */}
-          <button
-            type="submit"
-            disabled={!canSubmit || loading}
-            className={`w-full py-3 rounded-xl text-lg font-medium transition ${
-              canSubmit
-                ? "bg-blue-500 text-white hover:bg-blue-600"
-                : "bg-blue-200 text-blue-400 cursor-not-allowed"
-            }`}
+            {/* EMAIL */}
+            <motion.div variants={itemVariant}>
+              <input
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onBlur={() =>
+                  setTouched((t) => ({ ...t, email: true }))
+                }
+                onChange={(e) => setEmail(e.target.value)}
+                className={inputClass(touched.email && !email)}
+              />
+            </motion.div>
+
+            {/* PASSWORD */}
+            <motion.div variants={itemVariant}>
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onBlur={() =>
+                  setTouched((t) => ({ ...t, password: true }))
+                }
+                onChange={(e) => setPassword(e.target.value)}
+                className={inputClass(touched.password && !password)}
+              />
+            </motion.div>
+
+            {/* FORGOT PASSWORD */}
+            <motion.div
+              variants={itemVariant}
+              className="flex justify-end"
+            >
+              <button
+                type="button"
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Forgot password?
+              </button>
+            </motion.div>
+
+            {/* LOGIN BUTTON */}
+            <motion.div variants={itemVariant}>
+              <button
+                type="submit"
+                disabled={!canSubmit || loading}
+                className={`w-full py-3 rounded-xl text-lg font-semibold transition-all duration-300 ${
+                  canSubmit
+                    ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:scale-[1.02] hover:shadow-xl"
+                    : "bg-blue-200 text-blue-400 cursor-not-allowed"
+                }`}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </button>
+            </motion.div>
+
+            {/* DIVIDER */}
+            <motion.div
+              variants={itemVariant}
+              className="flex items-center gap-4 py-2"
+            >
+              <div className="flex-1 h-[1px] bg-blue-200"></div>
+
+              <span className="text-sm text-blue-500">
+                or continue with
+              </span>
+
+              <div className="flex-1 h-[1px] bg-blue-200"></div>
+            </motion.div>
+
+            {/* GOOGLE */}
+            <motion.button
+              variants={itemVariant}
+              type="button"
+              className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900"
+            >
+              Continue with Google
+            </motion.button>
+
+            {/* GITHUB */}
+            <motion.button
+              variants={itemVariant}
+              type="button"
+              className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900"
+            >
+              Continue with GitHub
+            </motion.button>
+          </form>
+
+          {/* SIGNUP */}
+          <motion.p
+            variants={itemVariant}
+            className="text-center text-blue-700 mt-7 text-sm"
           >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-
-        <p className="text-center text-blue-600 mt-6 text-sm">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-medium text-blue-700 hover:underline"
-          >
-            Create one
-          </Link>
-        </p>
-      </motion.div>
+            Don’t have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-semibold text-blue-800 hover:underline"
+            >
+              Create one
+            </Link>
+          </motion.p>
+        </motion.div>
+      </div>
     </div>
   );
 }
