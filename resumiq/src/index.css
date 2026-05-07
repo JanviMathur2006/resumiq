@@ -19,27 +19,27 @@
   body {
     font-family: Arial, sans-serif;
 
-    /* PREMIUM BLUE BACKGROUND */
+    /* LIGHT PREMIUM BACKGROUND */
 
     background:
       radial-gradient(
         circle at top left,
-        rgba(96, 165, 250, 0.25),
+        rgba(96, 165, 250, 0.20),
         transparent 35%
       ),
 
       radial-gradient(
         circle at bottom right,
-        rgba(37, 99, 235, 0.25),
+        rgba(59, 130, 246, 0.18),
         transparent 40%
       ),
 
       linear-gradient(
         135deg,
-        #eff6ff 0%,
-        #dbeafe 30%,
-        #bfdbfe 65%,
-        #93c5fd 100%
+        #f8fbff 0%,
+        #eef5ff 30%,
+        #e0ecff 65%,
+        #dbeafe 100%
       );
 
     min-height: 100vh;
@@ -47,6 +47,57 @@
     color: #111827;
 
     overflow-x: hidden;
+
+    position: relative;
+  }
+
+  /* ROOT */
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* MOVING BLUE BLOBS */
+
+  body::before,
+  body::after {
+    content: "";
+
+    position: fixed;
+
+    width: 500px;
+    height: 500px;
+
+    border-radius: 50%;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    filter: blur(90px);
+
+    animation: floatBlob 10s ease-in-out infinite;
+  }
+
+  /* FIRST BLOB */
+
+  body::before {
+    background: rgba(59, 130, 246, 0.35);
+
+    top: -100px;
+    left: -100px;
+  }
+
+  /* SECOND BLOB */
+
+  body::after {
+    background: rgba(96, 165, 250, 0.30);
+
+    bottom: -100px;
+    right: -100px;
+
+    animation-delay: 5s;
   }
 
   /* DARK MODE */
@@ -84,12 +135,10 @@
 
 @layer components {
 
-  /* =============================
-     GLASS CARD
-  ============================= */
+  /* GLASS CARD */
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.68);
+    background: rgba(255, 255, 255, 0.72);
 
     backdrop-filter: blur(18px);
 
@@ -98,14 +147,12 @@
     border: 1px solid rgba(255, 255, 255, 0.35);
 
     box-shadow:
-      0 8px 32px rgba(31, 38, 135, 0.15);
+      0 8px 32px rgba(31, 38, 135, 0.12);
 
     border-radius: 30px;
   }
 
-  /* =============================
-     NAVBAR
-  ============================= */
+  /* NAVBAR */
 
   .navbar {
     display: flex;
@@ -116,7 +163,7 @@
 
     padding: 14px 28px;
 
-    background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.50);
 
     backdrop-filter: blur(16px);
 
@@ -177,9 +224,7 @@
     color: #2563eb;
   }
 
-  /* =============================
-     PAGE CONTAINER
-  ============================= */
+  /* PAGE */
 
   .page {
     max-width: 750px;
@@ -201,16 +246,14 @@
     -webkit-backdrop-filter: blur(18px);
 
     box-shadow:
-      0 10px 30px rgba(37, 99, 235, 0.12);
+      0 10px 30px rgba(37, 99, 235, 0.10);
   }
 
   .dark .page {
     background: rgba(17, 24, 39, 0.82);
   }
 
-  /* =============================
-     INPUTS
-  ============================= */
+  /* INPUTS */
 
   .input,
   input,
@@ -226,7 +269,7 @@
 
     border: 1px solid #dbeafe;
 
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.85);
 
     color: #111827;
 
@@ -245,7 +288,7 @@
     border-color: #3b82f6;
 
     box-shadow:
-      0 0 0 4px rgba(59,130,246,0.15);
+      0 0 0 4px rgba(59,130,246,0.12);
   }
 
   .dark .input,
@@ -259,9 +302,7 @@
     color: #f9fafb;
   }
 
-  /* =============================
-     BUTTONS
-  ============================= */
+  /* BUTTONS */
 
   .btn {
     padding: 12px 18px;
@@ -293,47 +334,17 @@
     transform: translateY(-2px);
 
     box-shadow:
-      0 12px 24px rgba(37,99,235,0.25);
+      0 12px 24px rgba(37,99,235,0.22);
   }
 
   .btn:active {
     transform: scale(0.98);
   }
 
-  .btn-danger {
-    background:
-      linear-gradient(
-        to right,
-        #dc2626,
-        #ef4444
-      );
-  }
-
-  .btn-danger:hover {
-    box-shadow:
-      0 10px 22px rgba(220,38,38,0.25);
-  }
-
-  /* =============================
-     CHECKBOX
-  ============================= */
-
-  input[type="checkbox"] {
-    width: 18px;
-
-    height: 18px;
-
-    accent-color: #2563eb;
-
-    cursor: pointer;
-  }
-
-  /* =============================
-     CARDS
-  ============================= */
+  /* CARD */
 
   .card {
-    background: rgba(255,255,255,0.72);
+    background: rgba(255,255,255,0.74);
 
     backdrop-filter: blur(18px);
 
@@ -344,57 +355,14 @@
     padding: calc(var(--ui-padding) * 1.5);
 
     box-shadow:
-      0 10px 30px rgba(37,99,235,0.12);
+      0 10px 30px rgba(37,99,235,0.10);
   }
 
   .dark .card {
     background: rgba(17,24,39,0.82);
   }
 
-  /* =============================
-     MODALS
-  ============================= */
-
-  .modal-backdrop {
-    position: fixed;
-
-    inset: 0;
-
-    background: rgba(0,0,0,0.35);
-
-    backdrop-filter: blur(4px);
-
-    z-index: 40;
-  }
-
-  .modal {
-    width: 100%;
-
-    max-width: 420px;
-
-    padding: calc(var(--ui-padding) * 1.5);
-
-    border-radius: 24px;
-
-    background: rgba(255,255,255,0.8);
-
-    backdrop-filter: blur(20px);
-
-    -webkit-backdrop-filter: blur(20px);
-
-    box-shadow:
-      0 20px 40px rgba(0,0,0,0.15);
-
-    animation: scaleIn 0.2s ease-out;
-  }
-
-  .dark .modal {
-    background: rgba(17,24,39,0.85);
-  }
-
-  /* =============================
-     WELCOME SCREEN
-  ============================= */
+  /* WELCOME */
 
   .welcome-root {
     min-height: 100vh;
@@ -415,91 +383,18 @@
 
     border-radius: 30px;
 
-    background: rgba(255,255,255,0.76);
+    background: rgba(255,255,255,0.78);
 
     backdrop-filter: blur(18px);
 
     -webkit-backdrop-filter: blur(18px);
 
     box-shadow:
-      0 20px 50px rgba(37,99,235,0.15);
+      0 20px 50px rgba(37,99,235,0.12);
   }
 
   .dark .welcome-card {
     background: rgba(17,24,39,0.85);
-  }
-
-  .welcome-title {
-    font-size: 30px;
-
-    font-weight: 700;
-
-    margin-bottom: 14px;
-
-    color: #1e3a8a;
-  }
-
-  .welcome-subtitle {
-    font-size: 15px;
-
-    line-height: 1.7;
-
-    color: #4b5563;
-
-    margin-bottom: 30px;
-  }
-
-  .dark .welcome-subtitle {
-    color: #9ca3af;
-  }
-
-  .welcome-actions {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-  }
-
-  .welcome-btn {
-    width: 100%;
-
-    padding: 13px;
-
-    border-radius: 14px;
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-  }
-
-  .welcome-btn.primary {
-    background:
-      linear-gradient(
-        to right,
-        #2563eb,
-        #3b82f6
-      );
-
-    color: white;
-  }
-
-  .welcome-btn.secondary {
-    background: rgba(255,255,255,0.7);
-
-    border: 1px solid #dbeafe;
-
-    color: #1e3a8a;
-  }
-
-  .welcome-footer {
-    margin-top: 24px;
-
-    font-size: 13px;
-
-    color: #6b7280;
   }
 }
 
@@ -541,6 +436,31 @@
 
   .animate-scaleIn {
     animation: scaleIn 0.2s ease-out;
+  }
+
+  /* MOVING BACKGROUND */
+
+  @keyframes floatBlob {
+
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+
+    25% {
+      transform: translate(120px, -80px) scale(1.1);
+    }
+
+    50% {
+      transform: translate(-100px, 60px) scale(0.9);
+    }
+
+    75% {
+      transform: translate(80px, 100px) scale(1.05);
+    }
+
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
   }
 }
 
