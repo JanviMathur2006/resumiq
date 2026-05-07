@@ -19,8 +19,6 @@
   body {
     font-family: Arial, sans-serif;
 
-    /* LIGHT PREMIUM BACKGROUND */
-
     background:
       radial-gradient(
         circle at top left,
@@ -51,14 +49,12 @@
     position: relative;
   }
 
-  /* ROOT */
-
   #root {
     position: relative;
     z-index: 1;
   }
 
-  /* MOVING BLUE BLOBS */
+  /* MOVING GLOBAL BLOBS */
 
   body::before,
   body::after {
@@ -80,19 +76,15 @@
     animation: floatBlob 10s ease-in-out infinite;
   }
 
-  /* FIRST BLOB */
-
   body::before {
-    background: rgba(59, 130, 246, 0.35);
+    background: rgba(59, 130, 246, 0.30);
 
     top: -100px;
     left: -100px;
   }
 
-  /* SECOND BLOB */
-
   body::after {
-    background: rgba(96, 165, 250, 0.30);
+    background: rgba(96, 165, 250, 0.25);
 
     bottom: -100px;
     right: -100px;
@@ -399,6 +391,44 @@
 }
 
 /* ============================= */
+/* PAGE BACKGROUND BLOBS */
+/* ============================= */
+
+.animated-bg,
+.animated-bg-2 {
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  filter: blur(100px);
+
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+.animated-bg {
+  background: rgba(59, 130, 246, 0.18);
+
+  top: -120px;
+  left: -120px;
+
+  animation: moveBlob1 12s ease-in-out infinite;
+}
+
+.animated-bg-2 {
+  background: rgba(96, 165, 250, 0.15);
+
+  bottom: -120px;
+  right: -120px;
+
+  animation: moveBlob2 14s ease-in-out infinite;
+}
+
+/* ============================= */
 /* UTILITIES & ANIMATIONS */
 /* ============================= */
 
@@ -438,8 +468,6 @@
     animation: scaleIn 0.2s ease-out;
   }
 
-  /* MOVING BACKGROUND */
-
   @keyframes floatBlob {
 
     0% {
@@ -460,6 +488,36 @@
 
     100% {
       transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  @keyframes moveBlob1 {
+
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate(100px, 60px) scale(1.1);
+    }
+
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+  }
+
+  @keyframes moveBlob2 {
+
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate(-80px, -50px) scale(0.9);
+    }
+
+    100% {
+      transform: translate(0, 0) scale(1);
     }
   }
 }
