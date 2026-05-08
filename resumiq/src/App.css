@@ -1,5 +1,5 @@
 /* ===============================
-   ROOT (FIXED FULL WIDTH)
+   ROOT
 ================================ */
 
 #root {
@@ -7,10 +7,12 @@
   width: 100%;
   margin: 0;
   padding: 0;
+  position: relative;
+  z-index: 2;
 }
 
 /* ===============================
-   GLOBAL SMOOTHNESS (NEW)
+   GLOBAL RESET
 ================================ */
 
 * {
@@ -19,9 +21,147 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
+  margin: 0;
+  padding: 0;
+
   overflow-x: hidden;
-  background: linear-gradient(135deg, #e0ecff, #f5f9ff); /* updated light bluish */
+
+  font-family: Arial, sans-serif;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8fbff 0%,
+      #eef4ff 45%,
+      #e8f0ff 100%
+    );
+
+  color: #111827;
+
+  position: relative;
+}
+
+/* ===============================
+   PROFESSIONAL BACKGROUND
+================================ */
+
+body::before,
+body::after {
+  content: "";
+
+  position: fixed;
+
+  border-radius: 50%;
+
+  filter: blur(100px);
+
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+/* LEFT BLOB */
+
+body::before {
+  width: 450px;
+  height: 450px;
+
+  background:
+    rgba(96, 165, 250, 0.18);
+
+  top: -120px;
+  left: -120px;
+
+  animation: leftBlob 16s ease-in-out infinite;
+}
+
+/* RIGHT BLOB */
+
+body::after {
+  width: 420px;
+  height: 420px;
+
+  background:
+    rgba(59, 130, 246, 0.12);
+
+  bottom: -100px;
+  right: -100px;
+
+  animation: rightBlob 18s ease-in-out infinite;
+}
+
+/* ===============================
+   WAVE BACKGROUND
+================================ */
+
+.wave-bg {
+  position: fixed;
+
+  bottom: 0;
+  left: 0;
+
+  width: 200%;
+  height: 240px;
+
+  opacity: 0.25;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 65%,
+      rgba(59,130,246,0.07) 66%,
+      transparent 67%
+    );
+
+  background-size: 220px 120px;
+
+  animation: waveMove 18s linear infinite;
+
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+/* ===============================
+   DOTS
+================================ */
+
+.bg-dots {
+  position: fixed;
+
+  width: 170px;
+  height: 170px;
+
+  background-image:
+    radial-gradient(
+      rgba(59,130,246,0.18) 2px,
+      transparent 2px
+    );
+
+  background-size: 18px 18px;
+
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+.bg-dots.left {
+  left: 50px;
+  top: 250px;
+
+  animation: dotsFloat 8s ease-in-out infinite;
+}
+
+.bg-dots.right {
+  right: 60px;
+  bottom: 90px;
+
+  animation: dotsFloat 10s ease-in-out infinite;
 }
 
 /* ===============================
@@ -34,16 +174,29 @@ body {
   align-items: center;
 
   padding: 16px 32px;
-  background: #dbeafe; /* changed */
-  color: #1e3a8a;
 
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+  background: rgba(255,255,255,0.55);
+
+  backdrop-filter: blur(18px);
+
+  border-bottom:
+    1px solid rgba(255,255,255,0.3);
+
+  position: sticky;
+  top: 0;
+
+  z-index: 50;
+
+  box-shadow:
+    0 4px 20px rgba(59, 130, 246, 0.08);
 }
 
 .logo {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   cursor: pointer;
+
+  color: #1e3a8a;
 }
 
 /* ===============================
@@ -58,267 +211,53 @@ body {
 
 .nav-item {
   position: relative;
-  padding: 6px 10px;
-  border-radius: 8px;
+
+  padding: 8px 14px;
+
+  border-radius: 12px;
 
   color: #3b82f6;
+
   text-decoration: none;
+
   font-size: 14px;
+  font-weight: 500;
 
   transition: all 0.25s ease;
+
+  overflow: hidden;
 }
 
 .nav-item:hover {
   color: #1d4ed8;
+
   transform: translateY(-1px);
+
+  background:
+    rgba(96,165,250,0.12);
 }
 
 .nav-item.active {
   color: #1e3a8a;
-  font-weight: 500;
-}
 
-/* underline animation */
-.nav-item::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -4px;
+  background:
+    rgba(96,165,250,0.18);
 
-  width: 0%;
-  height: 2px;
-  background: #60a5fa;
-
-  transition: width 0.3s ease;
-}
-
-.nav-item:hover::after,
-.nav-item.active::after {
-  width: 100%;
+  box-shadow:
+    0 0 12px rgba(92,153,227,0.15);
 }
 
 /* ===============================
-   LOGOUT BUTTON
-================================ */
-
-.logout-btn {
-  margin-left: 16px;
-  background: #f87171;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-
-  transition: 0.3s ease;
-}
-
-.logout-btn:hover {
-  background: #ef4444;
-}
-
-/* ===============================
-   DASHBOARD LAYOUT
-================================ */
-
-.dashboard-main {
-  padding: 40px 48px;
-}
-
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.dashboard-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e3a8a;
-}
-
-.dashboard-header p {
-  color: #3b82f6;
-  margin-top: 6px;
-}
-
-/* ===============================
-   GRID
-================================ */
-
-.dashboard-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 28px;
-}
-
-/* ===============================
-   CARD BASE (GLASS + GLOW)
-================================ */
-
-.resume-card {
-  background: rgba(239, 246, 255, 0.9);
-  backdrop-filter: blur(10px);
-
-  border-radius: 18px;
-  border: 1px solid rgba(59, 130, 246, 0.15);
-  padding: 28px;
-  text-align: left;
-  cursor: pointer;
-  position: relative;
-
-  transition:
-    transform 0.35s ease,
-    box-shadow 0.45s ease,
-    border-color 0.45s ease;
-
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.12);
-
-  /* Glow variables */
-  --glow-border: rgba(59, 130, 246, 0.2);
-  --glow-border-strong: rgba(59, 130, 246, 0.4);
-  --glow-shadow: rgba(59, 130, 246, 0.25);
-  --glow-shadow-strong: rgba(59, 130, 246, 0.45);
-  --glow-outer: rgba(59, 130, 246, 0.3);
-  --glow-outer-strong: rgba(59, 130, 246, 0.6);
-}
-
-.resume-card:hover {
-  transform: translateY(-6px);
-}
-
-/* ===============================
-   TEXT
-================================ */
-
-.resume-card h2 {
-  font-size: 18px;
-  margin-bottom: 6px;
-  color: #1e3a8a;
-}
-
-.resume-date {
-  font-size: 14px;
-  color: #3b82f6;
-  margin-bottom: 16px;
-}
-
-/* ===============================
-   ACTION BUTTONS
-================================ */
-
-.card-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.primary-btn {
-  background: #3b82f6;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-  transition: 0.3s ease;
-}
-
-.primary-btn:hover {
-  background: #2563eb;
-}
-
-.danger-btn {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-}
-
-/* ===============================
-   EMPTY STATE
-================================ */
-
-.empty-state {
-  padding: 40px;
-  text-align: center;
-  color: #3b82f6;
-}
-
-/* ===============================
-   🔥 GLOW PULSE ANIMATION
-================================ */
-
-@keyframes glowPulse {
-  0% {
-    box-shadow:
-      0 0 0 2px var(--glow-border),
-      0 20px 40px var(--glow-shadow),
-      0 0 55px var(--glow-outer);
-  }
-
-  50% {
-    box-shadow:
-      0 0 0 2px var(--glow-border-strong),
-      0 28px 55px var(--glow-shadow-strong),
-      0 0 80px var(--glow-outer-strong);
-  }
-
-  100% {
-    box-shadow:
-      0 0 0 2px var(--glow-border),
-      0 20px 40px var(--glow-shadow),
-      0 0 55px var(--glow-outer);
-  }
-}
-
-.resume-card.active {
-  animation: glowPulse 2.6s ease-in-out infinite;
-}
-
-/* ===============================
-   COLOR VARIANTS (KEPT STRUCTURE)
-================================ */
-
-.resume-card.fresher {
-  --glow-border: rgba(59, 130, 246, 0.25);
-}
-
-.resume-card.professional {
-  --glow-border: rgba(59, 130, 246, 0.25);
-}
-
-.resume-card.internship {
-  --glow-border: rgba(59, 130, 246, 0.25);
-}
-
-.resume-card.career-switch {
-  --glow-border: rgba(59, 130, 246, 0.25);
-}
-
-/* ===============================
-   BADGE
-================================ */
-
-.resume-badge {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  background: #3b82f6;
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 0 22px rgba(59, 130, 246, 0.4);
-}
-
-/* ===============================
-   ✨ MICRO INTERACTIONS
+   BUTTONS
 ================================ */
 
 button,
 .primary-btn,
 .logout-btn {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.25s ease;
 }
 
 button:hover,
@@ -333,56 +272,322 @@ button:active,
   transform: scale(0.96);
 }
 
+.primary-btn {
+  background:
+    linear-gradient(
+      to right,
+      #2563eb,
+      #3b82f6
+    );
+
+  color: white;
+
+  padding: 10px 16px;
+
+  border-radius: 12px;
+
+  border: none;
+
+  box-shadow:
+    0 10px 24px rgba(37,99,235,0.18);
+}
+
+.primary-btn:hover {
+  background:
+    linear-gradient(
+      to right,
+      #1d4ed8,
+      #2563eb
+    );
+}
+
+.logout-btn {
+  margin-left: 16px;
+
+  background: #ef4444;
+
+  color: white;
+
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  border: none;
+}
+
+/* ===============================
+   DASHBOARD
+================================ */
+
+.dashboard-main {
+  padding: 40px 48px;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+
+  color: #0A1A33;
+}
+
+.dashboard-header p {
+  color: #64748b;
+
+  margin-top: 6px;
+}
+
+/* ===============================
+   GRID
+================================ */
+
+.dashboard-content {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(320px, 1fr));
+
+  gap: 28px;
+}
+
+/* ===============================
+   RESUME CARD
+================================ */
+
 .resume-card {
-  will-change: transform;
+  background:
+    rgba(255,255,255,0.72);
+
+  backdrop-filter: blur(18px);
+
+  border-radius: 28px;
+
+  border:
+    1px solid rgba(255,255,255,0.4);
+
+  padding: 28px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  position: relative;
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+
+  box-shadow:
+    0 12px 30px rgba(37,99,235,0.10);
+
+  overflow: hidden;
 }
 
 .resume-card:hover {
-  transform: translateY(-8px) scale(1.01);
+  transform:
+    translateY(-8px)
+    scale(1.01);
+
+  box-shadow:
+    0 20px 40px rgba(37,99,235,0.15);
 }
 
-button,
-.nav-item {
-  cursor: pointer;
+/* ===============================
+   CARD TEXT
+================================ */
+
+.resume-card h2 {
+  font-size: 20px;
+
+  margin-bottom: 8px;
+
+  color: #0A1A33;
 }
+
+.resume-date {
+  font-size: 14px;
+
+  color: #64748b;
+
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   ACTION BUTTONS
+================================ */
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.danger-btn {
+  background: #fee2e2;
+
+  color: #dc2626;
+
+  padding: 10px 14px;
+
+  border-radius: 12px;
+
+  border: none;
+}
+
+/* ===============================
+   BADGE
+================================ */
+
+.resume-badge {
+  position: absolute;
+
+  top: 18px;
+  right: 18px;
+
+  background:
+    linear-gradient(
+      to right,
+      #2563eb,
+      #3b82f6
+    );
+
+  color: #fff;
+
+  padding: 6px 14px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  box-shadow:
+    0 0 22px rgba(59,130,246,0.3);
+}
+
+/* ===============================
+   EMPTY STATE
+================================ */
+
+.empty-state {
+  padding: 40px;
+
+  text-align: center;
+
+  color: #64748b;
+}
+
+/* ===============================
+   ICON HOVER
+================================ */
 
 .icon-hover {
   display: inline-block;
+
   transition: transform 0.2s ease;
 }
 
 .icon-hover:hover {
-  transform: rotate(8deg) scale(1.15);
+  transform:
+    rotate(8deg)
+    scale(1.15);
 }
 
 /* ===============================
-   NAVBAR GLOW + ACTIVE EFFECT
+   ANIMATIONS
 ================================ */
 
-.nav-item {
-  position: relative;
-  overflow: hidden;
+@keyframes leftBlob {
+
+  0% {
+    transform:
+      translate(0,0)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      translate(90px,60px)
+      scale(1.08);
+  }
+
+  100% {
+    transform:
+      translate(0,0)
+      scale(1);
+  }
 }
 
-.nav-item::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(85, 152, 235, 0.2);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 8px;
+@keyframes rightBlob {
+
+  0% {
+    transform:
+      translate(0,0)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      translate(-80px,-50px)
+      scale(0.92);
+  }
+
+  100% {
+    transform:
+      translate(0,0)
+      scale(1);
+  }
 }
 
-.nav-item:hover::before {
-  opacity: 1;
+@keyframes waveMove {
+
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.nav-item.active::before {
-  opacity: 1;
-  background: rgba(96, 165, 250, 0.3);
+@keyframes dotsFloat {
+
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
-.nav-item.active {
-  box-shadow: 0 0 12px rgba(92, 153, 227, 0.4);
+/* ===============================
+   GLOBAL TRANSITIONS
+================================ */
+
+body,
+.resume-card,
+button,
+.nav-item,
+.primary-btn,
+.logout-btn {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
