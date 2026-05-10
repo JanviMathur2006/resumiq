@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { signInWithEmailAndPassword } from "firebase/auth";
+
+import {
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+
 import { auth } from "../firebase";
 
 /* ======================
@@ -58,34 +63,126 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = email.trim() !== "" && password.trim() !== "";
+  // STORE UNVERIFIED USER
+  const [unverifiedUser, setUnverifiedUser] =
+    useState(null);
+
+  const canSubmit =
+    email.trim() !== "" &&
+    password.trim() !== "";
+
+  /* ======================
+     LOGIN HANDLER
+  ====================== */
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!canSubmit) {
       setError("Please fill in all fields");
-      setTouched({ email: true, password: true });
+
+      setTouched({
+        email: true,
+        password: true,
+      });
+
       return;
     }
 
     try {
       setError("");
+      setSuccess("");
       setLoading(true);
 
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential =
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
-      navigate("/app", { replace: true });
+      const user = userCredential.user;
+
+      // RELOAD USER TO GET LATEST VERIFICATION STATUS
+      await user.reload();
+
+      // CHECK EMAIL VERIFIED
+      if (!user.emailVerified) {
+        setUnverifiedUser(user);
+
+        setError(
+          "Please verify your email before logging in."
+        );
+
+        setLoading(false);
+        return;
+      }
+
+      setSuccess("Login successful!");
+
+      setTimeout(() => {
+        navigate("/app", {
+          replace: true,
+        });
+      }, 1000);
+
     } catch (err) {
-      setError("Invalid email or password");
+      console.log(err);
+
+      if (
+        err.code === "auth/user-not-found"
+      ) {
+        setError(
+          "No account found with this email."
+        );
+      } else if (
+        err.code === "auth/wrong-password"
+      ) {
+        setError("Incorrect password.");
+      } else if (
+        err.code === "auth/invalid-email"
+      ) {
+        setError("Invalid email address.");
+      } else {
+        setError("Invalid email or password");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  /* ======================
+     RESEND VERIFICATION
+  ====================== */
+
+  const handleResendVerification =
+    async () => {
+      try {
+        if (!unverifiedUser) return;
+
+        await sendEmailVerification(
+          unverifiedUser
+        );
+
+        setSuccess(
+          "Verification email sent again! Check your inbox."
+        );
+
+      } catch (err) {
+        console.log(err);
+
+        setError(
+          "Failed to resend verification email."
+        );
+      }
+    };
 
   return (
     <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-6">
@@ -110,7 +207,10 @@ export default function Login() {
         >
           <h1 className="text-6xl font-bold leading-tight text-blue-950">
             Build resumes <br />
-            that <span className="text-blue-600">get you hired.</span>
+            that{" "}
+            <span className="text-blue-600">
+              get you hired.
+            </span>
           </h1>
 
           <p className="mt-6 text-lg text-blue-800 max-w-lg">
@@ -160,6 +260,8 @@ export default function Login() {
             Log in to continue building your resume
           </motion.p>
 
+          {/* ERROR */}
+
           {error && (
             <motion.p
               key={error}
@@ -171,9 +273,22 @@ export default function Login() {
             </motion.p>
           )}
 
+          {/* SUCCESS */}
+
+          {success && (
+            <motion.p
+              className="text-green-600 text-sm mb-4"
+            >
+              {success}
+            </motion.p>
+          )}
+
           {/* FORM */}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form
+            onSubmit={handleLogin}
+            className="space-y-5"
+          >
 
             {/* EMAIL */}
 
@@ -183,10 +298,17 @@ export default function Login() {
                 placeholder="Email address"
                 value={email}
                 onBlur={() =>
-                  setTouched((t) => ({ ...t, email: true }))
+                  setTouched((t) => ({
+                    ...t,
+                    email: true,
+                  }))
                 }
-                onChange={(e) => setEmail(e.target.value)}
-                className={inputClass(touched.email && !email)}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+                className={inputClass(
+                  touched.email && !email
+                )}
               />
             </motion.div>
 
@@ -198,10 +320,17 @@ export default function Login() {
                 placeholder="Password"
                 value={password}
                 onBlur={() =>
-                  setTouched((t) => ({ ...t, password: true }))
+                  setTouched((t) => ({
+                    ...t,
+                    password: true,
+                  }))
                 }
-                onChange={(e) => setPassword(e.target.value)}
-                className={inputClass(touched.password && !password)}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                className={inputClass(
+                  touched.password && !password
+                )}
               />
             </motion.div>
 
@@ -231,9 +360,26 @@ export default function Login() {
                     : "bg-blue-200 text-blue-400 cursor-not-allowed"
                 }`}
               >
-                {loading ? "Logging in..." : "Login"}
+                {loading
+                  ? "Logging in..."
+                  : "Login"}
               </button>
             </motion.div>
+
+            {/* RESEND VERIFICATION */}
+
+            {unverifiedUser && (
+              <motion.button
+                variants={itemVariant}
+                type="button"
+                onClick={
+                  handleResendVerification
+                }
+                className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900"
+              >
+                Resend Verification Email
+              </motion.button>
+            )}
 
             {/* DIVIDER */}
 
