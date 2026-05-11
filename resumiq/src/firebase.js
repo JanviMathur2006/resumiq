@@ -5,6 +5,7 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
+  GithubAuthProvider,
 } from "firebase/auth";
 
 import { getFirestore } from "firebase/firestore";
@@ -59,6 +60,17 @@ export const googleProvider =
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
+
+/* =====================================================
+   GITHUB AUTH PROVIDER
+===================================================== */
+
+export const githubProvider =
+  new GithubAuthProvider();
+
+// Optional GitHub scopes
+githubProvider.addScope("read:user");
+githubProvider.addScope("user:email");
 
 /* =====================================================
    EXPORT APP

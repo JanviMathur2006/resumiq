@@ -5,9 +5,14 @@ import { motion } from "framer-motion";
 import {
   signInWithEmailAndPassword,
   sendEmailVerification,
+  signInWithPopup,
 } from "firebase/auth";
 
-import { auth } from "../firebase";
+import {
+  auth,
+  googleProvider,
+  githubProvider,
+} from "../firebase";
 
 /* ======================
    ANIMATION VARIANTS
@@ -70,7 +75,6 @@ export default function Login() {
   const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // STORE UNVERIFIED USER
   const [unverifiedUser, setUnverifiedUser] =
     useState(null);
 
@@ -79,7 +83,7 @@ export default function Login() {
     password.trim() !== "";
 
   /* ======================
-     LOGIN HANDLER
+     EMAIL LOGIN
   ====================== */
 
   const handleLogin = async (e) => {
@@ -110,10 +114,8 @@ export default function Login() {
 
       const user = userCredential.user;
 
-      // RELOAD USER TO GET LATEST VERIFICATION STATUS
       await user.reload();
 
-      // CHECK EMAIL VERIFIED
       if (!user.emailVerified) {
         setUnverifiedUser(user);
 
@@ -153,6 +155,76 @@ export default function Login() {
       } else {
         setError("Invalid email or password");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ======================
+     GOOGLE LOGIN
+  ====================== */
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      await signInWithPopup(
+        auth,
+        googleProvider
+      );
+
+      setSuccess(
+        "Google login successful!"
+      );
+
+      setTimeout(() => {
+        navigate("/app", {
+          replace: true,
+        });
+      }, 1000);
+
+    } catch (err) {
+      console.log(err);
+
+      setError(
+        "Google sign in failed."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ======================
+     GITHUB LOGIN
+  ====================== */
+
+  const handleGithubLogin = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      await signInWithPopup(
+        auth,
+        githubProvider
+      );
+
+      setSuccess(
+        "GitHub login successful!"
+      );
+
+      setTimeout(() => {
+        navigate("/app", {
+          replace: true,
+        });
+      }, 1000);
+
+    } catch (err) {
+      console.log(err);
+
+      setError(
+        "GitHub sign in failed."
+      );
     } finally {
       setLoading(false);
     }
@@ -401,6 +473,7 @@ export default function Login() {
             <motion.button
               variants={itemVariant}
               type="button"
+              onClick={handleGoogleLogin}
               className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900 shadow-none"
             >
               Continue with Google
@@ -411,6 +484,7 @@ export default function Login() {
             <motion.button
               variants={itemVariant}
               type="button"
+              onClick={handleGithubLogin}
               className="w-full py-3 rounded-xl border border-blue-200 bg-white hover:bg-blue-50 transition font-medium text-blue-900 shadow-none"
             >
               Continue with GitHub
