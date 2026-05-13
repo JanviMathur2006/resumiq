@@ -86,9 +86,9 @@ export default function CreateResume() {
 
   return (
 
-    <div className="relative w-full min-h-screen overflow-hidden bg-[#f5f7fb] flex flex-col items-center pt-16">
+    <div className="relative w-full min-h-screen overflow-hidden bg-[#f5f7fb] flex flex-col items-center pt-12">
 
-      {/* PREMIUM BACKGROUND GLOWS */}
+      {/* BACKGROUND GLOWS */}
 
       <div className="absolute top-[-150px] left-[-150px] w-[420px] h-[420px] bg-blue-300/40 rounded-full blur-[140px]"></div>
 
@@ -106,7 +106,7 @@ export default function CreateResume() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-6xl font-bold text-gray-900 mb-4 text-center"
+          className="text-5xl font-bold text-gray-900 mb-3 text-center"
         >
           Create a Resume
         </motion.h1>
@@ -115,7 +115,7 @@ export default function CreateResume() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-gray-500 mb-12 text-xl text-center"
+          className="text-gray-500 mb-10 text-lg text-center"
         >
           Swipe left to skip, right to select
         </motion.p>
@@ -126,7 +126,7 @@ export default function CreateResume() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex gap-4 mb-14 flex-wrap justify-center"
+          className="flex gap-4 mb-12 flex-wrap justify-center"
         >
 
           {TABS.map((tab) => (
@@ -140,7 +140,7 @@ export default function CreateResume() {
               }}
 
               className={`
-                px-7
+                px-6
                 py-3
                 rounded-full
                 text-sm
@@ -166,7 +166,7 @@ export default function CreateResume() {
 
         {filteredResumes.length > 0 && (
 
-          <div className="relative w-[520px] h-[560px]">
+          <div className="relative w-[420px] h-[470px]">
 
             <AnimatePresence mode="wait">
 
@@ -225,7 +225,7 @@ export default function CreateResume() {
                   border
                   border-white/60
                   shadow-[0_25px_80px_rgba(0,0,0,0.10)]
-                  p-10
+                  p-8
                   flex
                   flex-col
                   justify-between
@@ -238,15 +238,15 @@ export default function CreateResume() {
 
                 <div>
 
-                  <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+                  <h2 className="text-3xl font-bold text-gray-900 leading-tight">
                     {current.title}
                   </h2>
 
-                  <p className="text-gray-600 mt-5 text-xl leading-relaxed">
+                  <p className="text-gray-600 mt-4 text-lg leading-relaxed">
                     {current.description}
                   </p>
 
-                  <div className="mt-8 text-lg text-gray-500">
+                  <div className="mt-7 text-base text-gray-500">
 
                     <span className="font-semibold text-gray-700">
                       Best for:
@@ -266,8 +266,8 @@ export default function CreateResume() {
                     onClick={() => handleSwipe("left")}
 
                     className="
-                      px-8
-                      py-4
+                      px-7
+                      py-3
                       rounded-full
                       border
                       border-gray-300
@@ -285,8 +285,8 @@ export default function CreateResume() {
                     onClick={() => handleSwipe("right")}
 
                     className="
-                      px-8
-                      py-4
+                      px-7
+                      py-3
                       rounded-full
                       bg-black
                       text-white
