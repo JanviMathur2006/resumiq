@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TABS = ["Recommended", "Students", "Professionals", "Specialized"];
+const TABS = [
+  "Recommended",
+  "Students",
+  "Professionals",
+  "Specialized",
+];
 
 const RESUME_TYPES = [
   {
@@ -12,6 +17,7 @@ const RESUME_TYPES = [
     bestFor: "Students, freshers",
     tab: "Students",
   },
+
   {
     id: "professional",
     title: "Experienced Professional Resume",
@@ -19,6 +25,7 @@ const RESUME_TYPES = [
     bestFor: "1–15 years experience",
     tab: "Professionals",
   },
+
   {
     id: "internship",
     title: "Internship Resume",
@@ -26,6 +33,7 @@ const RESUME_TYPES = [
     bestFor: "Internships",
     tab: "Students",
   },
+
   {
     id: "careerSwitch",
     title: "Career Switch Resume",
@@ -49,9 +57,11 @@ export default function CreateResume() {
       : RESUME_TYPES.filter((r) => r.tab === activeTab);
 
   const handleSelect = (resume) => {
+
     localStorage.setItem("resumeType", resume.id);
 
-    navigate("/resume-builder");
+    navigate("/app/builder");
+
   };
 
   const handleSwipe = (dir) => {
@@ -69,37 +79,55 @@ export default function CreateResume() {
       return next >= filteredResumes.length ? 0 : next;
 
     });
+
   };
 
   const current = filteredResumes[index];
 
   return (
 
-    <div className="relative overflow-hidden min-h-screen max-w-6xl mx-auto px-6 py-10 flex flex-col items-center">
+    <div className="relative w-full min-h-screen overflow-hidden bg-[#f5f7fb] flex flex-col items-center pt-16">
 
-      {/* ANIMATED BACKGROUND */}
+      {/* PREMIUM BACKGROUND GLOWS */}
 
-      <div className="animated-bg"></div>
+      <div className="absolute top-[-150px] left-[-150px] w-[420px] h-[420px] bg-blue-300/40 rounded-full blur-[140px]"></div>
 
-      <div className="animated-bg-2"></div>
+      <div className="absolute bottom-[-180px] right-[-180px] w-[420px] h-[420px] bg-blue-200/40 rounded-full blur-[140px]"></div>
+
+      <div className="absolute top-[25%] right-[8%] w-[280px] h-[280px] bg-blue-400/20 rounded-full blur-[120px]"></div>
 
       {/* CONTENT */}
 
       <div className="relative z-10 flex flex-col items-center w-full">
 
-        {/* HEADER */}
+        {/* HEADING */}
 
-        <h1 className="text-3xl font-bold mb-2">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-6xl font-bold text-gray-900 mb-4 text-center"
+        >
           Create a Resume
-        </h1>
+        </motion.h1>
 
-        <p className="text-gray-500 mb-8">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-gray-500 mb-12 text-xl text-center"
+        >
           Swipe left to skip, right to select
-        </p>
+        </motion.p>
 
         {/* TABS */}
 
-        <div className="flex gap-3 mb-10 flex-wrap justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex gap-4 mb-14 flex-wrap justify-center"
+        >
 
           {TABS.map((tab) => (
 
@@ -111,26 +139,34 @@ export default function CreateResume() {
                 setIndex(0);
               }}
 
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
-              
-              ${
-                activeTab === tab
-                  ? "bg-black text-white shadow-lg"
-                  : "bg-white/70 backdrop-blur-md text-gray-700 hover:bg-white"
-              }`}
+              className={`
+                px-7
+                py-3
+                rounded-full
+                text-sm
+                font-medium
+                transition-all
+                duration-300
+                
+                ${
+                  activeTab === tab
+                    ? "bg-black text-white shadow-xl"
+                    : "bg-white/70 backdrop-blur-xl border border-white/50 text-gray-700 hover:bg-white"
+                }
+              `}
             >
               {tab}
             </button>
 
           ))}
 
-        </div>
+        </motion.div>
 
-        {/* SWIPE CARD */}
+        {/* CARD */}
 
         {filteredResumes.length > 0 && (
 
-          <div className="relative w-[320px] h-[420px]">
+          <div className="relative w-[520px] h-[560px]">
 
             <AnimatePresence mode="wait">
 
@@ -143,63 +179,104 @@ export default function CreateResume() {
 
                 onDragEnd={(e, info) => {
 
-                  if (info.offset.x > 120)
+                  if (info.offset.x > 120) {
                     handleSwipe("right");
+                  }
 
-                  else if (info.offset.x < -120)
+                  else if (info.offset.x < -120) {
                     handleSwipe("left");
+                  }
+
                 }}
 
                 initial={{
-                  scale: 0.95,
-                  opacity: 0
+                  scale: 0.92,
+                  opacity: 0,
+                  y: 40,
                 }}
 
                 animate={{
                   scale: 1,
-                  opacity: 1
+                  opacity: 1,
+                  y: 0,
                 }}
 
                 exit={{
                   opacity: 0,
-                  x: 200
+                  x: 200,
                 }}
 
                 whileDrag={{
-                  scale: 1.05
+                  scale: 1.03,
+                  rotate: 2,
                 }}
 
-                className="absolute w-full h-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 p-6 flex flex-col justify-between cursor-grab active:cursor-grabbing"
+                transition={{
+                  duration: 0.4,
+                }}
+
+                className="
+                  absolute
+                  w-full
+                  h-full
+                  rounded-[38px]
+                  bg-white/65
+                  backdrop-blur-[30px]
+                  border
+                  border-white/60
+                  shadow-[0_25px_80px_rgba(0,0,0,0.10)]
+                  p-10
+                  flex
+                  flex-col
+                  justify-between
+                  cursor-grab
+                  active:cursor-grabbing
+                "
               >
+
+                {/* CARD CONTENT */}
 
                 <div>
 
-                  <h2 className="text-xl font-bold text-gray-900">
+                  <h2 className="text-4xl font-bold text-gray-900 leading-tight">
                     {current.title}
                   </h2>
 
-                  <p className="text-gray-600 mt-2">
+                  <p className="text-gray-600 mt-5 text-xl leading-relaxed">
                     {current.description}
                   </p>
 
-                  <p className="text-sm text-gray-500 mt-4">
+                  <div className="mt-8 text-lg text-gray-500">
 
-                    <span className="font-medium text-gray-700">
+                    <span className="font-semibold text-gray-700">
                       Best for:
                     </span>{" "}
 
                     {current.bestFor}
 
-                  </p>
+                  </div>
 
                 </div>
 
-                <div className="flex justify-between mt-6">
+                {/* BUTTONS */}
+
+                <div className="flex justify-between items-center">
 
                   <button
                     onClick={() => handleSwipe("left")}
 
-                    className="px-5 py-2 border border-gray-300 bg-white/70 backdrop-blur-md rounded-full hover:bg-gray-100 transition-all"
+                    className="
+                      px-8
+                      py-4
+                      rounded-full
+                      border
+                      border-gray-300
+                      bg-white/60
+                      backdrop-blur-md
+                      hover:bg-white
+                      transition-all
+                      duration-300
+                    "
                   >
                     Skip
                   </button>
@@ -207,7 +284,17 @@ export default function CreateResume() {
                   <button
                     onClick={() => handleSwipe("right")}
 
-                    className="px-5 py-2 bg-black text-white rounded-full hover:scale-105 transition-all"
+                    className="
+                      px-8
+                      py-4
+                      rounded-full
+                      bg-black
+                      text-white
+                      shadow-xl
+                      hover:scale-105
+                      transition-all
+                      duration-300
+                    "
                   >
                     Select
                   </button>
@@ -225,5 +312,6 @@ export default function CreateResume() {
       </div>
 
     </div>
+
   );
 }
