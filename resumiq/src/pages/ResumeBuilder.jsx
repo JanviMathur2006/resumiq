@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // ✅ added navigate
+import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import BuilderTransition from "../components/BuilderTransition";
@@ -22,17 +22,22 @@ const EMPTY_RESUME = {
   skills: "",
 };
 
-const createVersion = (name = "New Resume", data = EMPTY_RESUME) => ({
+const createVersion = (
+  name = "New Resume",
+  data = EMPTY_RESUME
+) => ({
   id: "v_" + Date.now(),
   name,
   deletedAt: null,
   data: { ...data },
+
   style: {
     fontFamily: "Inter",
     fontSize: 14,
     lineHeight: 1.6,
     margin: 40,
   },
+
   history: [],
 });
 
@@ -42,30 +47,55 @@ const createVersion = (name = "New Resume", data = EMPTY_RESUME) => ({
 
 export default function ResumeBuilder() {
   const pdfRef = useRef(null);
+
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ added
+
+  const navigate = useNavigate();
 
   const resumeType = location.state?.resumeType;
 
-  /* 🔥 FIX: redirect if no state */
+  /* ===================================================== */
+  /* ================= INITIAL REDIRECT ================= */
+  /* ===================================================== */
+
   useEffect(() => {
     if (!resumeType) {
       navigate("/app/choose");
     }
   }, [resumeType, navigate]);
 
-  /* ---------------- Versions ---------------- */
+  /* ===================================================== */
+  /* ================= VERSION STATE ==================== */
+  /* ===================================================== */
+
   const [versions, setVersions] = useState([]);
+
   const [activeId, setActiveId] = useState(null);
 
-  const activeVersion = versions.find(v => v.id === activeId);
-  const activeVersions = versions.filter(v => !v.deletedAt);
-  const deletedVersions = versions.filter(v => v.deletedAt);
+  const activeVersion = versions.find(
+    (v) => v.id === activeId
+  );
 
-  /* ---------------- UI ---------------- */
-  const [previewMode, setPreviewMode] = useState(false);
-  const [saveStatus, setSaveStatus] = useState("Saved");
-  const [lastSavedAt, setLastSavedAt] = useState(null);
+  const activeVersions = versions.filter(
+    (v) => !v.deletedAt
+  );
+
+  const deletedVersions = versions.filter(
+    (v) => v.deletedAt
+  );
+
+  /* ===================================================== */
+  /* ================= UI STATE ========================= */
+  /* ===================================================== */
+
+  const [previewMode, setPreviewMode] =
+    useState(false);
+
+  const [saveStatus, setSaveStatus] =
+    useState("Saved");
+
+  const [lastSavedAt, setLastSavedAt] =
+    useState(null);
 
   /* ===================================================== */
   /* ================= INITIAL LOAD ===================== */
@@ -74,7 +104,10 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (!resumeType) return;
 
-    const stored = JSON.parse(localStorage.getItem("resumiq_builder_full"));
+    const stored = JSON.parse(
+      localStorage.getItem("resumiq_builder_full")
+    );
+
     if (stored) {
       setVersions(stored.versions);
       setActiveId(stored.activeId);
@@ -83,77 +116,119 @@ export default function ResumeBuilder() {
 
     let initialData = { ...EMPTY_RESUME };
 
-    if (resumeType === "student" || resumeType === "internship") {
-      initialData.title = "Student / Fresher";
-    }
-    if (resumeType === "professional") {
-      initialData.title = "Experienced Professional";
-    }
-    if (resumeType === "career") {
-      initialData.title = "Career Transition Candidate";
+    if (
+      resumeType === "student" ||
+      resumeType === "internship"
+    ) {
+      initialData.title =
+        "Student / Fresher";
     }
 
-    const initial = createVersion("Primary Resume", initialData);
+    if (resumeType === "professional") {
+      initialData.title =
+        "Experienced Professional";
+    }
+
+    if (resumeType === "career") {
+      initialData.title =
+        "Career Transition Candidate";
+    }
+
+    const initial = createVersion(
+      "Primary Resume",
+      initialData
+    );
+
     setVersions([initial]);
+
     setActiveId(initial.id);
   }, [resumeType]);
 
   /* ===================================================== */
-  /* ================= SAVE ============================== */
+  /* ================= SAVE ============================= */
   /* ===================================================== */
 
   useEffect(() => {
     if (!versions.length) return;
+
     localStorage.setItem(
       "resumiq_builder_full",
-      JSON.stringify({ versions, activeId })
+
+      JSON.stringify({
+        versions,
+        activeId,
+      })
     );
   }, [versions, activeId]);
 
   /* ===================================================== */
-  /* ================= AUTOSAVE ========================== */
+  /* ================= AUTOSAVE ========================= */
   /* ===================================================== */
 
   useEffect(() => {
     if (!activeVersion) return;
+
     setSaveStatus("Saving…");
 
     const t = setTimeout(() => {
       setSaveStatus("Saved");
+
       setLastSavedAt(Date.now());
     }, 600);
 
     return () => clearTimeout(t);
-  }, [activeVersion?.data, activeVersion?.style]);
+  }, [
+    activeVersion?.data,
+    activeVersion?.style,
+  ]);
 
   const getSaveText = () => {
-    if (!lastSavedAt) return "Not saved yet";
-    const sec = Math.floor((Date.now() - lastSavedAt) / 1000);
+    if (!lastSavedAt)
+      return "Not saved yet";
+
+    const sec = Math.floor(
+      (Date.now() - lastSavedAt) / 1000
+    );
+
     if (sec < 3) return "Saved just now";
-    if (sec < 60) return `Saved ${sec}s ago`;
-    return `Saved ${Math.floor(sec / 60)} min ago`;
+
+    if (sec < 60)
+      return `Saved ${sec}s ago`;
+
+    return `Saved ${Math.floor(
+      sec / 60
+    )} min ago`;
   };
 
   /* ===================================================== */
-  /* ================= EDIT LOGIC ======================== */
+  /* ================= EDIT LOGIC ======================= */
   /* ===================================================== */
 
   const updateField = (field, value) => {
-    setVersions(prev =>
-      prev.map(v =>
+    setVersions((prev) =>
+      prev.map((v) =>
         v.id === activeId
           ? {
               ...v,
+
               history: [
                 ...v.history,
+
                 {
                   time: Date.now(),
+
                   action: `Edited ${field}`,
+
                   dataSnapshot: v.data,
+
                   styleSnapshot: v.style,
                 },
               ],
-              data: { ...v.data, [field]: value },
+
+              data: {
+                ...v.data,
+                [field]: value,
+              },
             }
           : v
       )
@@ -161,21 +236,30 @@ export default function ResumeBuilder() {
   };
 
   const updateStyle = (key, value) => {
-    setVersions(prev =>
-      prev.map(v =>
+    setVersions((prev) =>
+      prev.map((v) =>
         v.id === activeId
           ? {
               ...v,
+
               history: [
                 ...v.history,
+
                 {
                   time: Date.now(),
+
                   action: `Changed ${key}`,
+
                   dataSnapshot: v.data,
+
                   styleSnapshot: v.style,
                 },
               ],
-              style: { ...v.style, [key]: value },
+
+              style: {
+                ...v.style,
+                [key]: value,
+              },
             }
           : v
       )
@@ -183,14 +267,24 @@ export default function ResumeBuilder() {
   };
 
   const undo = () => {
-    setVersions(prev =>
-      prev.map(v => {
-        if (v.id !== activeId || !v.history.length) return v;
-        const last = v.history[v.history.length - 1];
+    setVersions((prev) =>
+      prev.map((v) => {
+        if (
+          v.id !== activeId ||
+          !v.history.length
+        )
+          return v;
+
+        const last =
+          v.history[v.history.length - 1];
+
         return {
           ...v,
+
           data: last.dataSnapshot,
+
           style: last.styleSnapshot,
+
           history: v.history.slice(0, -1),
         };
       })
@@ -198,76 +292,220 @@ export default function ResumeBuilder() {
   };
 
   /* ===================================================== */
-  /* ================= VERSION MGMT ====================== */
+  /* ================= VERSION MGMT ===================== */
   /* ===================================================== */
 
   const addVersion = () => {
-    const v = createVersion("New Resume");
+    const v = createVersion(
+      "New Resume"
+    );
+
     setVersions([...versions, v]);
+
     setActiveId(v.id);
   };
 
   const renameVersion = (id, name) => {
-    setVersions(versions.map(v => (v.id === id ? { ...v, name } : v)));
+    setVersions(
+      versions.map((v) =>
+        v.id === id
+          ? { ...v, name }
+          : v
+      )
+    );
   };
 
-  const softDeleteVersion = id => {
-    setVersions(versions.map(v =>
-      v.id === id ? { ...v, deletedAt: Date.now() } : v
-    ));
+  const softDeleteVersion = (id) => {
+    setVersions(
+      versions.map((v) =>
+        v.id === id
+          ? {
+              ...v,
+              deletedAt: Date.now(),
+            }
+          : v
+      )
+    );
+
     if (id === activeId) {
-      const remaining = activeVersions.filter(v => v.id !== id);
-      setActiveId(remaining.length ? remaining[0].id : null);
+      const remaining =
+        activeVersions.filter(
+          (v) => v.id !== id
+        );
+
+      setActiveId(
+        remaining.length
+          ? remaining[0].id
+          : null
+      );
     }
   };
 
-  const restoreVersion = id => {
-    setVersions(versions.map(v =>
-      v.id === id ? { ...v, deletedAt: null } : v
-    ));
+  const restoreVersion = (id) => {
+    setVersions(
+      versions.map((v) =>
+        v.id === id
+          ? {
+              ...v,
+              deletedAt: null,
+            }
+          : v
+      )
+    );
   };
 
-  const deleteForever = id => {
-    setVersions(versions.filter(v => v.id !== id));
+  const deleteForever = (id) => {
+    setVersions(
+      versions.filter((v) => v.id !== id)
+    );
   };
 
   /* ===================================================== */
-  /* ================= SCORE ============================= */
+  /* ================= SCORE ============================ */
   /* ===================================================== */
 
   const score = useMemo(() => {
     if (!activeVersion) return 0;
+
     const d = activeVersion.data;
+
     let s = 0;
-    if (d.summary.length > 30) s += 15;
-    if (d.experience.length > 50) s += 25;
-    if (d.projects.length > 40) s += 20;
-    if (d.education.length > 20) s += 15;
-    if (d.skills.length > 10) s += 25;
+
+    if (d.summary.length > 30)
+      s += 15;
+
+    if (d.experience.length > 50)
+      s += 25;
+
+    if (d.projects.length > 40)
+      s += 20;
+
+    if (d.education.length > 20)
+      s += 15;
+
+    if (d.skills.length > 10)
+      s += 25;
+
     return Math.min(s, 100);
   }, [activeVersion]);
 
   /* ===================================================== */
-  /* ================= PDF EXPORT ======================== */
+  /* ================= PDF DOWNLOAD ===================== */
   /* ===================================================== */
 
   const downloadPDF = async () => {
-    const canvas = await html2canvas(pdfRef.current, { scale: 2 });
-    const img = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const w = pdf.internal.pageSize.getWidth();
-    const h = (canvas.height * w) / canvas.width;
-    pdf.addImage(img, "PNG", 0, 0, w, h);
+    const canvas =
+      await html2canvas(
+        pdfRef.current,
+        {
+          scale: 2,
+        }
+      );
+
+    const img =
+      canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF(
+      "p",
+      "mm",
+      "a4"
+    );
+
+    const w =
+      pdf.internal.pageSize.getWidth();
+
+    const h =
+      (canvas.height * w) /
+      canvas.width;
+
+    pdf.addImage(
+      img,
+      "PNG",
+      0,
+      0,
+      w,
+      h
+    );
+
     pdf.save("resume.pdf");
+  };
+
+  /* ===================================================== */
+  /* ================= SHARE RESUME ===================== */
+  /* ===================================================== */
+
+  const shareResume = async () => {
+    try {
+      const canvas =
+        await html2canvas(
+          pdfRef.current,
+          {
+            scale: 2,
+          }
+        );
+
+      const imgData =
+        canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF(
+        "p",
+        "mm",
+        "a4"
+      );
+
+      const width =
+        pdf.internal.pageSize.getWidth();
+
+      const height =
+        (canvas.height * width) /
+        canvas.width;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        0,
+        width,
+        height
+      );
+
+      const pdfBlob =
+        pdf.output("blob");
+
+      const file = new File(
+        [pdfBlob],
+        "resume.pdf",
+        {
+          type: "application/pdf",
+        }
+      );
+
+      if (navigator.share) {
+        await navigator.share({
+          title: "My Resume",
+
+          text: "Check out my resume",
+
+          files: [file],
+        });
+      } else {
+        alert(
+          "Sharing not supported on this device"
+        );
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   if (!activeVersion) return null;
 
   const d = activeVersion.data;
+
   const s = activeVersion.style;
 
   /* ===================================================== */
-  /* ================= RENDER ============================ */
+  /* ================= RENDER =========================== */
   /* ===================================================== */
 
   return (
@@ -276,27 +514,60 @@ export default function ResumeBuilder() {
 
         <h1 className="text-3xl font-bold mb-6">
           Resume Builder
+
           <span className="ml-3 text-sm text-gray-500">
             ({resumeType})
           </span>
         </h1>
 
         {/* ===== Versions ===== */}
+
         <Box>
           <Row between>
-            <strong>Resume Versions</strong>
-            <button onClick={addVersion}>+ New</button>
+            <strong>
+              Resume Versions
+            </strong>
+
+            <button
+              onClick={addVersion}
+            >
+              + New
+            </button>
           </Row>
 
-          {activeVersions.map(v => (
-            <Row key={v.id} between>
+          {activeVersions.map((v) => (
+            <Row
+              key={v.id}
+              between
+            >
               <input
                 value={v.name}
-                onChange={e => renameVersion(v.id, e.target.value)}
+                onChange={(e) =>
+                  renameVersion(
+                    v.id,
+                    e.target.value
+                  )
+                }
               />
+
               <div>
-                <button onClick={() => setActiveId(v.id)}>Open</button>
-                <button onClick={() => softDeleteVersion(v.id)} style={{ color: "red" }}>
+                <button
+                  onClick={() =>
+                    setActiveId(v.id)
+                  }
+                >
+                  Open
+                </button>
+
+                <button
+                  onClick={() =>
+                    softDeleteVersion(v.id)
+                  }
+
+                  style={{
+                    color: "red",
+                  }}
+                >
                   Delete
                 </button>
               </div>
@@ -305,15 +576,36 @@ export default function ResumeBuilder() {
         </Box>
 
         {/* ===== Trash ===== */}
+
         {deletedVersions.length > 0 && (
           <Box>
             <strong>Trash</strong>
-            {deletedVersions.map(v => (
-              <Row key={v.id} between>
+
+            {deletedVersions.map((v) => (
+              <Row
+                key={v.id}
+                between
+              >
                 <span>{v.name}</span>
+
                 <div>
-                  <button onClick={() => restoreVersion(v.id)}>Restore</button>
-                  <button onClick={() => deleteForever(v.id)} style={{ color: "red" }}>
+                  <button
+                    onClick={() =>
+                      restoreVersion(v.id)
+                    }
+                  >
+                    Restore
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      deleteForever(v.id)
+                    }
+
+                    style={{
+                      color: "red",
+                    }}
+                  >
                     Delete Forever
                   </button>
                 </div>
@@ -323,24 +615,53 @@ export default function ResumeBuilder() {
         )}
 
         {/* ===== Score ===== */}
+
         <div className="mb-6">
-          <p>Resume Strength: {score}%</p>
-          <div style={{ height: 6, background: "#e5e7eb" }}>
-            <div style={{ width: `${score}%`, height: 6, background: "black" }} />
+          <p>
+            Resume Strength: {score}%
+          </p>
+
+          <div
+            style={{
+              height: 6,
+              background: "#e5e7eb",
+            }}
+          >
+            <div
+              style={{
+                width: `${score}%`,
+                height: 6,
+                background: "black",
+              }}
+            />
           </div>
         </div>
 
         {/* ===== Editor ===== */}
+
         {!previewMode && (
           <>
-            <button onClick={undo}>Undo</button>
-            {Object.keys(EMPTY_RESUME).map(key => (
+            <button onClick={undo}>
+              Undo
+            </button>
+
+            {Object.keys(
+              EMPTY_RESUME
+            ).map((key) => (
               <Box key={key}>
-                <strong>{key.toUpperCase()}</strong>
+                <strong>
+                  {key.toUpperCase()}
+                </strong>
+
                 <textarea
                   rows={4}
                   value={d[key]}
-                  onChange={e => updateField(key, e.target.value)}
+                  onChange={(e) =>
+                    updateField(
+                      key,
+                      e.target.value
+                    )
+                  }
                 />
               </Box>
             ))}
@@ -348,40 +669,111 @@ export default function ResumeBuilder() {
         )}
 
         {/* ===== Preview ===== */}
+
         {previewMode && (
           <div
             ref={pdfRef}
+
             style={{
-              fontFamily: s.fontFamily,
-              fontSize: s.fontSize,
-              lineHeight: s.lineHeight,
+              fontFamily:
+                s.fontFamily,
+
+              fontSize:
+                s.fontSize,
+
+              lineHeight:
+                s.lineHeight,
+
               padding: s.margin,
+
               background: "white",
             }}
           >
             <h1>{d.name}</h1>
-            <p>{d.title}</p>
-            <p>{[d.email, d.phone, d.location, d.linkedin].filter(Boolean).join(" • ")}</p>
 
-            {Object.entries(d).map(([k, v]) =>
-              v && !["name","title","email","phone","location","linkedin"].includes(k) && (
-                <section key={k}>
-                  <h3>{k.toUpperCase()}</h3>
-                  <p>{v}</p>
-                </section>
-              )
+            <p>{d.title}</p>
+
+            <p>
+              {[
+                d.email,
+                d.phone,
+                d.location,
+                d.linkedin,
+              ]
+                .filter(Boolean)
+                .join(" • ")}
+            </p>
+
+            {Object.entries(d).map(
+              ([k, v]) =>
+                v &&
+                ![
+                  "name",
+                  "title",
+                  "email",
+                  "phone",
+                  "location",
+                  "linkedin",
+                ].includes(k) && (
+                  <section key={k}>
+                    <h3>
+                      {k.toUpperCase()}
+                    </h3>
+
+                    <p>{v}</p>
+                  </section>
+                )
             )}
           </div>
         )}
 
         {/* ===== Actions ===== */}
+
         <Row between>
-          <small>{saveStatus === "Saving…" ? "Saving…" : getSaveText()}</small>
-          <div>
-            <button onClick={() => setPreviewMode(!previewMode)}>
-              {previewMode ? "Edit" : "Preview"}
+          <small>
+            {saveStatus === "Saving…"
+              ? "Saving…"
+              : getSaveText()}
+          </small>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "12px",
+              alignItems: "center",
+            }}
+          >
+            <button
+              onClick={() =>
+                setPreviewMode(
+                  !previewMode
+                )
+              }
+            >
+              {previewMode
+                ? "Edit"
+                : "Preview"}
             </button>
-            {previewMode && <button onClick={downloadPDF}>Download PDF</button>}
+
+            {previewMode && (
+              <>
+                <button
+                  onClick={
+                    downloadPDF
+                  }
+                >
+                  Download PDF
+                </button>
+
+                <button
+                  onClick={
+                    shareResume
+                  }
+                >
+                  Share
+                </button>
+              </>
+            )}
           </div>
         </Row>
 
@@ -395,17 +787,34 @@ export default function ResumeBuilder() {
 /* ===================================================== */
 
 const Box = ({ children }) => (
-  <div style={{ border: "1px solid #e5e7eb", padding: 16, marginBottom: 16 }}>
+  <div
+    style={{
+      border:
+        "1px solid #e5e7eb",
+
+      padding: 16,
+
+      marginBottom: 16,
+    }}
+  >
     {children}
   </div>
 );
 
-const Row = ({ children, between }) => (
+const Row = ({
+  children,
+  between,
+}) => (
   <div
     style={{
       display: "flex",
-      justifyContent: between ? "space-between" : "flex-start",
+
+      justifyContent: between
+        ? "space-between"
+        : "flex-start",
+
       gap: 12,
+
       marginBottom: 8,
     }}
   >
