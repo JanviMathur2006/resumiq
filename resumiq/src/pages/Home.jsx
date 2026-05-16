@@ -235,21 +235,21 @@ export default function Home() {
 
     <PageTransition>
 
-      <div className="relative flex min-h-screen overflow-hidden bg-[#f5f7fb]">
+      <div className="relative flex min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
 
         {/* BACKGROUND GLOWS */}
 
-        <div className="absolute top-[-180px] left-[-180px] w-[500px] h-[500px] bg-blue-300/50 rounded-full blur-[150px]"></div>
+        <div className="absolute top-[-180px] left-[-180px] w-[500px] h-[500px] bg-blue-300/40 rounded-full blur-[150px]"></div>
 
-        <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-blue-200/50 rounded-full blur-[150px]"></div>
+        <div className="absolute bottom-[-200px] right-[-200px] w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-[150px]"></div>
 
-        <div className="absolute top-[25%] right-[10%] w-[350px] h-[350px] bg-blue-400/30 rounded-full blur-[140px]"></div>
+        <div className="absolute top-[25%] right-[10%] w-[350px] h-[350px] bg-blue-400/20 rounded-full blur-[140px]"></div>
 
-        <div className="absolute bottom-[10%] left-[20%] w-[300px] h-[300px] bg-indigo-200/30 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[10%] left-[20%] w-[300px] h-[300px] bg-indigo-200/20 rounded-full blur-[120px]"></div>
 
         {/* SIDEBAR */}
 
-        <div className="relative z-10 w-80 bg-[#07122b] text-white flex flex-col p-8 border-r border-slate-800">
+        <div className="relative z-10 w-72 bg-[#07122b] text-white flex flex-col p-8 border-r border-slate-800">
 
           <h2 className="text-4xl font-bold mb-14">
             Resumiq
@@ -359,52 +359,63 @@ export default function Home() {
 
         {/* MAIN */}
 
-        <div className="relative z-10 flex-1 px-20 py-12">
-
-          {/* BUTTON */}
-
-          <button
-            onClick={() => navigate("/app/create")}
-
-            className="
-              absolute
-              top-10
-              right-10
-              bg-blue-600
-              text-white
-              px-6
-              py-3
-              rounded-2xl
-              shadow-xl
-              hover:scale-105
-              transition-all
-              duration-300
-            "
-          >
-            + New Resume
-          </button>
+        <div className="relative z-10 flex-1 px-10 lg:px-20 py-12 max-w-7xl mx-auto w-full">
 
           {/* HERO */}
 
           <motion.div className="mb-14">
 
-            <h1
-              className="text-6xl font-bold text-gray-900 mb-3"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                letterSpacing: "1px"
-              }}
-            >
-              Create something remarkable
-            </h1>
+            <div className="flex items-start justify-between gap-8 flex-wrap">
 
-            <p className="text-gray-600 text-xl mb-5">
-              Craft a resume that reflects your true potential.
-            </p>
+              <div>
 
-            <h2 className="text-2xl text-blue-900 font-medium">
-              <Typewriter words={resumeNames} loop={0} cursor />
-            </h2>
+                <h1
+                  className="
+                    text-5xl
+                    lg:text-6xl
+                    leading-tight
+                    font-bold
+                    text-gray-900
+                    mb-4
+                    max-w-4xl
+                  "
+                  style={{
+                    fontFamily: "'Playfair Display', serif",
+                    letterSpacing: "1px"
+                  }}
+                >
+                  Create something remarkable
+                </h1>
+
+                <p className="text-gray-600 text-xl mb-5">
+                  Craft a resume that reflects your true potential.
+                </p>
+
+                <h2 className="text-2xl text-blue-900 font-medium">
+                  <Typewriter words={resumeNames} loop={0} cursor />
+                </h2>
+
+              </div>
+
+              <button
+                onClick={() => navigate("/app/create")}
+                className="
+                  bg-blue-600
+                  text-white
+                  px-6
+                  py-3
+                  rounded-2xl
+                  shadow-lg
+                  hover:bg-blue-700
+                  hover:scale-105
+                  transition-all
+                  duration-300
+                "
+              >
+                + New Resume
+              </button>
+
+            </div>
 
           </motion.div>
 
@@ -423,8 +434,8 @@ export default function Home() {
                 left-4
                 top-1/2
                 -translate-y-1/2
-                h-12
-                w-12
+                h-14
+                w-14
                 items-center
                 justify-center
                 rounded-full
@@ -450,8 +461,8 @@ export default function Home() {
                 right-4
                 top-1/2
                 -translate-y-1/2
-                h-12
-                w-12
+                h-14
+                w-14
                 items-center
                 justify-center
                 rounded-full
@@ -497,21 +508,21 @@ export default function Home() {
               `}
             >
 
-              <div className="flex gap-10">
+              <div className="flex gap-6">
 
                 {/* CREATE RESUME */}
 
                 <div className="snap-center min-w-full flex justify-center">
 
-                  <Link to="/app/create" className="w-full max-w-4xl">
+                  <Link to="/app/create" className="w-full max-w-5xl">
 
                     <motion.div
                       whileHover={{ y: -6 }}
 
                       className="
-                        h-[360px]
+                        min-h-[280px]
                         rounded-[32px]
-                        bg-white/65
+                        bg-white/70
                         backdrop-blur-[30px]
                         border
                         border-white/60
@@ -548,10 +559,10 @@ export default function Home() {
 
                     className="
                       w-full
-                      max-w-4xl
-                      h-[360px]
+                      max-w-5xl
+                      min-h-[280px]
                       rounded-[32px]
-                      bg-white/65
+                      bg-white/70
                       backdrop-blur-[30px]
                       border
                       border-white/60
@@ -654,10 +665,10 @@ export default function Home() {
 
                     className="
                       w-full
-                      max-w-4xl
-                      h-[360px]
+                      max-w-5xl
+                      min-h-[280px]
                       rounded-[32px]
-                      bg-white/65
+                      bg-white/70
                       backdrop-blur-[30px]
                       border
                       border-white/60
