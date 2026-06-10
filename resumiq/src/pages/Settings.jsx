@@ -207,27 +207,129 @@ export default function Settings() {
           </Section>
         );
 
-      case "Terms":
-        return (
-          <Section title="Terms & Conditions">
-            <Scrollable>
-              <p>Using Resumiq means you agree to these terms.</p>
-              <p>You are responsible for your account and data.</p>
-              <p>We may suspend accounts violating policies.</p>
-            </Scrollable>
-          </Section>
-        );
+     case "Terms":
+  return (
+    <Section title="Terms & Conditions">
+      <Scrollable>
 
+        <h3 className="font-semibold text-lg">1. Acceptance of Terms</h3>
+        <p>
+          By accessing and using Resumiq, you agree to comply with and be bound
+          by these Terms & Conditions. If you do not agree with any part of
+          these terms, you should discontinue use of the platform immediately.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">2. User Accounts</h3>
+        <p>
+          Users are responsible for maintaining the confidentiality of their
+          login credentials and for all activities conducted through their
+          accounts.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">3. Resume Ownership</h3>
+        <p>
+          You retain ownership of all resume content created on Resumiq. By
+          using the service, you grant Resumiq permission to store and process
+          your data solely to provide platform functionality.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">4. Acceptable Use</h3>
+        <p>
+          Users may not upload harmful, fraudulent, unlawful, offensive, or
+          misleading content. Violation of these rules may result in account
+          suspension or termination.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">5. Intellectual Property</h3>
+        <p>
+          All Resumiq branding, templates, software, features, and designs are
+          protected by intellectual property laws and remain the property of
+          Resumiq.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">6. Privacy</h3>
+        <p>
+          Your use of Resumiq is also governed by our Privacy Policy. We take
+          reasonable measures to safeguard your personal information.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">7. Service Availability</h3>
+        <p>
+          We strive to maintain uninterrupted service but do not guarantee that
+          the platform will always be available. Scheduled maintenance and
+          technical issues may temporarily affect access.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">8. Limitation of Liability</h3>
+        <p>
+          Resumiq shall not be liable for any indirect, incidental, special, or
+          consequential damages arising from the use of the platform.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">9. Account Termination</h3>
+        <p>
+          We reserve the right to suspend or terminate accounts that violate
+          these Terms & Conditions or misuse the platform.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">10. Changes to Terms</h3>
+        <p>
+          Resumiq may revise these Terms & Conditions at any time. Continued use
+          of the platform after changes indicates acceptance of the updated
+          terms.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">11. Contact Information</h3>
+        <p>
+          If you have questions regarding these Terms & Conditions, please
+          contact the Resumiq support team.
+        </p>
+
+      </Scrollable>
+    </Section>
+  );
       case "Privacy":
-        return (
-          <Section title="Privacy Policy">
-            <Scrollable>
-              <p>Your data is stored securely.</p>
-              <p>We do not sell your information.</p>
-              <p>You may delete your account anytime.</p>
-            </Scrollable>
-          </Section>
-        );
+  return (
+    <Section title="Privacy Policy">
+      <Scrollable>
+        <h3 className="font-semibold text-lg">1. Information We Collect</h3>
+        <p>
+          Resumiq may collect account information, resume data, preferences,
+          and usage information required to provide platform services.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">2. How We Use Data</h3>
+        <p>
+          Information is used to provide services, improve user experience,
+          maintain platform security, and enhance resume-building features.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">3. Data Protection</h3>
+        <p>
+          We implement reasonable security measures to protect user data from
+          unauthorized access, disclosure, or misuse.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">4. Third-Party Services</h3>
+        <p>
+          Certain features may rely on trusted third-party providers for
+          authentication, analytics, storage, or communication services.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">5. User Rights</h3>
+        <p>
+          Users may update, modify, export, or delete their information where
+          supported by the platform.
+        </p>
+
+        <h3 className="font-semibold text-lg mt-5">6. Contact</h3>
+        <p>
+          Questions regarding privacy practices may be directed to the Resumiq
+          support team.
+        </p>
+      </Scrollable>
+    </Section>
+  );
 
       case "Delete":
         return (
