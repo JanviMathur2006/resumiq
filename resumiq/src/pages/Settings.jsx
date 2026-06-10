@@ -160,30 +160,64 @@ export default function Settings() {
         );
 
       case "Appearance":
-        return (
-          <Section title="Appearance">
-            <Select
-              label="Theme"
-              value={theme}
-              onChange={setTheme}
-              options={[
-                { label: "System", value: "system" },
-                { label: "Light", value: "light" },
-                { label: "Dark", value: "dark" },
-              ]}
-            />
-            <Select
-              label="Density"
-              value={density}
-              onChange={setDensity}
-              options={[
-                { label: "Comfortable", value: "comfortable" },
-                { label: "Compact", value: "compact" },
-              ]}
-            />
-          </Section>
-        );
+  return (
+    <Section title="Appearance">
+      <div className="space-y-8">
 
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border">
+          <h3 className="font-semibold mb-4">Theme Mode</h3>
+
+          <div className="grid grid-cols-3 gap-3">
+            {["system", "light", "dark"].map((item) => (
+              <button
+                key={item}
+                onClick={() => setTheme(item)}
+                className={`p-4 rounded-xl border transition-all capitalize ${
+                  theme === item
+                    ? "border-blue-500 bg-blue-50 text-blue-600"
+                    : "hover:border-slate-400"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border">
+          <h3 className="font-semibold mb-4">Layout Density</h3>
+
+          <div className="grid grid-cols-2 gap-3">
+            {["comfortable", "compact"].map((item) => (
+              <button
+                key={item}
+                onClick={() => setDensity(item)}
+                className={`p-4 rounded-xl border transition-all capitalize ${
+                  density === item
+                    ? "border-blue-500 bg-blue-50 text-blue-600"
+                    : "hover:border-slate-400"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border">
+          <h3 className="font-semibold mb-4">Preview</h3>
+
+          <div className="rounded-xl border p-4 bg-white dark:bg-slate-900">
+            <div className="h-3 w-40 bg-slate-300 rounded mb-3"></div>
+            <div className="h-2 w-full bg-slate-200 rounded mb-2"></div>
+            <div className="h-2 w-5/6 bg-slate-200 rounded mb-2"></div>
+            <div className="h-2 w-4/6 bg-slate-200 rounded"></div>
+          </div>
+        </div>
+
+      </div>
+    </Section>
+  );
       case "Resume":
         return (
           <Section title="Resume Preferences">
