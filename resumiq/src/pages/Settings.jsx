@@ -213,16 +213,7 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border">
-          <h3 className="font-semibold mb-4">Preview</h3>
-
-          <div className="rounded-xl border p-4 bg-white dark:bg-slate-900">
-            <div className="h-3 w-40 bg-slate-300 rounded mb-3"></div>
-            <div className="h-2 w-full bg-slate-200 rounded mb-2"></div>
-            <div className="h-2 w-5/6 bg-slate-200 rounded mb-2"></div>
-            <div className="h-2 w-4/6 bg-slate-200 rounded"></div>
-          </div>
-        </div>
+        
 
       </div>
     </Section>
