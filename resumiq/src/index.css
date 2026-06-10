@@ -560,7 +560,6 @@ body {
   margin: 0;
   padding: 0;
   font-family: Inter, sans-serif;
-  background: #f5f7fb;
 }
 .density-comfortable {
   --space-scale: 1;
@@ -579,4 +578,37 @@ body {
 .density-compact select {
   padding-top: 0.45rem;
   padding-bottom: 0.45rem;
+}
+/* =========================
+   GLOBAL DARK MODE
+========================= */
+
+html.dark body {
+  background: #020617 !important;
+  color: #f8fafc !important;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark .glass-card,
+html.dark .card,
+html.dark .page,
+html.dark .welcome-card {
+  background: rgba(15, 23, 42, 0.9) !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background: #1e293b !important;
+  color: white !important;
+  border-color: #334155 !important;
+}
+
+html.dark button {
+  color: white;
 }

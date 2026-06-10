@@ -16,7 +16,6 @@ import {
   reauthenticateWithCredential,
   deleteUser,
   sendEmailVerification,
-  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
@@ -70,31 +69,6 @@ export default function Settings() {
     });
     return () => unsub();
   }, []);
-  useEffect(() => {
-  localStorage.setItem("theme", theme);
-
-  if (theme === "dark") {
-    document.documentElement.classList.add("dark");
-  } else if (theme === "light") {
-    document.documentElement.classList.remove("dark");
-  } else {
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    document.documentElement.classList.toggle(
-      "dark",
-      prefersDark
-    );
-  }
-}, [theme]);
-useEffect(() => {
-  const savedTheme = localStorage.getItem("theme");
-
-  if (savedTheme) {
-    setTheme(savedTheme);
-  }
-}, []);
 
   /* ================= HANDLERS ================= */
   const saveName = async () => {
@@ -128,14 +102,6 @@ useEffect(() => {
     if (!confirm("Delete account permanently?")) return;
     await deleteUser(user);
   };
-  const resetPassword = async () => {
-  try {
-    await sendPasswordResetEmail(auth, user.email);
-    alert("Password reset email sent successfully.");
-  } catch (error) {
-    alert(error.message);
-  }
-};
 
   /* ================= TABS ================= */
   const tabs = [
@@ -194,55 +160,30 @@ useEffect(() => {
         );
 
       case "Appearance":
-  return (
-    <Section title="Appearance">
-      <div className="space-y-8">
+        return (
+          <Section title="Appearance">
+            <Select
+              label="Theme"
+              value={theme}
+              onChange={setTheme}
+              options={[
+                { label: "System", value: "system" },
+                { label: "Light", value: "light" },
+                { label: "Dark", value: "dark" },
+              ]}
+            />
+            <Select
+              label="Density"
+              value={density}
+              onChange={setDensity}
+              options={[
+                { label: "Comfortable", value: "comfortable" },
+                { label: "Compact", value: "compact" },
+              ]}
+            />
+          </Section>
+        );
 
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border">
-          <h3 className="font-semibold mb-4">Theme Mode</h3>
-
-          <div className="grid grid-cols-3 gap-3">
-            {["system", "light", "dark"].map((item) => (
-              <button
-                key={item}
-                onClick={() => setTheme(item)}
-                className={`p-4 rounded-xl border transition-all capitalize ${
-                  theme === item
-                    ? "border-blue-500 bg-blue-50 text-blue-600"
-                    : "hover:border-slate-400"
-                }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border">
-          <h3 className="font-semibold mb-4">Layout Density</h3>
-
-          <div className="grid grid-cols-2 gap-3">
-            {["comfortable", "compact"].map((item) => (
-              <button
-                key={item}
-                onClick={() => setDensity(item)}
-                className={`p-4 rounded-xl border transition-all capitalize ${
-                  density === item
-                    ? "border-blue-500 bg-blue-50 text-blue-600"
-                    : "hover:border-slate-400"
-                }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        
-
-      </div>
-    </Section>
-  );
       case "Resume":
         return (
           <Section title="Resume Preferences">
@@ -260,207 +201,33 @@ useEffect(() => {
         );
 
       case "Security":
-  return (
-    <Section title="Security">
-      <div className="space-y-6">
+        return (
+          <Section title="Security">
+            <p className="text-sm">Security options can be added here.</p>
+          </Section>
+        );
 
-        <div className="border rounded-xl p-5">
-          <h3 className="font-semibold text-lg mb-2">
-            Password Protection
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Keep your account secure with a strong password.
-          </p>
+      case "Terms":
+        return (
+          <Section title="Terms & Conditions">
+            <Scrollable>
+              <p>Using Resumiq means you agree to these terms.</p>
+              <p>You are responsible for your account and data.</p>
+              <p>We may suspend accounts violating policies.</p>
+            </Scrollable>
+          </Section>
+        );
 
-          <button
-  onClick={resetPassword}
-  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
->
-  Send Password Reset Email
-</button>
-        </div>
-
-        <div className="border rounded-xl p-5">
-          <h3 className="font-semibold text-lg mb-2">
-            Email Verification
-          </h3>
-
-          <p className="text-sm text-gray-500 mb-4">
-            Verify your email address for additional account security.
-          </p>
-
-          {user?.emailVerified ? (
-            <span className="text-green-600 font-medium">
-              ✓ Verified
-            </span>
-          ) : (
-            <button
-              onClick={sendVerification}
-              className="px-4 py-2 rounded-lg bg-green-600 text-white"
-            >
-              {sendingVerify ? "Sending..." : "Send Verification Email"}
-            </button>
-          )}
-        </div>
-
-        <div className="border rounded-xl p-5">
-          <h3 className="font-semibold text-lg mb-2">
-            Login Information
-          </h3>
-
-          <div className="space-y-2 text-sm">
-            <p>
-              <strong>Email:</strong> {user?.email}
-            </p>
-
-            <p>
-              <strong>Status:</strong>{" "}
-              {user?.emailVerified
-                ? "Verified"
-                : "Not Verified"}
-            </p>
-          </div>
-        </div>
-
-        <div className="border rounded-xl p-5">
-          <h3 className="font-semibold text-lg mb-2 text-red-600">
-            Security Recommendations
-          </h3>
-
-          <ul className="list-disc ml-5 space-y-2 text-sm text-gray-600">
-            <li>Use a strong password with at least 12 characters.</li>
-            <li>Do not share your account credentials.</li>
-            <li>Verify your email address.</li>
-            <li>Regularly review your account activity.</li>
-          </ul>
-        </div>
-
-      </div>
-    </Section>
-  );
-     case "Terms":
-  return (
-    <Section title="Terms & Conditions">
-      <Scrollable>
-
-        <h3 className="font-semibold text-lg">1. Acceptance of Terms</h3>
-        <p>
-          By accessing and using Resumiq, you agree to comply with and be bound
-          by these Terms & Conditions. If you do not agree with any part of
-          these terms, you should discontinue use of the platform immediately.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">2. User Accounts</h3>
-        <p>
-          Users are responsible for maintaining the confidentiality of their
-          login credentials and for all activities conducted through their
-          accounts.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">3. Resume Ownership</h3>
-        <p>
-          You retain ownership of all resume content created on Resumiq. By
-          using the service, you grant Resumiq permission to store and process
-          your data solely to provide platform functionality.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">4. Acceptable Use</h3>
-        <p>
-          Users may not upload harmful, fraudulent, unlawful, offensive, or
-          misleading content. Violation of these rules may result in account
-          suspension or termination.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">5. Intellectual Property</h3>
-        <p>
-          All Resumiq branding, templates, software, features, and designs are
-          protected by intellectual property laws and remain the property of
-          Resumiq.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">6. Privacy</h3>
-        <p>
-          Your use of Resumiq is also governed by our Privacy Policy. We take
-          reasonable measures to safeguard your personal information.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">7. Service Availability</h3>
-        <p>
-          We strive to maintain uninterrupted service but do not guarantee that
-          the platform will always be available. Scheduled maintenance and
-          technical issues may temporarily affect access.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">8. Limitation of Liability</h3>
-        <p>
-          Resumiq shall not be liable for any indirect, incidental, special, or
-          consequential damages arising from the use of the platform.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">9. Account Termination</h3>
-        <p>
-          We reserve the right to suspend or terminate accounts that violate
-          these Terms & Conditions or misuse the platform.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">10. Changes to Terms</h3>
-        <p>
-          Resumiq may revise these Terms & Conditions at any time. Continued use
-          of the platform after changes indicates acceptance of the updated
-          terms.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">11. Contact Information</h3>
-        <p>
-          If you have questions regarding these Terms & Conditions, please
-          contact the Resumiq support team.
-        </p>
-
-      </Scrollable>
-    </Section>
-  );
       case "Privacy":
-  return (
-    <Section title="Privacy Policy">
-      <Scrollable>
-        <h3 className="font-semibold text-lg">1. Information We Collect</h3>
-        <p>
-          Resumiq may collect account information, resume data, preferences,
-          and usage information required to provide platform services.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">2. How We Use Data</h3>
-        <p>
-          Information is used to provide services, improve user experience,
-          maintain platform security, and enhance resume-building features.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">3. Data Protection</h3>
-        <p>
-          We implement reasonable security measures to protect user data from
-          unauthorized access, disclosure, or misuse.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">4. Third-Party Services</h3>
-        <p>
-          Certain features may rely on trusted third-party providers for
-          authentication, analytics, storage, or communication services.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">5. User Rights</h3>
-        <p>
-          Users may update, modify, export, or delete their information where
-          supported by the platform.
-        </p>
-
-        <h3 className="font-semibold text-lg mt-5">6. Contact</h3>
-        <p>
-          Questions regarding privacy practices may be directed to the Resumiq
-          support team.
-        </p>
-      </Scrollable>
-    </Section>
-  );
+        return (
+          <Section title="Privacy Policy">
+            <Scrollable>
+              <p>Your data is stored securely.</p>
+              <p>We do not sell your information.</p>
+              <p>You may delete your account anytime.</p>
+            </Scrollable>
+          </Section>
+        );
 
       case "Delete":
         return (
@@ -480,7 +247,7 @@ useEffect(() => {
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
-          <aside className="w-64 bg-[#0F172A] rounded-xl p-3 text-white">
+          <aside className="w-64 bg-[#0F172A] dark:bg-[#020617] rounded-xl p-3 text-white">
             {tabs.map((t) => (
               <button
                 key={t.key}
