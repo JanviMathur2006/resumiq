@@ -70,6 +70,31 @@ export default function Settings() {
     });
     return () => unsub();
   }, []);
+  useEffect(() => {
+  localStorage.setItem("theme", theme);
+
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    document.documentElement.classList.toggle(
+      "dark",
+      prefersDark
+    );
+  }
+}, [theme]);
+useEffect(() => {
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme) {
+    setTheme(savedTheme);
+  }
+}, []);
 
   /* ================= HANDLERS ================= */
   const saveName = async () => {
