@@ -16,6 +16,7 @@ import {
   reauthenticateWithCredential,
   deleteUser,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
@@ -102,6 +103,14 @@ export default function Settings() {
     if (!confirm("Delete account permanently?")) return;
     await deleteUser(user);
   };
+  const resetPassword = async () => {
+  try {
+    await sendPasswordResetEmail(auth, user.email);
+    alert("Password reset email sent successfully.");
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   /* ================= TABS ================= */
   const tabs = [
@@ -235,12 +244,84 @@ export default function Settings() {
         );
 
       case "Security":
-        return (
-          <Section title="Security">
-            <p className="text-sm">Security options can be added here.</p>
-          </Section>
-        );
+  return (
+    <Section title="Security">
+      <div className="space-y-6">
 
+        <div className="border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2">
+            Password Protection
+          </h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Keep your account secure with a strong password.
+          </p>
+
+          <button
+  onClick={resetPassword}
+  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+>
+  Send Password Reset Email
+</button>
+        </div>
+
+        <div className="border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2">
+            Email Verification
+          </h3>
+
+          <p className="text-sm text-gray-500 mb-4">
+            Verify your email address for additional account security.
+          </p>
+
+          {user?.emailVerified ? (
+            <span className="text-green-600 font-medium">
+              ✓ Verified
+            </span>
+          ) : (
+            <button
+              onClick={sendVerification}
+              className="px-4 py-2 rounded-lg bg-green-600 text-white"
+            >
+              {sendingVerify ? "Sending..." : "Send Verification Email"}
+            </button>
+          )}
+        </div>
+
+        <div className="border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2">
+            Login Information
+          </h3>
+
+          <div className="space-y-2 text-sm">
+            <p>
+              <strong>Email:</strong> {user?.email}
+            </p>
+
+            <p>
+              <strong>Status:</strong>{" "}
+              {user?.emailVerified
+                ? "Verified"
+                : "Not Verified"}
+            </p>
+          </div>
+        </div>
+
+        <div className="border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2 text-red-600">
+            Security Recommendations
+          </h3>
+
+          <ul className="list-disc ml-5 space-y-2 text-sm text-gray-600">
+            <li>Use a strong password with at least 12 characters.</li>
+            <li>Do not share your account credentials.</li>
+            <li>Verify your email address.</li>
+            <li>Regularly review your account activity.</li>
+          </ul>
+        </div>
+
+      </div>
+    </Section>
+  );
      case "Terms":
   return (
     <Section title="Terms & Conditions">
