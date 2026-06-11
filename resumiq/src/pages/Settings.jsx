@@ -16,6 +16,7 @@ import {
   reauthenticateWithCredential,
   deleteUser,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import PageTransition from "../components/PageTransition";
@@ -102,6 +103,14 @@ export default function Settings() {
     if (!confirm("Delete account permanently?")) return;
     await deleteUser(user);
   };
+  const resetPassword = async () => {
+  try {
+    await sendPasswordResetEmail(auth, user.email);
+    alert("Password reset email sent successfully.");
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   /* ================= TABS ================= */
   const tabs = [
@@ -201,34 +210,208 @@ export default function Settings() {
         );
 
       case "Security":
-        return (
-          <Section title="Security">
-            <p className="text-sm">Security options can be added here.</p>
-          </Section>
-        );
+  return (
+    <Section title="Security">
+      <div className="space-y-6">
 
-      case "Terms":
-        return (
-          <Section title="Terms & Conditions">
-            <Scrollable>
-              <p>Using Resumiq means you agree to these terms.</p>
-              <p>You are responsible for your account and data.</p>
-              <p>We may suspend accounts violating policies.</p>
-            </Scrollable>
-          </Section>
-        );
+        <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2">
+            Password Protection
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Keep your account secure by using a strong password.
+          </p>
+
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            onClick={resetPassword}
+          >
+            Send Password Reset Email
+          </button>
+        </div>
+
+        <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2">
+            Email Verification
+          </h3>
+
+          <p className="text-gray-600 mb-4">
+            Verify your email address for enhanced account security.
+          </p>
+
+          {user?.emailVerified ? (
+            <span className="text-green-600 font-medium">
+              ✓ Email Verified
+            </span>
+          ) : (
+            <button
+              onClick={sendVerification}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg"
+            >
+              {sendingVerify
+                ? "Sending..."
+                : "Send Verification Email"}
+            </button>
+          )}
+        </div>
+
+        <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2">
+            Account Information
+          </h3>
+
+          <div className="space-y-2 text-sm">
+            <p>
+              <strong>Email:</strong> {user?.email}
+            </p>
+
+            <p>
+              <strong>Status:</strong>{" "}
+              {user?.emailVerified
+                ? "Verified"
+                : "Not Verified"}
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-5">
+          <h3 className="font-semibold text-lg mb-2 text-red-600">
+            Security Tips
+          </h3>
+
+          <ul className="list-disc ml-5 text-sm text-gray-600 space-y-2">
+            <li>Use a password with at least 12 characters.</li>
+            <li>Do not share your credentials.</li>
+            <li>Verify your email address.</li>
+            <li>Regularly review account activity.</li>
+          </ul>
+        </div>
+
+      </div>
+    </Section>
+  );
+     case "Terms":
+  return (
+    <Section title="Terms & Conditions">
+      <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-6 space-y-6">
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            1. Acceptance of Terms
+          </h3>
+          <p className="text-gray-600">
+            By using Resumiq, you agree to comply with these terms and conditions.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            2. Account Responsibility
+          </h3>
+          <p className="text-gray-600">
+            You are responsible for maintaining the security of your account and credentials.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            3. Resume Ownership
+          </h3>
+          <p className="text-gray-600">
+            You retain ownership of all resume content created on Resumiq.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            4. Acceptable Use
+          </h3>
+          <p className="text-gray-600">
+            Users must not upload harmful, illegal, misleading, or offensive content.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            5. Service Availability
+          </h3>
+          <p className="text-gray-600">
+            We strive for uninterrupted service but cannot guarantee 100% uptime.
+          </p>
+        </div>
+
+      </div>
+    </Section>
+  );
 
       case "Privacy":
-        return (
-          <Section title="Privacy Policy">
-            <Scrollable>
-              <p>Your data is stored securely.</p>
-              <p>We do not sell your information.</p>
-              <p>You may delete your account anytime.</p>
-            </Scrollable>
-          </Section>
-        );
+  return (
+    <Section title="Privacy Policy">
+      <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-6 space-y-6">
 
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            1. Information We Collect
+          </h3>
+          <p className="text-gray-600">
+            We collect account information, resume data, preferences, and usage
+            information necessary to provide our services.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            2. How We Use Your Data
+          </h3>
+          <p className="text-gray-600">
+            Your information is used to improve platform functionality,
+            personalize your experience, and maintain security.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            3. Data Security
+          </h3>
+          <p className="text-gray-600">
+            We implement industry-standard security measures to protect your
+            information from unauthorized access.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            4. Third-Party Services
+          </h3>
+          <p className="text-gray-600">
+            Some services may rely on trusted third-party providers for
+            authentication, analytics, and storage.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            5. User Rights
+          </h3>
+          <p className="text-gray-600">
+            You can update, export, or delete your account information at any
+            time through your settings.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            6. Contact Us
+          </h3>
+          <p className="text-gray-600">
+            If you have questions regarding our privacy practices, please
+            contact the Resumiq support team.
+          </p>
+        </div>
+
+      </div>
+    </Section>
+  );
       case "Delete":
         return (
           <Section title="Delete Account">
@@ -302,10 +485,15 @@ function Input({ label, value, onChange, type = "text", disabled }) {
 
 function Toggle({ label, value, onChange }) {
   return (
-    <div className="flex justify-between items-center">
+    <label className="flex items-center gap-3 cursor-pointer">
+      <input
+        type="checkbox"
+        checked={value}
+        onChange={() => onChange(!value)}
+        className="w-4 h-4"
+      />
       <span>{label}</span>
-      <input type="checkbox" checked={value} onChange={() => onChange(!value)} />
-    </div>
+    </label>
   );
 }
 
