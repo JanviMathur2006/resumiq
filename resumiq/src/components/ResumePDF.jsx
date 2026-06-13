@@ -4,54 +4,44 @@ const ResumePDF = forwardRef(({ data }, ref) => {
   return (
     <div
       ref={ref}
-      className="w-[800px] bg-white text-black p-10"
+      className="w-[800px] bg-white text-black px-10 py-8 text-sm leading-relaxed"
     >
-      <h1 className="text-3xl font-bold mb-4">
-        Your Name
+      {/* HEADER */}
+      <h1 className="text-3xl font-bold uppercase">
+        {data.name || "YOUR NAME"}
       </h1>
 
-      {/* SUMMARY */}
-      {data.summary && (
-        <Section title="Professional Summary">
-          <p>{data.summary}</p>
-        </Section>
-      )}
+      <div className="mt-2 text-sm">
+        {data.phone} | {data.email} | {data.github} | {data.linkedin}
+      </div>
 
-      {/* EXPERIENCE */}
-      {data.experience && (
-        <Section title="Experience">
-          <p>{data.experience}</p>
-        </Section>
-      )}
+      {/* PROFILE */}
+      <Section title="PROFILE">
+        <p>{data.summary}</p>
+      </Section>
 
       {/* PROJECTS */}
-      {data.projects && (
-        <Section title="Projects">
-          <p>{data.projects}</p>
-        </Section>
-      )}
+      <Section title="PROJECTS">
+        <p>{data.projects}</p>
+      </Section>
+
+      {/* TECHNICAL SKILLS */}
+      <Section title="TECHNICAL SKILLS">
+        <p>{data.skills}</p>
+      </Section>
 
       {/* EDUCATION */}
-      {data.education && (
-        <Section title="Education">
-          <p>{data.education}</p>
-        </Section>
-      )}
-
-      {/* SKILLS */}
-      {data.skills && (
-        <Section title="Skills">
-          <p>{data.skills}</p>
-        </Section>
-      )}
+      <Section title="EDUCATION">
+        <p>{data.education}</p>
+      </Section>
     </div>
   );
 });
 
 function Section({ title, children }) {
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-semibold mb-2">
+    <div className="mt-6">
+      <h2 className="font-bold uppercase border-b border-black pb-1 mb-2">
         {title}
       </h2>
       {children}

@@ -669,63 +669,102 @@ export default function ResumeBuilder() {
         )}
 
         {/* ===== Preview ===== */}
+{previewMode && (
+  <div
+    ref={pdfRef}
+    className="bg-white mx-auto"
+    style={{
+      width: "800px",
+      minHeight: "1100px",
+      padding: "50px",
+      color: "#000",
+      fontFamily: "Times New Roman",
+      lineHeight: 1.6,
+    }}
+  >
+    <h1
+      style={{
+        fontSize: "30px",
+        fontWeight: "700",
+        marginBottom: "8px",
+      }}
+    >
+      {d.name}
+    </h1>
 
-        {previewMode && (
-          <div
-            ref={pdfRef}
+    <p style={{ marginBottom: "20px" }}>
+      {[d.phone, d.email, d.linkedin]
+        .filter(Boolean)
+        .join(" | ")}
+    </p>
 
-            style={{
-              fontFamily:
-                s.fontFamily,
+    {d.summary && (
+      <section style={{ marginBottom: "20px" }}>
+        <h2
+          style={{
+            fontWeight: "700",
+            borderBottom: "1px solid black",
+            marginBottom: "8px",
+          }}
+        >
+          PROFILE
+        </h2>
+        <p>{d.summary}</p>
+      </section>
+    )}
 
-              fontSize:
-                s.fontSize,
+    {d.projects && (
+      <section style={{ marginBottom: "20px" }}>
+        <h2
+          style={{
+            fontWeight: "700",
+            borderBottom: "1px solid black",
+            marginBottom: "8px",
+          }}
+        >
+          PROJECTS
+        </h2>
+        <p style={{ whiteSpace: "pre-wrap" }}>
+          {d.projects}
+        </p>
+      </section>
+    )}
 
-              lineHeight:
-                s.lineHeight,
+    {d.skills && (
+      <section style={{ marginBottom: "20px" }}>
+        <h2
+          style={{
+            fontWeight: "700",
+            borderBottom: "1px solid black",
+            marginBottom: "8px",
+          }}
+        >
+          TECHNICAL SKILLS
+        </h2>
+        <p style={{ whiteSpace: "pre-wrap" }}>
+          {d.skills}
+        </p>
+      </section>
+    )}
 
-              padding: s.margin,
-
-              background: "white",
-            }}
-          >
-            <h1>{d.name}</h1>
-
-            <p>{d.title}</p>
-
-            <p>
-              {[
-                d.email,
-                d.phone,
-                d.location,
-                d.linkedin,
-              ]
-                .filter(Boolean)
-                .join(" • ")}
-            </p>
-
-            {Object.entries(d).map(
-              ([k, v]) =>
-                v &&
-                ![
-                  "name",
-                  "title",
-                  "email",
-                  "phone",
-                  "location",
-                  "linkedin",
-                ].includes(k) && (
-                  <section key={k}>
-                    <h3>
-                      {k.toUpperCase()}
-                    </h3>
-
-                    <p>{v}</p>
-                  </section>
-                )
-            )}
-          </div>
-        )}
+    {d.education && (
+      <section>
+        <h2
+          style={{
+            fontWeight: "700",
+            borderBottom: "1px solid black",
+            marginBottom: "8px",
+          }}
+        >
+          EDUCATION
+        </h2>
+        <p style={{ whiteSpace: "pre-wrap" }}>
+          {d.education}
+        </p>
+      </section>
+    )}
+  </div>
+)}
 
         {/* ===== Actions ===== */}
 
