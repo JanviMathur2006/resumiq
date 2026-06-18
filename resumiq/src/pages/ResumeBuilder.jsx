@@ -212,19 +212,6 @@ export default function ResumeBuilder() {
           ? {
               ...v,
 
-              history: [
-                ...v.history,
-
-                {
-                  time: Date.now(),
-
-                  action: `Edited ${field}`,
-
-                  dataSnapshot: v.data,
-
-                  styleSnapshot: v.style,
-                },
-              ],
 
               data: {
                 ...v.data,

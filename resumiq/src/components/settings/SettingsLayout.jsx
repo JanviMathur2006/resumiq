@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   User,
   Lock,
@@ -7,6 +6,7 @@ import {
   FileText,
   Shield,
   AlertTriangle,
+  HelpCircle,
 } from "lucide-react";
 
 import AccountPrivacy from "./AccountPrivacy";
@@ -171,6 +171,58 @@ function PrivacyPolicy() {
     </div>
   );
 }
+function HelpSupport() {
+  return (
+    <div className="space-y-6 text-slate-700 dark:text-slate-300">
+      <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+        Help & Support
+      </h2>
+
+      <p>
+        Need assistance while using ResumiQ? We're here to help.
+      </p>
+
+      <div>
+        <h3 className="font-semibold text-lg mb-2">
+          Contact Support
+        </h3>
+
+        <p>
+          If you encounter technical issues, bugs, account-related
+          problems, or have suggestions for improving ResumiQ,
+          please contact us at:
+        </p>
+
+        <p className="mt-3 font-medium text-blue-600">
+          mathurj9900@gmail.com
+        </p>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-lg mb-2">
+          Response Time
+        </h3>
+
+        <p>
+          We typically respond within 24–48 hours.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-lg mb-2">
+          Support Topics
+        </h3>
+
+        <ul className="list-disc ml-6">
+          <li>Bug reports and technical issues</li>
+          <li>Resume creation assistance</li>
+          <li>Feature requests and suggestions</li>
+          <li>Account and login problems</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
 
 /* ===========================
    SIDEBAR TABS
@@ -183,6 +235,11 @@ const tabs = [
   { label: "Security", key: "Security", icon: Lock },
   { label: "Terms & Conditions", key: "Terms", icon: FileText },
   { label: "Privacy Policy", key: "Privacy", icon: Shield },
+  {
+  label: "Help & Support",
+  key: "Help",
+  icon: HelpCircle,
+},
   {
     label: "Delete Account",
     key: "Danger Zone",
@@ -216,6 +273,9 @@ export default function SettingsLayout() {
 
       case "Privacy":
         return <PrivacyPolicy />;
+
+        case "Help":
+  return <HelpSupport />;
 
       case "Danger Zone":
         return <DangerZone />;

@@ -7,6 +7,7 @@ import {
   Bell,
   Lock,
   AlertTriangle,
+  HelpCircle,
 } from "lucide-react";
 import {
   onAuthStateChanged,
@@ -121,6 +122,7 @@ export default function Settings() {
     { key: "Security", label: "Security", icon: Lock },
     { key: "Terms", label: "Terms & Conditions", icon: FileText },
     { key: "Privacy", label: "Privacy Policy", icon: Lock },
+    { key: "Help", label: "Help & Support", icon: HelpCircle },
     { key: "Delete", label: "Delete Account", icon: AlertTriangle, danger: true },
   ];
 
@@ -406,6 +408,45 @@ export default function Settings() {
           <p className="text-gray-600">
             If you have questions regarding our privacy practices, please
             contact the Resumiq support team.
+          </p>
+        </div>
+
+      </div>
+    </Section>
+  );
+  case "Help":
+  return (
+    <Section title="Help & Support">
+      <div className="bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-6 space-y-6">
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            Contact Support
+          </h3>
+
+          <p className="text-gray-600">
+            If you experience any bugs, technical issues, account problems,
+            or have suggestions for improving ResumiQ, please contact us.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            Email Support
+          </h3>
+
+          <p className="text-blue-600 font-medium">
+            mathurj9900@gmail.com
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-lg mb-2">
+            Response Time
+          </h3>
+
+          <p className="text-gray-600">
+            We typically respond within 24–48 hours.
           </p>
         </div>
 
