@@ -52,13 +52,14 @@ export default function ResumeBuilder() {
 
   const navigate = useNavigate();
 
-  const resumeType = location.state?.resumeType;
+  const resumeType = localStorage.getItem("resumeType");
 
   /* ===================================================== */
   /* ================= INITIAL REDIRECT ================= */
   /* ===================================================== */
 
   useEffect(() => {
+    console.log("resumeType:", resumeType);
     if (!resumeType) {
       navigate("/app/choose");
     }

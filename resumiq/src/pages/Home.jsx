@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Typewriter } from "react-simple-typewriter";
 import PageTransition from "../components/PageTransition";
 import { resumeTypes } from "../data/resumeTypes";
-
+import logo from "../assets/logo.png";
 /* ANIMATION */
 import { fadeUp } from "../animations/stagger";
 

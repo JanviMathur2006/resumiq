@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -13,11 +14,33 @@ export default function Navbar() {
       
       {/* Logo */}
       <div
-        className="logo"
-        onClick={() => navigate("/app")}
-      >
-        Resumiq
-      </div>
+  className="logo"
+  onClick={() => navigate("/app")}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    cursor: "pointer",
+  }}
+>
+  <img
+    src={logo}
+    alt="Resumiq"
+    style={{
+      height: "42px",
+      width: "auto",
+    }}
+  />
+
+  <span
+    style={{
+      fontWeight: "700",
+      fontSize: "24px",
+    }}
+  >
+    Resumiq
+  </span>
+</div>
 
       {/* Navigation Links */}
       <div className="nav-links">
