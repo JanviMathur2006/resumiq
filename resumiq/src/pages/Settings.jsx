@@ -429,16 +429,18 @@ export default function Settings() {
             or have suggestions for improving ResumiQ, please contact us.
           </p>
         </div>
+<div>
+  <h3 className="font-semibold text-lg mb-2">
+    Email Support
+  </h3>
 
-        <div>
-          <h3 className="font-semibold text-lg mb-2">
-            Email Support
-          </h3>
-
-          <p className="text-blue-600 font-medium">
-            mathurj9900@gmail.com
-          </p>
-        </div>
+  <a
+    href="mailto:mathurj9900@gmail.com?subject=ResumiQ Support Request"
+    className="text-blue-600 font-medium hover:underline"
+  >
+    mathurj9900@gmail.com
+  </a>
+</div>
 
         <div>
           <h3 className="font-semibold text-lg mb-2">
