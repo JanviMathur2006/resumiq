@@ -76,7 +76,7 @@
 /* BUTTON */
 .use-btn {
   padding: 6px 12px;
-  background: white;
+  background: rgba(255, 255, 255, 0.972);
   color: #0A1A33;
   border: none;
   border-radius: 6px;
