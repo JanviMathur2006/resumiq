@@ -21,15 +21,17 @@ import ResumeBuilder from "./pages/ResumeBuilder";
 import ResumeSamples from "./pages/ResumeSamples";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import UploadResume from "./pages/UploadResume"; // NEW
 
 /* LAYOUT */
 import AppLayout from "./components/AppLayout";
 import AuthWrapper from "./components/AuthWrapper";
 
-/* 🔥 OVERLAY */
+/* OVERLAY */
 import TransitionOverlay from "./components/TransitionOverlay";
 
 /* ================= PAGE WRAPPER ================= */
+
 function PageWrapper({ children }) {
   return (
     <motion.div
@@ -53,77 +55,152 @@ function PageWrapper({ children }) {
 }
 
 /* ================= ROUTES ================= */
+
 function AnimatedRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
-
-      {/* ✅ Overlay stays separate (your original style) */}
       <TransitionOverlay key={location.pathname} />
 
       <Routes location={location} key={location.pathname}>
-
         {/* PUBLIC ROUTES */}
-        <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
-        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-        <Route path="/signup" element={<PageWrapper><Signup /></PageWrapper>} />
-        <Route path="/onboarding" element={<PageWrapper><Onboarding /></PageWrapper>} />
+
+        <Route
+          path="/"
+          element={
+            <PageWrapper>
+              <Landing />
+            </PageWrapper>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <PageWrapper>
+              <Login />
+            </PageWrapper>
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <PageWrapper>
+              <Signup />
+            </PageWrapper>
+          }
+        />
+
+        <Route
+          path="/onboarding"
+          element={
+            <PageWrapper>
+              <Onboarding />
+            </PageWrapper>
+          }
+        />
 
         {/* PROTECTED ROUTES */}
+
         <Route element={<AuthWrapper />}>
           <Route element={<AppLayout />}>
-
-            <Route path="/app" element={<PageWrapper><Home /></PageWrapper>} />
+            <Route
+              path="/app"
+              element={
+                <PageWrapper>
+                  <Home />
+                </PageWrapper>
+              }
+            />
 
             <Route
               path="/app/choose"
-              element={<PageWrapper><ChooseResumeType /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <ChooseResumeType />
+                </PageWrapper>
+              }
             />
 
             <Route
               path="/app/resumes"
-              element={<PageWrapper><CreateResumes /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <CreateResumes />
+                </PageWrapper>
+              }
             />
 
             <Route
               path="/app/create"
-              element={<PageWrapper><CreateResumes /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <CreateResumes />
+                </PageWrapper>
+              }
             />
 
             <Route
               path="/app/builder"
-              element={<PageWrapper><ResumeBuilder /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <ResumeBuilder />
+                </PageWrapper>
+              }
+            />
+
+            {/* NEW UPLOAD RESUME PAGE */}
+
+            <Route
+              path="/app/upload"
+              element={
+                <PageWrapper>
+                  <UploadResume />
+                </PageWrapper>
+              }
             />
 
             <Route
               path="/app/samples"
-              element={<PageWrapper><ResumeSamples /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <ResumeSamples />
+                </PageWrapper>
+              }
             />
 
             <Route
               path="/app/profile"
-              element={<PageWrapper><Profile /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <Profile />
+                </PageWrapper>
+              }
             />
 
             <Route
               path="/app/settings"
-              element={<PageWrapper><Settings /></PageWrapper>}
+              element={
+                <PageWrapper>
+                  <Settings />
+                </PageWrapper>
+              }
             />
-
           </Route>
         </Route>
 
         {/* FALLBACK */}
+
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
-
     </AnimatePresence>
   );
 }
 
 /* ================= ROOT ================= */
+
 export default function App() {
   return (
     <BrowserRouter>

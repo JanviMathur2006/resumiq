@@ -22,7 +22,7 @@ import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
-const TOTAL_SLIDES = 3;
+const TOTAL_SLIDES = 4;
 
 export default function Home() {
 
@@ -694,6 +694,45 @@ export default function Home() {
                   </motion.div>
 
                 </div>
+                {/* UPLOAD RESUME */}
+
+<div className="snap-center min-w-full flex justify-center">
+
+  <motion.div
+    onClick={() => navigate("/app/upload")}
+    whileHover={{ y: -6 }}
+    className="
+      w-full
+      max-w-5xl
+      min-h-[280px]
+      rounded-[32px]
+      bg-white/70
+      backdrop-blur-[30px]
+      border
+      border-white/60
+      shadow-[0_25px_80px_rgba(0,0,0,0.10)]
+      flex
+      flex-col
+      items-center
+      justify-center
+      text-center
+      px-10
+      cursor-pointer
+    "
+  >
+    <div className="text-6xl mb-5">📄</div>
+
+    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      Upload Resume
+    </h2>
+
+    <p className="text-lg text-gray-600">
+      Upload your existing PDF or DOCX resume and continue editing it.
+    </p>
+
+  </motion.div>
+
+</div>
 
               </div>
 
