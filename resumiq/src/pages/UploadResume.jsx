@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 
 export default function UploadResume() {
   const navigate = useNavigate();
@@ -38,13 +39,19 @@ export default function UploadResume() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center p-8">
-
       <motion.div
         initial={{ opacity: 0, y: 35 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
-        className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl p-12"
+        className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl p-12"
       >
+        {/* Back Arrow */}
+        <button
+          onClick={() => navigate("/app")}
+          className="absolute top-6 left-6 w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition duration-200"
+        >
+          <ArrowLeft size={24} className="text-gray-700" />
+        </button>
 
         <h1 className="text-4xl font-bold text-center text-gray-900 mb-4">
           Upload Existing Resume
@@ -89,49 +96,36 @@ export default function UploadResume() {
             onChange={(e) => handleFile(e.target.files[0])}
           />
 
-          <span className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium">
+          <span className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition">
             Choose File
           </span>
         </label>
 
         {file && (
           <div className="mt-8 rounded-2xl bg-green-50 border border-green-200 p-5">
-
             <h3 className="font-semibold text-green-700">
               Selected Resume
             </h3>
 
-            <p className="mt-2 text-gray-700">
+            <p className="mt-2 text-gray-700 break-all">
               {file.name}
             </p>
 
             <p className="text-sm text-gray-500">
               {(file.size / 1024 / 1024).toFixed(2)} MB
             </p>
-
           </div>
         )}
 
-        <div className="mt-10 flex justify-between">
-
-          <button
-            onClick={() => navigate("/app")}
-            className="px-6 py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition"
-          >
-            Back
-          </button>
-
+        <div className="mt-10 flex justify-end">
           <button
             onClick={handleUpload}
             className="px-8 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
           >
             Upload Resume
           </button>
-
         </div>
-
       </motion.div>
-
     </div>
   );
 }
