@@ -8,6 +8,7 @@ import {
   Lock,
   AlertTriangle,
   HelpCircle,
+  ChevronRight,
 } from "lucide-react";
 import {
   onAuthStateChanged,
@@ -473,21 +474,39 @@ export default function Settings() {
     <PageTransition>
       <div className="min-h-screen bg-gray-100 dark:bg-[#0B1220]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex gap-8">
-          <aside className="w-64 bg-[#0F172A] dark:bg-[#020617] rounded-xl p-3 text-white">
-            {tabs.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setActiveTab(t.key)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded ${
-                  t.danger ? "text-red-400" : ""
-                }`}
-              >
-                <t.icon size={18} />
-                {t.label}
-              </button>
-            ))}
-          </aside>
+          <aside className="w-72 bg-[#08112A] rounded-2xl p-4 text-white shadow-xl">
+  <nav className="space-y-2">
+    {tabs.map((t) => (
+      <button
+        key={t.key}
+        onClick={() => setActiveTab(t.key)}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 ${
+          activeTab === t.key
+            ? "bg-[#1D4ED8] text-white shadow-md"
+            : t.danger
+            ? "text-red-400 hover:bg-red-500/10"
+            : "text-white hover:bg-white/10"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          <t.icon size={20} />
+          <span className="font-medium">{t.label}</span>
+        </div>
 
+        <ChevronRight
+          size={18}
+          className={`${
+            activeTab === t.key
+              ? "text-white"
+              : t.danger
+              ? "text-red-400"
+              : "text-slate-400"
+          }`}
+        />
+      </button>
+    ))}
+  </nav>
+</aside>
           <main className="flex-1 bg-white dark:bg-[#0F172A] rounded-xl p-8">
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} {...tabVariants}>

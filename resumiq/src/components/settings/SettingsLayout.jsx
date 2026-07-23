@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   User,
   Lock,
@@ -7,6 +9,7 @@ import {
   Shield,
   AlertTriangle,
   HelpCircle,
+  ChevronRight,
 } from "lucide-react";
 
 import AccountPrivacy from "./AccountPrivacy";
@@ -297,19 +300,33 @@ export default function SettingsLayout() {
 
               return (
                 <button
-                  key={tab.key}
-                  onClick={() => setActive(tab.key)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                    active === tab.key
-                      ? "bg-white text-black"
-                      : tab.danger
-                      ? "text-red-400 hover:bg-red-500/10"
-                      : "hover:bg-white/10"
-                  }`}
-                >
-                  <Icon size={20} />
-                  <span>{tab.label}</span>
-                </button>
+  key={tab.key}
+  onClick={() => setActive(tab.key)}
+  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 ${
+    active === tab.key
+      ? "bg-[#1E40AF] text-white shadow-lg"
+      : tab.danger
+      ? "text-red-400 hover:bg-red-500/10"
+      : "text-white hover:bg-white/10"
+  }`}
+>
+  <div className="flex items-center gap-3">
+    <Icon size={20} />
+    <span className="font-medium">{tab.label}</span>
+  </div>
+
+  <ChevronRight
+    size={18}
+    strokeWidth={2.5}
+    className={`transition-all ${
+      active === tab.key
+        ? "text-white translate-x-1"
+        : tab.danger
+        ? "text-red-400"
+        : "text-slate-400"
+    }`}
+  />
+</button>
               );
             })}
           </nav>
