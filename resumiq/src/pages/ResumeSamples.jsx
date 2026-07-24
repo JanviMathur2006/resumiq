@@ -2,7 +2,7 @@ import { useState } from "react";
 import { resumeTypeSamples } from "../data/resumeTypeSamples";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { ArrowLeft } from "lucide-react";
 /* =====================================================
    FILTER TABS
 ===================================================== */
@@ -54,19 +54,33 @@ export default function ResumeSamples() {
           </motion.div>
 
           {/* Header Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative text-center"
-          >
-            <h1 className="text-4xl font-semibold text-gray-900 mb-3">
-              Resume Samples
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Recruiter-approved resume examples for every career stage.
-            </p>
-          </motion.div>
+<motion.div
+  initial={{ opacity: 0, y: 25 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="relative flex items-center justify-center"
+>
+  {/* Back Button */}
+  <button
+    onClick={() => navigate(-1)}
+    className="absolute left-0 flex items-center justify-center
+               w-11 h-11 rounded-full bg-white border border-gray-200
+               shadow-md hover:bg-gray-100 hover:shadow-lg
+               transition-all duration-200"
+  >
+    <ArrowLeft size={22} />
+  </button>
+
+  <div className="text-center">
+    <h1 className="text-4xl font-semibold text-gray-900 mb-3">
+      Resume Samples
+    </h1>
+
+    <p className="text-gray-600 text-lg">
+      Recruiter-approved resume examples for every career stage.
+    </p>
+  </div>
+</motion.div>
 
         </div>
 
