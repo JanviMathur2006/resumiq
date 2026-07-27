@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import {
   signOut,
   updateProfile,
@@ -197,10 +198,17 @@ export default function Profile() {
   /* ================= UI ================= */
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#030712]">
+    <div className="relative min-h-screen bg-gray-50 dark:bg-[#030712]">
 
       {/* COVER */}
       <div className="h-48 bg-gradient-to-r from-blue-200 to-indigo-200" />
+
+<button
+  onClick={() => navigate(-1)}
+  className="fixed top-6 left-6 z-[999] w-11 h-11 rounded-full bg-white shadow-lg hover:scale-105 transition flex items-center justify-center"
+>
+  <ArrowLeft size={22} />
+</button>
 
       <div className="max-w-6xl mx-auto px-6 -mt-20">
         <div className="flex gap-8">
