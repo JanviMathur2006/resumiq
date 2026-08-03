@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 
 const TABS = ["Recommended", "Students", "Professionals", "Specialized"];
 
@@ -73,6 +74,33 @@ export default function ChooseResumeType() {
 
   return (
     <div className="relative min-h-screen overflow-hidden px-6 py-10">
+      {/* BACK BUTTON */}
+<button
+  onClick={() => navigate(-1)}
+  className="
+    absolute
+    top-8
+    left-8
+    z-50
+    w-14
+    h-14
+    rounded-2xl
+    bg-white/90
+    backdrop-blur-md
+    border
+    border-white/60
+    shadow-xl
+    flex
+    items-center
+    justify-center
+    hover:scale-105
+    hover:shadow-2xl
+    transition-all
+    duration-300
+  "
+>
+  <ArrowLeft size={28} className="text-[#0A1A33]" />
+</button>
 
       {/* BACKGROUND */}
       <div className="wave-bg"></div>
